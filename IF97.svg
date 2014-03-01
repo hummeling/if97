@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="text/ecmascript" zoomAndPan="magnify" text-rendering="geometricPrecision" contentStyleType="text/css" stroke-linecap="round" version="1.1" width="102" preserveAspectRatio="xMidYMid meet" viewBox="0 0 102 102" height="102" font-family="Hummeling Engineering" stroke-linejoin="round">
+<defs>
+<filter x="-50%" y="-50%" width="200%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:actuate="onLoad" height="200%" id="erode" xlink:show="other">
+<feMorphology radius="1.0" operator="erode"/>
+</filter>
+<filter x="-50%" y="-50%" width="200%" xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:actuate="onLoad" height="200%" id="neon" xlink:show="other">
+<feColorMatrix values="0 0 0 .3 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0" type="matrix"/>
+<feGaussianBlur result="blur" stdDeviation="5"/>
+<feMerge>
+<feMergeNode in="blur"/>
+<feMergeNode in="blur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+<font horiz-adv-x="500">
+<font-face font-family="Hummeling Engineering" units-per-em="1000"/>
+<missing-glyph d="M50 0 L450 0 L450 300 L50 300 Z"/>
+<glyph horiz-adv-x="350" unicode="7" d="M50 400 a25 25 0 0 0 0 50 h200 a75 75 0 0 0 75 -75 V25 a25 25 0 0 0 -50 0 V375 a25 25 0 0 1 -25 25 Z"/>
+<glyph unicode="9" d="M200 200 a25 25 0 0 0 0 -50 h-50 a150 150 0 0 0 0 300 h50 A225 225 0 0 0 200 0 h-50 A25 25 0 0 0 150 50 h50 A175 175 0 0 1 200 400 h-50 A100 100 0 0 1 150 200 Z"/>
+<glyph horiz-adv-x="400" unicode="&gt;" d="M50 200 L350 100 L50 0"/>
+<glyph unicode="E" d="M300 400 A25 25 0 0 1 300 450 L250 450 A225 225 0 0 1 250 0 H425 A25 25 0 0 1 425 50 H250 A175 175 0 0 0 250 400 L300 400 M350 200 A25 25 0 0 1 350 250 H250 A25 25 0 0 1 250 200 Z"/>
+<glyph horiz-adv-x="450" unicode="F" d="M50 25 A25 25 0 0 1 100 25 V375 A25 25 0 0 0 125 400 H250 A25 25 0 0 1 250 450 H125 A75 75 0 0 1 50 375 V25 M300 200 A25 25 0 0 1 300 250 H200 A25 25 0 0 1 200 200 Z"/>
+<glyph unicode="G" d="M300 400 A25 25 0 0 1 300 450 h-50 A225 225 0 0 1 250 0 h50 A150 150 0 0 1 300 300 h-50 A25 25 0 0 1 250 250 h50 A100 100 0 0 0 300 50 h-50 A175 175 0 0 0 250 400 Z"/>
+<glyph horiz-adv-x="150" unicode="I" d="M50 25 A25 25 0 0 1 100 25L100 425 A25 25 0 0 1 50 425 Z"/>
+<glyph unicode="N" d="M50 25 A25 25 0 0 1 100 25 L100 330 450 0 450 425 A25 25 0 0 1 400 425 L400 120 50 450 Z"/>
+<glyph horiz-adv-x="450" unicode="P" d="M50 25 A25 25 0 0 1 100 25 V375 A25 25 0 0 0 125 400 L250 400 A100 100 0 0 0 250 200 L200 200A25 25 0 0 1 200 150 L250 150 A125 125 0 0 1 250 450 L125 450A75 75 0 0 1 50 375 L50 25 Z"/>
+<glyph horiz-adv-x="450" unicode="R" d="M50 25 A25 25 0 0 1 100 25 V375 A25 25 0 0 0 125 400 L250 400 A100 100 0 0 0 250 200 L200 200A25 25 0 0 1 200 150 L250 150 A125 125 0 0 1 250 450 L125 450A75 75 0 0 1 50 375 L50 25M367 8 A25 25 45 0 1 402 43 L345 100 A25 25 45 0 1 310 65 Z"/>
+<glyph horiz-adv-x="450" unicode="a" d="M200 300 h50 a150 150 0 0 0 0 -300 h-100 a100 100 0 0 0 0 200 h100"/>
+<glyph horiz-adv-x="450" unicode="e" d="M200 100 h100 A100 100 0 0 1 300 300 h-100 A150 150 0 0 1 200 0 h50"/>
+<glyph unicode="g" d="M300 0 L200 0 A100 100 0 0 0 200 300L250 300 A200 200 0 0 0 250 -100 L200 -100"/>
+<glyph unicode="h" d="M50 0 L50 600M150 300 L250 300 A200 200 0 0 0 450 100 L450 0"/>
+<glyph horiz-adv-x="100" unicode="i" d="M50 0 V300 M50 400 v1"/>
+<glyph horiz-adv-x="200" unicode="j" d="M150 300 V50 A150 150 0 0 0 0 -100 M150 400 v1"/>
+<glyph horiz-adv-x="250" unicode="l" d="M50 600 V150 A150 150 0 0 1 200 0"/>
+<glyph horiz-adv-x="600" unicode="m" d="M50 0 L50 175 A75 75 0 0 0 300 175L300 100 300 175 A75 75 0 0 0 550 175 L550 0"/>
+<glyph unicode="n" d="M50 0 L50 100 A150 150 0 0 0 450 100 L450 0"/>
+<glyph unicode="u" d="M50 300 V200 A150 150 0 0 1 450 200 V300"/>
+<glyph horiz-adv-x="400" unicode="v" d="M50 300 L200 0 350 300"/>
+<glyph horiz-adv-x="300" unicode=" " d=""/>
+</font>
+</defs>
+<rect x="1" y="1" fill="#024" width="100" rx="8" ry="8" height="100"/>
+<rect x="6" y="6" fill="#fff" width="90" rx="4" ry="4" height="50"/>
+<text x="10" font-size="55" y="46" fill="none" filter="url(#erode)" stroke="#357" stroke-width="4">java</text>
+<text x="6" font-size="60" y="92" fill="#eff" filter="url(#neon)" stroke="#fff" stroke-width="1">IF97</text>
+</svg>
