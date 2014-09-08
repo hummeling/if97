@@ -270,7 +270,6 @@ public class Region3Test {
         }
     }
 
-    @Ignore
     @Test
     public void testSpeedOfSoundRhoT() {
         double tol = 1e-6;

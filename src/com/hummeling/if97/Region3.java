@@ -20,107 +20,97 @@
  */
 package com.hummeling.if97;
 
-import static com.hummeling.if97.IF97.R;
-import static com.hummeling.if97.IF97.Tc;
-import static com.hummeling.if97.IF97.pc;
-import static com.hummeling.if97.IF97.rhoc;
+import static com.hummeling.if97.IF97.*;
 import static java.lang.Double.NaN;
-import static java.lang.Math.exp;
-import static java.lang.Math.log;
-import static java.lang.Math.pow;
-import static java.lang.Math.sqrt;
+import static java.lang.Math.*;
 
 /**
- * Region 3. This class shouldn't be invoked directly.
+ * Region 3.
  *
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
 class Region3 extends Region {
-// <editor-fold defaultstate="collapsed" desc="fields">
 
-    private static final String NAME = "Region 3";
-    static final double rhoRef = 322, Tref = 647.096, n1 = 0.10658070028513e1,
-            s3ab = 4.41202148223476;
-    static final double[][] IJn = {
-        {0, 0, -0.15732845290239e2},
-        {0, 1, 00.20944396974307e2},
-        {0, 2, -0.76867707878716e1},
-        {0, 7, 00.26185947787954e1},
-        {0, 10, -.28080781148620e1},
-        {0, 12, 0.12053369696517e1},
-        {0, 23, -.84566812812502e-2},
-        {1, 2, -0.12654315477714e1},
-        {1, 6, -0.11524407806681e1},
-        {1, 15, 0.88521043984318},
-        {1, 17, -.64207765181607},
-        {2, 0, 00.38493460186671},
-        {2, 2, -0.85214708824206},
-        {2, 6, 00.48972281541877e1},
-        {2, 7, -0.30502617256965e1},
-        {2, 22, 0.39420536879154e-1},
-        {2, 26, 0.12558408424308},
-        {3, 0, -0.27999329698710},
-        {3, 2, 00.13899799569460e1},
-        {3, 4, -0.20189915023570e1},
-        {3, 16, -.82147637173963e-2},
-        {3, 26, -.47596035734923},
-        {4, 0, 00.43984074473500e-1},
-        {4, 2, -0.44476435428739},
-        {4, 4, 00.90572070719733},
-        {4, 26, 0.70522450087967},
-        {5, 1, 00.10770512626332},
-        {5, 3, -0.32913623258954},
-        {5, 26, -.50871062041158},
-        {6, 0, -0.22175400873096e-1},
-        {6, 2, 00.94260751665092e-1},
-        {6, 26, 0.16436278447961},
-        {7, 2, -0.13503372241348e-1},
-        {8, 26, -.14834345352472e-1},
-        {9, 2, 00.57922953628084e-3},
-        {9, 26, 0.32308904703711e-2},
-        {10, 0, 0.80964802996215e-4},
-        {10, 1, -.16557679795037e-3},
-        {11, 26, -.44923899061815e-4}
-    };
-// </editor-fold>
+    private static final String NAME;
+    static final double rhoRef, Tref, n1, s3ab;
+    static final double[][] IJn;
+
+    static {
+        NAME = "Region 3";
+        rhoRef = 322;
+        Tref = 647.096;
+        n1 = 0.10658070028513e1;
+        s3ab = 4.41202148223476;
+        IJn = new double[][]{
+            {0, 0, -0.15732845290239e2},
+            {0, 1, 00.20944396974307e2},
+            {0, 2, -0.76867707878716e1},
+            {0, 7, 00.26185947787954e1},
+            {0, 10, -.28080781148620e1},
+            {0, 12, 0.12053369696517e1},
+            {0, 23, -.84566812812502e-2},
+            {1, 2, -0.12654315477714e1},
+            {1, 6, -0.11524407806681e1},
+            {1, 15, 0.88521043984318},
+            {1, 17, -.64207765181607},
+            {2, 0, 00.38493460186671},
+            {2, 2, -0.85214708824206},
+            {2, 6, 00.48972281541877e1},
+            {2, 7, -0.30502617256965e1},
+            {2, 22, 0.39420536879154e-1},
+            {2, 26, 0.12558408424308},
+            {3, 0, -0.27999329698710},
+            {3, 2, 00.13899799569460e1},
+            {3, 4, -0.20189915023570e1},
+            {3, 16, -.82147637173963e-2},
+            {3, 26, -.47596035734923},
+            {4, 0, 00.43984074473500e-1},
+            {4, 2, -0.44476435428739},
+            {4, 4, 00.90572070719733},
+            {4, 26, 0.70522450087967},
+            {5, 1, 00.10770512626332},
+            {5, 3, -0.32913623258954},
+            {5, 26, -.50871062041158},
+            {6, 0, -0.22175400873096e-1},
+            {6, 2, 00.94260751665092e-1},
+            {6, 26, 0.16436278447961},
+            {7, 2, -0.13503372241348e-1},
+            {8, 26, -.14834345352472e-1},
+            {9, 2, 00.57922953628084e-3},
+            {9, 26, 0.32308904703711e-2},
+            {10, 0, 0.80964802996215e-4},
+            {10, 1, -.16557679795037e-3},
+            {11, 26, -.44923899061815e-4}};
+    }
 
     protected Region3() {
     }
 
     @Override
     String getName() {
+
         return NAME;
     }
 
     private SubRegion getSubRegionS(double entropy) {
 
-        if (entropy <= s3ab) {
-            return SubRegion.a;
-
-        } else {
-            return SubRegion.b;
-        }
+        return entropy <= s3ab ? SubRegion.a : SubRegion.b;
     }
 
     private SubRegion getSubRegionPH(double pressure, double enthalpy) {
 
-        if (enthalpy < enthalpy3ab(pressure)) {
-            return SubRegion.a;
-        } else {
-            return SubRegion.b;
-        }
+        return enthalpy < enthalpy3ab(pressure) ? SubRegion.a : SubRegion.b;
     }
 
     static double enthalpy3ab(double pressure) {
 
         double out = 0, pi = pressure;
-        double[] n = new double[]{
+        double[] n = {
             0.201464004206875e4,
             0.374696550136983e1,
             -.219921901054187e-1,
-            0.875131686009950e-4
-        };
+            0.875131686009950e-4};
 
         for (int i = 0; i < n.length; i++) {
             out += n[i] * pow(pi, i);
@@ -170,8 +160,7 @@ class Region3 extends Region {
             {3, 0, -1.46340792313332e-2},
             {4, 2, -2.24503486668184},
             {5, 2, 1.10533464706142},
-            {8, 2, -4.08757344495612e-2}
-        };
+            {8, 2, -4.08757344495612e-2}};
 
         for (double[] ijn : IJnA) {
             out += ijn[2] * pow(pi + 0.128, ijn[0]) * pow(eta - 0.727, ijn[1]);
@@ -219,8 +208,7 @@ class Region3 extends Region {
             {1, 0, -1.79967222507787e-2},
             {1, 1, 3.71810116332674e-2},
             {2, 2, -5.36288335065096e-2},
-            {2, 6, 1.60697101092520}
-        };
+            {2, 6, 1.60697101092520}};
 
         for (double[] ijn : IJnB) {
             out += ijn[2] * pow(pi + 0.0661, ijn[0]) * pow(eta - 0.720, ijn[1]);
@@ -374,8 +362,7 @@ class Region3 extends Region {
             {28, 16, .108408607429124e29},
             {28, 36, .730872705175151e44},
             {32, 10, .159145847398870e25},
-            {32, 28, .377121605943324e41}
-        };
+            {32, 28, .377121605943324e41}};
 
         for (double[] ijn : IJnA) {
             out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -429,8 +416,7 @@ class Region3 extends Region {
             {8, 1, -.227361631268929e5},
             {10, 1, .890746343932567e5},
             {14, 3, -.239234565822486e8},
-            {14, 7, .568795808129714e10}
-        };
+            {14, 7, .568795808129714e10}};
 
         for (double[] ijn : IJnB) {
             out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -479,8 +465,7 @@ class Region3 extends Region {
             {4, 0, 2.52233108341612e-3},
             {4, 3, -7.64885133368119e-3},
             {10, 4, 1.36176427574291e-2},
-            {12, 5, -1.33027883575669e-2}
-        };
+            {12, 5, -1.33027883575669e-2}};
 
         for (double[] ijn : IJnA) {
             out += ijn[2] * pow(pi + 0.240, ijn[0]) * pow(eta - 0.615, ijn[1]);
@@ -531,8 +516,7 @@ class Region3 extends Region {
             {3, 1, -4.36653048526683e-1},
             {5, 1, 2.86596714529479e-1},
             {6, 1, -1.31778331276228e-1},
-            {8, 1, 6.76682064330275e-3}
-        };
+            {8, 1, 6.76682064330275e-3}};
 
         for (double[] ijn : IJnB) {
             out += ijn[2] * pow(pi + 0.298, ijn[0]) * pow(eta - 0.720, ijn[1]);
@@ -541,21 +525,27 @@ class Region3 extends Region {
     }
 
     double isobaricCubicExpansionCoefficientRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature,
+
+        double delta = density / rhoc,
+                tau = Tc / temperature,
                 phiDelta = phiDelta(delta, tau);
-        return (phiDelta - tau * phiDeltaTau(delta, tau))
-                / (2 * phiDelta + delta * phiDeltaDelta(delta, tau)) / temperature;
+
+        return (phiDelta - tau * phiDeltaTau(delta, tau)) / (2 * phiDelta + delta * phiDeltaDelta(delta, tau)) / temperature;
     }
 
     double isothermalCompressibilityRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature;
-        return 1e3
-                / (2 * delta * phiDelta(delta, tau) + delta * delta * phiDeltaDelta(delta, tau))
-                / (density * R * temperature);
+
+        double delta = density / rhoc,
+                tau = Tc / temperature;
+
+        return 1e3 / (2 * delta * phiDelta(delta, tau) + delta * delta * phiDeltaDelta(delta, tau)) / (density * R * temperature);
     }
 
     double isothermalStressCoefficientRhoT(double rho, double T) {
-        double delta = rho / rhoc, tau = Tc / T;
+
+        double delta = rho / rhoc,
+                tau = Tc / T;
+
         return rho * (2 + delta * phiDeltaDelta(delta, tau) / phiDelta(delta, tau));
     }
 
@@ -568,11 +558,14 @@ class Region3 extends Region {
             case b:
                 return piB(h / 2800, s / 5.3) * 16.6;
         }
-        return Double.NaN;
+        return NaN;
     }
 
     double pressureRhoT(double rho, double T) {
-        double delta = rho / rhoc, tau = Tc / T;
+
+        double delta = rho / rhoc,
+                tau = Tc / T;
+
         return delta * phiDelta(delta, tau) * rho * R * T / 1e3;
     }
 
@@ -584,66 +577,90 @@ class Region3 extends Region {
      * @return
      */
     double relativePressureCoefficientRhoT(double rho, double T) {
-        double delta = rho / rhoc, tau = Tc / T;
+
+        double delta = rho / rhoc,
+                tau = Tc / T;
+
         return (1 - tau * phiDeltaTau(delta, tau) / phiDelta(delta, tau)) / T;
     }
 
     @Override
     double specificEnthalpyPT(double pressure, double temperature) {
+
         double rho = 1 / specificVolumePT(pressure, temperature);
+
         return specificEnthalpyRhoT(rho, temperature);
     }
 
-//    @Override
     double specificEnthalpyRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature;
+
+        double delta = density / rhoc,
+                tau = Tc / temperature;
+
         return (tau * phiTau(delta, tau) + delta * phiDelta(delta, tau)) * R * temperature;
     }
 
     @Override
     double specificEntropyPT(double pressure, double temperature) {
+
         double rho = 1 / specificVolumePT(pressure, temperature);
+
         return specificEntropyRhoT(rho, temperature);
     }
 
     @Override
     double specificEntropyRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature;
+
+        double delta = density / rhoc,
+                tau = Tc / temperature;
+
         return (tau * phiTau(delta, tau) - phi(delta, tau)) * R;
     }
 
     @Override
     double specificInternalEnergyPT(double pressure, double temperature) {
+
         double rho = 1 / specificVolumePT(pressure, temperature);
+
         return specificInternalEnergyRhoT(rho, temperature);
     }
 
     double specificInternalEnergyRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature;
+
+        double delta = density / rhoc,
+                tau = Tc / temperature;
+
         return tau * phiTau(delta, tau) * R * temperature;
     }
 
     @Override
     double specificIsobaricHeatCapacityPT(double pressure, double temperature) {
+
         double rho = 1 / specificVolumePT(pressure, temperature);
+
         return specificIsobaricHeatCapacityRhoT(rho, temperature);
     }
 
     double specificIsobaricHeatCapacityRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature,
+
+        double delta = density / rhoc,
+                tau = Tc / temperature,
                 phiDelta = phiDelta(delta, tau),
                 x = delta * phiDelta - delta * tau * phiDeltaTau(delta, tau);
-        return (-tau * tau * phiTauTau(delta, tau)
-                + x * x / (2 * delta * phiDelta
-                + delta * delta * phiDeltaDelta(delta, tau))) * R;
+
+        return (-tau * tau * phiTauTau(delta, tau) + x * x / (2 * delta * phiDelta + delta * delta * phiDeltaDelta(delta, tau))) * R;
     }
 
     double specificIsochoricHeatCapacityRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature;
+
+        double delta = density / rhoc,
+                tau = Tc / temperature;
+
         return -tau * tau * phiTauTau(delta, tau) * R;
     }
 
     double specificVolumeHS(double enthalpy, double entropy) {
+
         return specificVolumePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
@@ -657,8 +674,10 @@ class Region3 extends Region {
 
             case b:
                 return omegaB(pi, enthalpy / 2800) * 0.0088;
+
+            default:
+                return NaN;
         }
-        return Double.NaN;
     }
 
     double specificVolumePS(double pressure, double entropy) {
@@ -672,8 +691,7 @@ class Region3 extends Region {
                 x = new double[]{
                     pressure / 100 + 0.187,
                     entropy / 4.4 - 0.755,
-                    0.0028
-                };
+                    0.0028};
                 IJnOmega = new double[][]{
                     {-12, 10, .795544074093975e2},
                     {-12, 12, -.238261242984590e4},
@@ -702,16 +720,14 @@ class Region3 extends Region {
                     {2, 0, .164094443541384e-1},
                     {4, 2, -.680468275301065e-1},
                     {5, 2, .257988576101640e-1},
-                    {6, 0, -.145749861944416e-3}
-                };
+                    {6, 0, -.145749861944416e-3}};
                 break;
 
             case b:
                 x = new double[]{
                     pressure / 100 + 0.298,
                     entropy / 5.3 - 0.816,
-                    0.0088
-                };
+                    0.0088};
                 IJnOmega = new double[][]{
                     {-12, 0, .591599780322238e-4},
                     {-12, 1, -.185465997137856e-2},
@@ -743,8 +759,7 @@ class Region3 extends Region {
                     {0, 2, -.191449143716586e2},
                     {1, 0, -.150448002905284e-1},
                     {1, 2, .146407900162154e2},
-                    {2, 2, -.327477787188230e1}
-                };
+                    {2, 2, -.327477787188230e1}};
                 break;
         }
         for (double[] ijn : IJnOmega) {
@@ -756,8 +771,15 @@ class Region3 extends Region {
     @Override
     double specificVolumePT(double p, double T) {
 
-        double dTheta_dPi = 3.727888004, omega = 0, pi = p, pSat623, pSat643,
-                p3cd = 19.00881189, theta, logPi = log(pi), Tsat;
+        double dTheta_dPi = 3.727888004,
+                omega = 0,
+                pi = p,
+                pSat623,
+                pSat643,
+                p3cd = 19.00881189,
+                theta,
+                logPi = log(pi),
+                Tsat;
         try {
             pSat623 = Region4.saturationPressureT(623.15);
             pSat643 = Region4.saturationPressureT(643.15);
@@ -769,9 +791,8 @@ class Region3 extends Region {
 
         double[][] In;
 
-
         /*
-         * Boundary Equations
+         Boundary Equations
          */
         theta = 0;
         In = new double[][]{
@@ -779,8 +800,8 @@ class Region3 extends Region {
             {1, -.187661219490113e3},
             {2, 0.213144632222112e2},
             {-1, -.191887498864292e4},
-            {-2, 0.918419702359447e3}
-        };
+            {-2, 0.918419702359447e3}};
+
         for (double[] in : In) {
             theta += in[1] * pow(logPi, in[0]);
         }
@@ -791,14 +812,13 @@ class Region3 extends Region {
             {0, 0.585276966696349e3},
             {1, 0.278233532206915e1},
             {2, -.127283549295878e-1},
-            {3, 0.159090746562729e-3}
-        };
+            {3, 0.159090746562729e-3}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
-        double T3cd = theta;
-
-        double T3ef = dTheta_dPi * (pi - 22.064) + 647.096;
+        double T3cd = theta,
+                T3ef = dTheta_dPi * (pi - 22.064) + 647.096;
 
         theta = 0;
         In = new double[][]{
@@ -806,8 +826,8 @@ class Region3 extends Region {
             {1, 0.428143584791546e4},
             {2, -.269029173140130e3},
             {3, 0.751608051114157e1},
-            {4, -.787105249910383e-1}
-        };
+            {4, -.787105249910383e-1}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -819,8 +839,8 @@ class Region3 extends Region {
             {1, -.616179320924617},
             {2, 0.260763050899562},
             {3, -.587071076864459e-2},
-            {4, 0.515308185433082e-4}
-        };
+            {4, 0.515308185433082e-4}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -832,8 +852,8 @@ class Region3 extends Region {
             {1, -.770600270141675e1},
             {2, 0.697072596851896},
             {3, -.157391839848015e-1},
-            {4, 0.137897492684194e-3}
-        };
+            {4, 0.137897492684194e-3}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -844,8 +864,8 @@ class Region3 extends Region {
             {0, 0.535339483742384e3},
             {1, 0.761978122720128e1},
             {2, -.158365725441648},
-            {3, 0.192871054508108e-2}
-        };
+            {3, 0.192871054508108e-2}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -857,8 +877,8 @@ class Region3 extends Region {
             {1, -.332500170441278e3},
             {2, 0.642859598466067e2},
             {-1, 0.773845935768222e3},
-            {-2, -.152313732937084e4}
-        };
+            {-2, -.152313732937084e4}};
+
         for (double[] in : In) {
             theta += in[1] * pow(logPi, in[0]);
         }
@@ -869,8 +889,8 @@ class Region3 extends Region {
             {0, 0.565603648239126e3},
             {1, 0.529062258221222e1},
             {2, -.102020639611016},
-            {3, 0.122240301070145e-2}
-        };
+            {3, 0.122240301070145e-2}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -881,8 +901,8 @@ class Region3 extends Region {
             {0, 0.584561202520006e3},
             {1, -.102961025163669e1},
             {2, 0.243293362700452},
-            {3, -.294905044740799e-2}
-        };
+            {3, -.294905044740799e-2}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -893,8 +913,8 @@ class Region3 extends Region {
             {0, 0.528199646263062e3},
             {1, 0.890579602135307e1},
             {2, -.222814134903755},
-            {3, 0.286791682263697e-2}
-        };
+            {3, 0.286791682263697e-2}};
+
         for (double[] in : In) {
             theta += in[1] * pow(pi, in[0]);
         }
@@ -906,8 +926,8 @@ class Region3 extends Region {
             {1, 0.973505869861952e2},
             {2, 0.147370491183191e2},
             {-1, 0.329196213998375e3},
-            {-2, 0.873371668682417e3}
-        };
+            {-2, 0.873371668682417e3}};
+
         for (double[] in : In) {
             theta += in[1] * pow(logPi, in[0]);
         }
@@ -915,35 +935,25 @@ class Region3 extends Region {
 
 
         /*
-         * Subregions
+         Subregions
          */
         SubRegion subRegion = null;
 
         if (22.5 >= p && p > pSat643
                 && T3rx > T && T > T3qu) {
             /*
-             * Auxiliary Equations for the Near-Critical Region (p.126)
+             Auxiliary Equations for the Near-Critical Region (p.126)
              */
             if (p <= pc) {
                 if (T <= Tsat) {
                     if (21.93161551 < p) {
-                        if (T <= T3uv) {
-                            subRegion = SubRegion.u;
-
-                        } else {
-                            subRegion = SubRegion.y;
-                        }
+                        subRegion = T <= T3uv ? SubRegion.u : SubRegion.y;
                     } else {
                         subRegion = SubRegion.u;
                     }
                 } else {
                     if (21.90096265 < p) {
-                        if (T <= T3wx) {
-                            subRegion = SubRegion.z;
-
-                        } else {
-                            subRegion = SubRegion.x;
-                        }
+                        subRegion = T <= T3wx ? SubRegion.z : SubRegion.x;
                     } else {
                         subRegion = SubRegion.x;
                     }
@@ -980,12 +990,7 @@ class Region3 extends Region {
             }
 
         } else if (40 < p) {
-            if (T <= T3ab) {
-                subRegion = SubRegion.a;
-
-            } else {
-                subRegion = SubRegion.b;
-            }
+            subRegion = T <= T3ab ? SubRegion.a : SubRegion.b;
 
         } else if (25 < p) {
             if (T <= T3cd) {
@@ -1107,12 +1112,7 @@ class Region3 extends Region {
             }
 
         } else if (pSat623 < p) {
-            if (T <= Tsat) {
-                subRegion = SubRegion.c;
-
-            } else {
-                subRegion = SubRegion.t;
-            }
+            subRegion = T <= Tsat ? SubRegion.c : SubRegion.t;
         }
 
         pi = p / subRegion.pRed;
@@ -1120,7 +1120,7 @@ class Region3 extends Region {
 
         //System.out.println("subRegion: " + subRegion);
         /*
-         * Backward Equation
+         Backward Equation
          */
         double[] x;
 
@@ -1147,21 +1147,23 @@ class Region3 extends Region {
 
     @Override
     double speedOfSoundPT(double pressure, double temperature) {
-        double rho = 1 / specificVolumePT(pressure, temperature);
-        return speedOfSoundRhoT(rho, temperature);
+
+        return speedOfSoundRhoT(1 / specificVolumePT(pressure, temperature), temperature);
     }
 
     double speedOfSoundRhoT(double density, double temperature) {
-        double delta = density / rhoc, tau = Tc / temperature,
+
+        double delta = density / rhoc,
+                tau = Tc / temperature,
                 phiDelta = phiDelta(delta, tau),
                 x = delta * phiDelta - delta * tau * phiDeltaTau(delta, tau);
-        return sqrt((2 * delta * phiDelta
-                + delta * delta * phiDeltaDelta(delta, tau)
-                - x * x / (tau * tau * phiTauTau(delta, tau))) * R * temperature);
+
+        return sqrt((2 * delta * phiDelta + delta * delta * phiDeltaDelta(delta, tau) - x * x / (tau * tau * phiTauTau(delta, tau))) * 1e3 * R * temperature);
     }
 
     @Override
     double temperatureHS(double enthalpy, double entropy) {
+
         return temperaturePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
@@ -1171,10 +1173,13 @@ class Region3 extends Region {
         switch (getSubRegionPH(pressure, enthalpy)) {
             case a:
                 return thetaA(pressure / 100, enthalpy / 2300) * 760;
+
             case b:
                 return thetaB(pressure / 100, enthalpy / 2800) * 860;
+
+            default:
+                return NaN;
         }
-        return Double.NaN;
     }
 
     double temperaturePS(double pressure, double entropy) {
@@ -1188,8 +1193,7 @@ class Region3 extends Region {
                 x = new double[]{
                     pressure / 100 + 0.240,
                     entropy / 4.4 - 0.703,
-                    760
-                };
+                    760};
                 IJnTheta = new double[][]{
                     {-12, 28, .150042008263875e10},
                     {-12, 32, -.159397258480424e12},
@@ -1223,16 +1227,14 @@ class Region3 extends Region {
                     {3, 2, .188367048396131},
                     {8, 0, .141064266818704e-3},
                     {8, 1, -.257418501496337e-2},
-                    {10, 2, .123220024851555e-2}
-                };
+                    {10, 2, .123220024851555e-2}};
                 break;
 
             case b:
                 x = new double[]{
                     pressure / 100 + 0.760,
                     entropy / 5.3 - 0.818,
-                    860
-                };
+                    860};
                 IJnTheta = new double[][]{
                     {-12, 1, .527111701601660},
                     {-12, 3, -.401317830052742e2},
@@ -1261,8 +1263,7 @@ class Region3 extends Region {
                     {6, 0, -.699997000152457e-3},
                     {8, 3, .119845803210767e-1},
                     {12, 1, .193848122022095e-4},
-                    {14, 2, -.215095749182309e-4}
-                };
+                    {14, 2, -.215095749182309e-4}};
                 break;
         }
         for (double[] ijn : IJnTheta) {
@@ -1273,25 +1274,29 @@ class Region3 extends Region {
 
     @Override
     double isobaricCubicExpansionCoefficientPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region3.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double isothermalCompressibilityPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region3.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificIsochoricHeatCapacityPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region3.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double vapourFractionHS(double h, double s) {
-        return Double.NaN;
+
+        return NaN;
     }
 
-    static enum SubRegion {
+    enum SubRegion {
 
         a(0.0024, 100, 760, 0.085, 0.817, 1, 1, 1, new double[][]{
             {-12, 5, 00.110879558823853e-2},
@@ -1323,8 +1328,7 @@ class Region3 extends Region {
             {1, 0, -.502268790869663e-1},
             {1, 2, -.369645308193377},
             {2, 0, 0.633828037528420e-2},
-            {2, 2, 0.797441793901017e-1}
-        }),
+            {2, 2, 0.797441793901017e-1}}),
         b(0.0041, 100, 860, 0.280, 0.779, 1, 1, 1, new double[][]{
             {-12, 10, -0.827670470003621e-1},
             {-12, 12, 0.416887126010565e2},
@@ -1357,8 +1361,7 @@ class Region3 extends Region {
             {2, 0, 0.655540456406790e-1},
             {3, 2, -0.2404625351},
             {4, 0, -0.269798180310075e-1},
-            {4, 1, 0.128369435967012}
-        }),
+            {4, 1, 0.128369435967012}}),
         c(0.0022, 40, 690, 0.259, 0.903, 1, 1, 1, new double[][]{
             {-12, 6, 0.311967788763030e1},
             {-12, 8, 0.276713458847564e5},
@@ -1394,8 +1397,7 @@ class Region3 extends Region {
             {2, 7, 0.123290423502494e7},
             {3, 0, -0.240650039730845e-1},
             {3, 7, -0.107077716660869e7},
-            {8, 1, 0.438319858566475e-1}
-        }),
+            {8, 1, 0.438319858566475e-1}}),
         d(0.0029, 40, 690, 0.559, 0.939, 1, 1, 4, new double[][]{
             {-12, 4, -4.52484847171645e-10},
             {-12, 6, 3.15210389538801e-5},
@@ -1434,8 +1436,7 @@ class Region3 extends Region {
             {0, 2, 1.71946252068742},
             {1, 0, -3.26650121426383e-2},
             {1, 6, 4.98044171727877e3},
-            {3, 0, 5.51478022765087e-3}
-        }),
+            {3, 0, 5.51478022765087e-3}}),
         //
         e(0.0032, 40, 710, 0.587, 0.918, 1, 1, 1, new double[][]{
             {-12, 14, 0.715815808404721e9},
@@ -1466,8 +1467,7 @@ class Region3 extends Region {
             {1, 4, 0.204529931318843e4},
             {1, 6, -.228342359328752e5},
             {2, 0, 0.413197481515899},
-            {2, 2, -.341931835910405e2}
-        }),
+            {2, 2, -.341931835910405e2}}),
         f(0.0064, 40, 730, 0.587, 0.891, 0.5, 1, 4, new double[][]{
             {0, -3, -.251756547792325e-7},
             {0, -2, 0.601307193668763e-5},
@@ -1510,8 +1510,7 @@ class Region3 extends Region {
             {24, -12, 0.241995578306660e-9},
             {24, -4, -.405735532730322e-3},
             {28, -12, 0.189424143498011e-9},
-            {32, -12, -.486632965074563e-9}
-        }),
+            {32, -12, -.486632965074563e-9}}),
         g(0.0027, 25, 660, 0.872, 0.971, 1, 1, 4, new double[][]{
             {-12, 7, 0.412209020652996e-4},
             {-12, 12, -.114987238280587e7},
@@ -1550,8 +1549,7 @@ class Region3 extends Region {
             {6, 12, 0.818396024524612e23},
             {8, 3, 0.940781944835829e9},
             {10, 0, -.367279669545448e5},
-            {10, 6, -.837513931798655e16}
-        }),
+            {10, 6, -.837513931798655e16}}),
         h(0.0032, 25, 660, 0.898, 0.983, 1, 1, 4, new double[][]{
             {-12, 8, .561379678887577e-1},
             {-12, 12, .774135421587083e10},
@@ -1581,8 +1579,7 @@ class Region3 extends Region {
             {-1, 2, .202618487025578e2},
             {0, 0, .899345518944240},
             {1, 0, -.211346402240858},
-            {1, 2, .249971752957491e2}
-        }),
+            {1, 2, .249971752957491e2}}),
         //
         i(0.0041, 25, 660, 0.910, 0.984, 0.5, 1, 4, new double[][]{
             {0, 0, .106905684359136e1},
@@ -1626,8 +1623,7 @@ class Region3 extends Region {
             {32, -10, .374684572410204e-3},
             {32, -5, -.931976897511086e5},
             {36, -10, -.247690616026922e-1},
-            {36, -8, .658110546759474e2}
-        }),
+            {36, -8, .658110546759474e2}}),
         j(0.0054, 25, 670, 0.875, 0.964, 0.5, 1, 4, new double[][]{
             {0, -1, -.111371317395540e-3},
             {0, 0, .100342892423685e1},
@@ -1657,8 +1653,7 @@ class Region3 extends Region {
             {24, -12, .454652854268717e-11},
             {24, -6, -.422271787482497e-2},
             {28, -12, .283911742354706e-10},
-            {28, -5, .270929002720228e1}
-        }),
+            {28, -5, .270929002720228e1}}),
         k(0.0077, 25, 680, 0.802, 0.935, 1, 1, 1, new double[][]{
             {-2, 10, -.401215699576099e9},
             {-2, 12, .484501478318406e11},
@@ -1693,8 +1688,7 @@ class Region3 extends Region {
             {6, -5, .383719409025556e-4},
             {8, -12, -.649565446702457e-14},
             {10, -12, -.149095328506000e-11},
-            {12, -10, .541449377329581e-8}
-        }),
+            {12, -10, .541449377329581e-8}}),
         l(0.0026, 24, 650, 0.908, 0.989, 1, 1, 4, new double[][]{
             {-12, 14, .260702058647537e10},
             {-12, 16, -.188277213604704e15},
@@ -1738,8 +1732,7 @@ class Region3 extends Region {
             {6, 14, .116662121219322e33},
             {10, 4, -.315874976271533e16},
             {10, 12, -.445703369196945e33},
-            {14, 10, .642794932373694e33}
-        }),
+            {14, 10, .642794932373694e33}}),
         //
         m(0.0028, 23, 650, 1.000, 0.997, 1, 0.25, 1, new double[][]{
             {0, 0, .811384363481847},
@@ -1781,8 +1774,7 @@ class Region3 extends Region {
             {4, 36, -.346865122768353e30},
             {8, 36, -.211961148774260e38},
             {14, 36, -.128617899887675e49},
-            {24, 36, .479817895699239e65}
-        }),
+            {24, 36, .479817895699239e65}}),
         n(0.0031, 23, 650, 0.976, 0.997, NaN, NaN, NaN, new double[][]{
             {0, -12, .280967799943151e-38},
             {3, -12, .614869006573609e-30},
@@ -1822,8 +1814,7 @@ class Region3 extends Region {
             {0, 2, -.792681207132600e6},
             {1, 4, -.869871364662769e11},
             {0, 5, .354542769185671e12},
-            {1, 6, .400849240129329e15}
-        }),
+            {1, 6, .400849240129329e15}}),
         o(0.0034, 23, 650, 0.974, 0.996, 0.5, 1, 1, new double[][]{
             {0, -12, .128746023979718e-34},
             {0, -4, -.735234770382342e-11},
@@ -1848,8 +1839,7 @@ class Region3 extends Region {
             {14, -8, .233907907347507e-7},
             {20, -12, -.174093247766213e-12},
             {20, -10, .377682649089149e-8},
-            {24, -12, -.516720236575302e-10}
-        }),
+            {24, -12, -.516720236575302e-10}}),
         p(0.0041, 23, 650, 0.972, 0.997, 0.5, 1, 1, new double[][]{
             {0, -1, -.982825342010366e-4},
             {0, 0, .105145700850612e1},
@@ -1877,8 +1867,7 @@ class Region3 extends Region {
             {22, -10, .602745973022975e-7},
             {24, -12, -.382323011855257e-10},
             {24, -8, .179946628317437e-2},
-            {36, -12, -.345042834640005e-3}
-        }),
+            {36, -12, -.345042834640005e-3}}),
         //
         q(0.0022, 23, 650, 0.848, 0.983, 1, 1, 4, new double[][]{
             {-12, 10, -.820433843259950e5},
@@ -1904,8 +1893,7 @@ class Region3 extends Region {
             {0, 0, .961917379376452},
             {1, 0, -.838165632204598e-1},
             {1, 1, .247795908411492e1},
-            {1, 3, -.319114969006533e4}
-        }),
+            {1, 3, -.319114969006533e4}}),
         r(0.0054, 23, 650, 0.874, 0.982, 1, 1, 1, new double[][]{
             {-8, 6, .144165955660863e-2},
             {-8, 14, -.701438599628258e13},
@@ -1933,8 +1921,7 @@ class Region3 extends Region {
             {10, -3, -.143365406393758e5},
             {10, -2, .150764974125511e6},
             {12, -12, -.337209709340105e-9},
-            {14, -12, .377501980025469e-8}
-        }),
+            {14, -12, .377501980025469e-8}}),
         s(0.0022, 21, 640, 0.886, 0.990, 1, 1, 4, new double[][]{
             {-12, 20, -.532466612140254e23},
             {-12, 24, .100415480000824e32},
@@ -1964,8 +1951,7 @@ class Region3 extends Region {
             {4, 18, .437796099975134e34},
             {4, 24, -.616552611135792e46},
             {5, 4, .193568768917797e10},
-            {14, 24, .950898170425042e54}
-        }),
+            {14, 24, .950898170425042e54}}),
         t(0.0088, 20, 650, 0.803, 1.020, 1, 1, 1, new double[][]{
             {0, 0, .155287249586268e1},
             {0, 1, .664235115009031e1},
@@ -1999,8 +1985,7 @@ class Region3 extends Region {
             {32, 22, -.668481295196808e51},
             {32, 32, .428432338620678e69},
             {32, 36, -.444227367758304e72},
-            {36, 36, -.281396013562745e77}
-        }),
+            {36, 36, -.281396013562745e77}}),
         // Auxiliary equations
         u(0.0026, 23, 650, 0.902, 0.988, 1, 1, 1, new double[][]{
             {-12, 14, .122088349258355e18},
@@ -2040,8 +2025,7 @@ class Region3 extends Region {
             {14, -12, -.488731565776210e-9},
             {14, -10, .151001548880670e-4},
             {14, -6, -.227700464643920e5},
-            {14, 6, -.781754507698846e28}
-        }),
+            {14, 6, -.781754507698846e28}}),
         v(0.0031, 23, 650, 0.960, 0.995, 1, 1, 1, new double[][]{
             {-10, -8, -.415652812061591e-54},
             {-8, -12, .177441742924043e-60},
@@ -2081,8 +2065,7 @@ class Region3 extends Region {
             {8, -12, -.417247986986821e-18},
             {10, -2, .312545677756104e14},
             {12, -3, -.100375333864186e15},
-            {14, 1, .247761392329058e27}
-        }),
+            {14, 1, .247761392329058e27}}),
         w(0.0039, 23, 650, 0.959, 0.995, 1, 1, 4, new double[][]{
             {-12, 8, -.586219133817016e-7},
             {-12, 14, -.894460355005526e11},
@@ -2118,8 +2101,7 @@ class Region3 extends Region {
             {8, -12, .542000573372233e-17},
             {8, -10, -.856711586510214e-12},
             {10, -12, .266170454405981e-13},
-            {10, -8, .858133791857099e-5}
-        }),
+            {10, -8, .858133791857099e-5}}),
         x(0.0049, 23, 650, 0.910, 0.988, 1, 1, 1, new double[][]{
             {-8, 14, .377373741298151e19},
             {-6, 10, -.507100883722913e13},
@@ -2156,8 +2138,7 @@ class Region3 extends Region {
             {14, -12, -.183027173269660e-4},
             {14, -10, .181339603516302},
             {14, -8, -.119228759669889e4},
-            {14, -6, .430867658061468e7}
-        }),
+            {14, -6, .430867658061468e7}}),
         y(0.0031, 22, 650, 0.996, 0.994, 1, 1, 4, new double[][]{
             {0, -3, -.525597995024633e-9},
             {0, 1, .583441305228407e4},
@@ -2178,8 +2159,7 @@ class Region3 extends Region {
             {8, -8, .724660165585797e-4},
             {8, -2, -.937808169550193e14},
             {10, -5, .514411468376383e10},
-            {12, -8, -.828198594040141e5}
-        }),
+            {12, -8, -.828198594040141e5}}),
         z(0.0038, 22, 650, 0.993, 0.994, 1, 1, 4, new double[][]{
             {-8, 3, .244007892290650e-10},
             {-6, 6, -.463057430331242e7},
@@ -2203,14 +2183,12 @@ class Region3 extends Region {
             {6, -4, -.373962862928643e4},
             {6, -1, -.682859011374572e11},
             {8, -8, -.248488015614543e-3},
-            {8, -4, .394536049497068e7}
-        });
+            {8, -4, .394536049497068e7}});
+
         double nuRed, pRed, Tred, A, B, C, D, E;
         double[][] IJn;
 
-        SubRegion(double nu, double p, double T,
-                double a, double b, double c, double d, double e,
-                double[][] IJn) {
+        SubRegion(double nu, double p, double T, double a, double b, double c, double d, double e, double[][] IJn) {
 
             nuRed = nu;
             pRed = p;

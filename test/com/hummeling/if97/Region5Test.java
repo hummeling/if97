@@ -157,10 +157,10 @@ public class Region5Test {
         }
     }
 
-    @Ignore
     @Test
     public void testSpeedOfSoundPT() {
-        double tol = 1e-6;
+
+        double tol = 1e-5;
         System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = new double[][]{
             {0.917068690e3, 0.5, 1500},

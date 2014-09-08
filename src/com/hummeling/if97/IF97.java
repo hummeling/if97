@@ -47,8 +47,8 @@ import static java.lang.Math.*;
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
 public class IF97 {
-// <editor-fold defaultstate="collapsed" desc="fields">
 
+// <editor-fold defaultstate="collapsed" desc="fields">
     private UnitSystem UNIT_SYSTEM;
     /**
      * Specific gas constant of ordinary water [kJ/kg-K].
@@ -82,12 +82,29 @@ public class IF97 {
      * Critical density [kg/m3].
      */
     public static final double rhoc = 322;
+    static final double BTU, ft, ft2, ft3, g, hr, in, in2, lb, lbf, psi, Ra;
 // </editor-fold>
+
+    static {
+        BTU = 1.055056; // British thermal unit acc. International standard ISO 31-4 on Quantities and units—Part 4: Heat, Appendix A [kJ]
+        ft = 0.3048; // foot [m]
+        ft2 = ft * ft; // square foot [m^2]
+        ft3 = ft * ft2; // cubic foot [m^3]
+        g = 9.80665; // gravitational accelleration [m/s^2]
+        hr = 3600; // hour [s]
+        in = ft / 12; // inch [m]
+        in2 = in * in; // square inch [m^2]
+        lb = 0.45359237; // pound [kg]
+        lbf = lb * g;
+        psi = 1e-6 * lb / in2; // pounds per square inch [MPa]
+        Ra = 5.0 / 9.0; // Rankine [K]
+    }
 
     /**
      * Instantiate an IF97 object with the default unit system.
      */
     public IF97() {
+
         this(UnitSystem.DEFAULT);
     }
 
@@ -97,6 +114,7 @@ public class IF97 {
      * @param unitSystem unit system
      */
     public IF97(UnitSystem unitSystem) {
+
         setUnitSystem(unitSystem);
     }
 
@@ -247,30 +265,40 @@ public class IF97 {
         switch (quantity) {
             case rho:
                 return convertFromDefault(unitSystem.DENSITY, value);
+
             case p:
                 return convertFromDefault(unitSystem.PRESSURE, value);
+
             case u:
                 return convertFromDefault(unitSystem.SPECIFIC_ENERGY, value);
+
             case h:
                 return convertFromDefault(unitSystem.SPECIFIC_ENTHALPY, value);
+
             case s:
                 return convertFromDefault(unitSystem.SPECIFIC_ENTROPY, value);
+
             case nu:
                 return convertFromDefault(unitSystem.SPECIFIC_VOLUME, value);
+
             case T:
                 return convertFromDefault(unitSystem.TEMPERATURE, value);
+
             case lambda:
-                return convertFromDefault(unitSystem.WAVE_LENGTH, value);
+                return convertFromDefault(unitSystem.WAVELENGTH, value);
+
             default:
                 throw new IllegalArgumentException("No conversion available for: " + quantity);
         }
     }
 
     static double convertFromDefault(double[] quantity, double value) {
+
         return (value - quantity[1]) / quantity[0];
     }
 
     static double convertToDefault(double[] quantity, double value) {
+
         return value * quantity[0] + quantity[1];
     }
 
@@ -626,9 +654,9 @@ public class IF97 {
      *
      * @param pressure pressure
      * @param temperature temperature
-     * @param x
-     * @param y
-     * @param z
+     * @param x any {@link Quantity}
+     * @param y any {@link Quantity}
+     * @param z any {@link Quantity}
      * @return partial derivative in default units
      * @throws OutOfRangeException
      */
@@ -660,9 +688,9 @@ public class IF97 {
      *
      * @param density density
      * @param temperature temperature
-     * @param x
-     * @param y
-     * @param z
+     * @param x any {@link Quantity}
+     * @param y any {@link Quantity}
+     * @param z any {@link Quantity}
      * @return partial derivative in default units
      * @throws OutOfRangeException
      */
@@ -713,17 +741,17 @@ public class IF97 {
      *
      * @param pressure pressure
      * @param temperature temperature
-     * @param waveLength wave length
+     * @param wavelength wavelength
      * @return refractive index [-]
      * @throws OutOfRangeException out-of-range exception
      */
-    public double refractiveIndexPTLambda(double pressure, double temperature, double waveLength) throws OutOfRangeException {
+    public double refractiveIndexPTLambda(double pressure, double temperature, double wavelength) throws OutOfRangeException {
 
         try {
             double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
                     T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
                     rho = 1 / Calculate.specificVolumePT(p, T),
-                    lambda = convertToDefault(UNIT_SYSTEM.WAVE_LENGTH, waveLength);
+                    lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
 
             return Calculate.refractiveIndexRhoTLambda(rho, T, lambda);
 
@@ -746,7 +774,7 @@ public class IF97 {
         try {
             double rho = convertToDefault(UNIT_SYSTEM.DENSITY, density),
                     T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
-                    lambda = convertToDefault(UNIT_SYSTEM.WAVE_LENGTH, waveLength);
+                    lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, waveLength);
 
             return Calculate.refractiveIndexRhoTLambda(rho, T, lambda);
 
@@ -837,6 +865,7 @@ public class IF97 {
      * @param unitSystem unit system
      */
     public final void setUnitSystem(UnitSystem unitSystem) {
+
         UNIT_SYSTEM = unitSystem;
     }
 
@@ -1027,6 +1056,28 @@ public class IF97 {
     }
 
     /**
+     * Speed of sound as a function of pressure & temperature.
+     *
+     * @param pressure pressure
+     * @param temperature temperature
+     * @return speed of sound
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double speedOfSoundPT(double pressure, double temperature) throws OutOfRangeException {
+
+        try {
+            double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                    T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                    w = Calculate.speedOfSoundPT(p, T);
+
+            return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, w);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
      * Surface tension as a function of temperature.
      *
      * @param temperature temperature
@@ -1159,7 +1210,7 @@ public class IF97 {
     /**
      * Calculate in default units.
      */
-    static class Calculate {
+    private static class Calculate {
 
         /**
          * Prandtl number.
@@ -1189,12 +1240,17 @@ public class IF97 {
          */
         static double dielectricConstantRhoT(double rho, double T) throws OutOfRangeException {
 
-            double k = 1.380658e-23, NA = 6.0221367e23, alpha = 1.636e-40,
-                    epsilon0 = 8.854187817e-12, mu = 6.138e-30, M = 0.018015268,
+            double k = 1.380658e-23,
+                    NA = 6.0221367e23,
+                    alpha = 1.636e-40,
+                    epsilon0 = 8.854187817e-12,
+                    mu = 6.138e-30,
+                    M = 0.018015268,
                     n12 = 0.196096504426e-2,
-                    delta = rho / rhoc, tau = Tc / T,
+                    delta = rho / rhoc,
+                    tau = Tc / T,
                     g = 1 + n12 * delta * pow(Tc / 228 / tau - 1, -1.2);
-            double[][] IJn = new double[][]{
+            double[][] IJn = {
                 {1, 0.25, 0.978224486826},
                 {1, 1.0, -0.957771379375},
                 {1, 2.5, 0.237511794148},
@@ -1205,8 +1261,7 @@ public class IF97 {
                 {5, 2, -.980469816509e-2},
                 {6, 5, 0.165167634970e-4},
                 {7, 0.5, 0.937359795772e-4},
-                {10, 10, -.123179218720e-9}
-            };
+                {10, 10, -.123179218720e-9}};
 
             for (double[] ijn : IJn) {
                 g += ijn[2] * pow(delta, ijn[0]) * pow(tau, ijn[1]);
@@ -1215,8 +1270,7 @@ public class IF97 {
             double A = NA * mu * mu * rho * g / (M * epsilon0 * k * T),
                     B = NA * alpha * rho / (3 * M * epsilon0);
 
-            return (1 + A + 5 * B + sqrt(9 + 2 * A + 18 * B + A * A + 10 * A * B + 9 * B * B))
-                    / (4 * (1 - B));
+            return (1 + A + 5 * B + sqrt(9 + 2 * A + 18 * B + A * A + 10 * A * B + 9 * B * B)) / (4 * (1 - B));
         }
 
         /**
@@ -1229,12 +1283,12 @@ public class IF97 {
          */
         static double dynamicViscosityRhoT(double rho, double T) throws OutOfRangeException {
 
-            double delta = rho / rhoc, theta = T / Tc,
-                    psi0 = 0, psi1 = 0;
-            double[] n0 = new double[]{
-                0.167752e-1, 0.220462e-1, 0.6366564e-2, -0.241605e-2
-            };
-            double[][] IJn = new double[][]{
+            double delta = rho / rhoc,
+                    theta = T / Tc,
+                    psi0 = 0,
+                    psi1 = 0;
+            double[] n0 = {0.167752e-1, 0.220462e-1, 0.6366564e-2, -0.241605e-2};
+            double[][] IJn = {
                 {0, 0, 0.520094},
                 {0, 1, 0.850895e-1},
                 {0, 2, -.108374e1},
@@ -1255,15 +1309,14 @@ public class IF97 {
                 {4, 3, 0.698452e-1},
                 {5, 4, 0.872102e-2},
                 {6, 3, -.435673e-2},
-                {6, 5, -.593264e-3}
-            };
+                {6, 5, -.593264e-3}};
 
             for (int i = 0; i < n0.length; i++) {
                 psi0 += n0[i] / pow(theta, i);
             }
             psi0 = sqrt(theta) / psi0;
 
-            double[] x = new double[]{delta - 1, 1 / theta - 1};
+            double[] x = {delta - 1, 1 / theta - 1};
 
             for (double[] ijn : IJn) {
                 psi1 += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -1291,7 +1344,8 @@ public class IF97 {
 
             Region region = Region.getRegionPT(p, T);
 
-            double nu = region.specificVolumePT(p, T), rho = 1.0 / nu,
+            double nu = region.specificVolumePT(p, T),
+                    rho = 1.0 / nu,
                     s = region.specificEntropyRhoT(rho, T),
                     cp = region.specificIsobaricHeatCapacityPT(p, T),
                     alphanu = region.isobaricCubicExpansionCoefficientPT(p, T),
@@ -1301,11 +1355,14 @@ public class IF97 {
                     dy = partialDerivativesPT(p, T, y, nu, s, cp, alphanu, kappaT),
                     dz = partialDerivativesPT(p, T, z, nu, s, cp, alphanu, kappaT);
 
-            double dx_dT = dx[0], dy_dT = dy[0], dz_dT = dz[0],
-                    dx_dp = dx[1], dy_dp = dy[1], dz_dp = dz[1];
+            double dx_dT = dx[0],
+                    dy_dT = dy[0],
+                    dz_dT = dz[0],
+                    dx_dp = dx[1],
+                    dy_dp = dy[1],
+                    dz_dp = dz[1];
 
-            return (dz_dp * dy_dT - dz_dT * dy_dp)
-                    / (dx_dp * dy_dT - dx_dT * dy_dp);
+            return (dz_dp * dy_dT - dz_dT * dy_dp) / (dx_dp * dy_dT - dx_dT * dy_dp);
         }
 
         /**
@@ -1337,11 +1394,14 @@ public class IF97 {
                     dy = partialDerivativesNuT(nu, T, y, p, s, cv, alphap, betap),
                     dz = partialDerivativesNuT(nu, T, z, p, s, cv, alphap, betap);
 
-            double dx_dnu = dx[0], dy_dnu = dy[0], dz_dnu = dz[0],
-                    dx_dT = dx[1], dy_dT = dy[1], dz_dT = dz[1];
+            double dx_dnu = dx[0],
+                    dy_dnu = dy[0],
+                    dz_dnu = dz[0],
+                    dx_dT = dx[1],
+                    dy_dT = dy[1],
+                    dz_dT = dz[1];
 
-            return (dz_dnu * dy_dT - dz_dT * dy_dnu)
-                    / (dx_dnu * dy_dT - dx_dT * dy_dnu);
+            return (dz_dnu * dy_dT - dz_dT * dy_dnu) / (dx_dnu * dy_dT - dx_dT * dy_dnu);
         }
 
         /**
@@ -1362,7 +1422,8 @@ public class IF97 {
          */
         private static double[] partialDerivativesNuT(double nu, double T, Quantity quantity, double p, double s, double cv, double alphap, double betap) {
 
-            double d_dnu = Double.NaN, d_dT = Double.NaN;
+            double d_dnu = Double.NaN,
+                    d_dT = Double.NaN;
 
             switch (quantity) {
                 case p:
@@ -1426,7 +1487,8 @@ public class IF97 {
          */
         private static double[] partialDerivativesPT(double p, double T, Quantity quantity, double nu, double s, double cp, double alphanu, double kappaT) {
 
-            double d_dT = Double.NaN, d_dp = Double.NaN;
+            double d_dT = Double.NaN,
+                    d_dp = Double.NaN;
 
             switch (quantity) {
                 case p:
@@ -1478,7 +1540,7 @@ public class IF97 {
          *
          * @param rho density [kg/m&sup3;]
          * @param T temperature [K]
-         * @param lambda wave length [&mu;m]
+         * @param lambda wavelength [&mu;m]
          * @return refractive index [-]
          * @throws OutOfRangeException out-of-range exception
          */
@@ -1503,27 +1565,14 @@ public class IF97 {
                 throw new OutOfRangeException(Quantity.lambda, lambda, 1.1);
             }
 
-            double[] a = new double[]{
-                0.244257733,
-                0.974634476e-2,
-                -.373234996e-2,
-                0.268678472e-3,
-                0.158920570e-2,
-                0.245934259e-2,
-                0.900704920,
-                -.166626219e-1
-            };
-            double delta = rho / 1e3, theta = T / 273.15,
-                    Lambda = lambda / 0.589, Lambda2 = Lambda * Lambda,
-                    LambdaIR = 5.432937, LambdaUV = -0.229202,
-                    A = delta * (a[0]
-                    + a[1] * delta
-                    + a[2] * theta
-                    + a[3] * Lambda2 * theta
-                    + a[4] / Lambda2
-                    + a[5] / (Lambda2 - LambdaUV * LambdaUV)
-                    + a[6] / (Lambda2 - LambdaIR * LambdaIR)
-                    + a[7] * delta * delta);
+            double[] a = {0.244257733, 0.974634476e-2, -.373234996e-2, 0.268678472e-3, 0.158920570e-2, 0.245934259e-2, 0.900704920, -.166626219e-1};
+            double delta = rho / 1e3,
+                    theta = T / 273.15,
+                    Lambda = lambda / 0.589,
+                    Lambda2 = Lambda * Lambda,
+                    LambdaIR = 5.432937,
+                    LambdaUV = -0.229202,
+                    A = delta * (a[0] + a[1] * delta + a[2] * theta + a[3] * Lambda2 * theta + a[4] / Lambda2 + a[5] / (Lambda2 - LambdaUV * LambdaUV) + a[6] / (Lambda2 - LambdaIR * LambdaIR) + a[7] * delta * delta);
 
             return sqrt((2 * A + 1) / (1 - A));
         }
@@ -1537,7 +1586,21 @@ public class IF97 {
          * @throws OutOfRangeException out-of-range exception
          */
         static double specificVolumePT(double p, double T) throws OutOfRangeException {
+
             return getRegionPT(p, T).specificVolumePT(p, T);
+        }
+
+        /**
+         * Speed of sound as a function of pressure & temperature.
+         *
+         * @param p pressure [MPa]
+         * @param T temperature [K]
+         * @return speed of sound [m/s]
+         * @throws OutOfRangeException out-of-range exception
+         */
+        static double speedOfSoundPT(double p, double T) throws OutOfRangeException {
+
+            return getRegionPT(p, T).speedOfSoundPT(p, T);
         }
 
         /**
@@ -1557,6 +1620,7 @@ public class IF97 {
             }
 
             double theta = T / 647.096;
+
             return 235.8 * pow(1 - theta, 1.256) * (1 - 0.625 * (1 - theta)) * 1e-3;
         }
 
@@ -1569,6 +1633,7 @@ public class IF97 {
          * @throws OutOfRangeException out-of-range exception
          */
         static double temperaturePH(double p, double h) throws OutOfRangeException {
+
             return getRegionPH(p, h).temperaturePH(p, h);
         }
 
@@ -1585,50 +1650,25 @@ public class IF97 {
             /*
              * Coefficients
              */
-            double[] n0 = new double[]{
-                0.102811e-1,
-                0.299621e-1,
-                0.156146e-1,
-                -.422464e-2
-            }, n1 = new double[]{
-                -.397070,
-                0.400302,
-                0.106000e1,
-                -.171587,
-                0.239219e1
-            }, n2 = new double[]{
-                0.701309e-1,
-                0.118520e-1,
-                0.642857,
-                0.169937e-2,
-                -.102000e1,
-                -.411717e1,
-                -.617937e1,
-                0.822994e-1,
-                0.100932e2,
-                0.308976e-2
-            };
+            double[] n0 = {0.102811e-1, 0.299621e-1, 0.156146e-1, -.422464e-2},
+                    n1 = {-.397070, 0.400302, 0.106000e1, -.171587, 0.239219e1},
+                    n2 = {0.701309e-1, 0.118520e-1, 0.642857, 0.169937e-2, -.102000e1, -.411717e1, -.617937e1, 0.822994e-1, 0.100932e2, 0.308976e-2};
 
-            double theta = T / 647.26, DeltaTheta = abs(theta - 1.0) + n2[9],
-                    rho = 1.0 / specificVolumePT(p, T), delta = rho / 317.7,
-                    Lambda0 = 0.0,
-                    A, B = 2.0 + n2[7] * pow(DeltaTheta, -0.6);
+            double theta = T / 647.26,
+                    DeltaTheta = abs(theta - 1) + n2[9],
+                    rho = 1 / specificVolumePT(p, T),
+                    delta = rho / 317.7,
+                    Lambda0 = 0,
+                    A, B = 2 + n2[7] * pow(DeltaTheta, -0.6);
 
             //System.out.println("rho: " + rho + ", theta: " + theta);
             for (int i = 0; i < 4; i++) {
                 Lambda0 += n0[i] * pow(theta, i);
             }
-            if (theta < 1.0) {
-                A = n2[8] / pow(DeltaTheta, 0.6);
-
-            } else {
-                A = 1.0 / DeltaTheta;
-            }
+            A = theta < 1 ? n2[8] / pow(DeltaTheta, 0.6) : 1 / DeltaTheta;
 
             double Lambda1 = n1[0] + n1[1] * delta + n1[2] * exp(n1[3] * pow(delta + n1[4], 2)),
-                    Lambda2 = (n2[0] / pow(theta, 10) + n2[1]) * pow(delta, 1.8) * exp(n2[2] * (1.0 - pow(delta, 2.8)))
-                    + n2[3] * A * pow(delta, B) * exp(B / (1.0 + B) * (1.0 - pow(delta, 1.0 + B)))
-                    + n2[4] * exp(n2[5] * pow(theta, 1.5) + n2[6] / pow(delta, 5));
+                    Lambda2 = (n2[0] / pow(theta, 10) + n2[1]) * pow(delta, 1.8) * exp(n2[2] * (1.0 - pow(delta, 2.8))) + n2[3] * A * pow(delta, B) * exp(B / (1.0 + B) * (1.0 - pow(delta, 1.0 + B))) + n2[4] * exp(n2[5] * pow(theta, 1.5) + n2[6] / pow(delta, 5));
 
             return sqrt(theta) * Lambda0 + Lambda1 + Lambda2;
         }
@@ -1668,7 +1708,7 @@ public class IF97 {
          */
         s,
         /**
-         * Wave length.
+         * Wavelength.
          */
         lambda,
         /**
@@ -1703,64 +1743,105 @@ public class IF97 {
                     return "specific entropy";
 
                 case lambda:
-                    return "wave length";
+                    return "wavelength";
 
                 case rho:
                     return "density";
 
+                default:
+                    return name().toLowerCase().replaceAll("_", " ");
             }
-
-            return name().toLowerCase().replaceAll("_", " ");
         }
     }
 
     /**
-     * Unit system conversion is pending complete implementation.
+     * Unit systems.
      *
      * <table border="1"> <tr>
-     * <th></th><th></th><th>Default</th><th>Engineering</th><th>SI</th><th>US
-     * customary</th><th>Imperial</th> </tr> <tr>
-     * <td><i>&rho;</i></td><td>density</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>lb/ft&sup3;</td><td>lb/ft&sup3;</td>
-     * </tr> <tr> <td><i>&epsilon;</i></td><td>dielectric
-     * constant</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td> </tr>
-     * <tr> <td><i>&eta;</i></td><td>dynamic
-     * viscosity</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td></td><td></td>
-     * </tr> <tr> <td><i>&alpha;<sub>v</sub></i></td><td>isobaric cubic
-     * expansion
-     * coefficient</td><td>1/K</td><td>1/K</td><td>1/K</td><td>1/R</td><td>1/R</td>
-     * </tr> <tr> <td><i>&kappa;<sub>T</sub></i></td><td>isothermal
-     * compressibility</td><td>1/MPa</td><td>1/MPa</td><td>1/Pa</td><td>in&sup2;/lb</td><td>in&sup2;/lb</td>
-     * </tr> <tr> <td><i>&nu;</i></td><td>kinematic
-     * viscosity</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>ft&sup2;/s</td><td>ft&sup2;/s</td>
-     * </tr> <tr> <td><i>Pr</i></td><td>Prandtl
-     * number</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td> </tr> <tr>
-     * <td><i>p</i></td><td>pressure</td><td>MPa</td><td>bar</td><td>Pa</td><td>lb/in&sup2;</td><td>lb/in&sup2;</td>
-     * </tr> <tr> <td><i>n</i></td><td>refractive
-     * index</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td> </tr> <tr>
-     * <td><i>h</i></td><td>specific
-     * enthalpy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td><td>BTU/lb</td>
-     * </tr> <tr> <td><i>s</i></td><td>specific
-     * entropy</td><td>kJ/kg&middot;K</td><td>kJ/kg&middot;K</td><td>J/kg&middot;K</td><td>BTU/lb&middot;R</td><td></td>
-     * </tr> <tr> <td><i>u</i></td><td>specific internal
-     * energy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td><td>BTU/lb</td>
-     * </tr> <tr> <td><i>c<sub>p</sub></i></td><td>specific isobaric heat
-     * capacity</td><td>kJ/kg&middot;K</td><td>kJ/kg&middot;K</td><td>J/kg&middot;K</td><td>BTU/lb&middot;R</td><td></td>
-     * </tr> <tr> <td><i>c<sub>v</sub></i></td><td>specific isochoric heat
-     * capacity</td><td>kJ/kg&middot;K</td><td>kJ/kg&middot;K</td><td>J/kg&middot;K</td><td>BTU/lb&middot;R</td><td></td>
-     * </tr> <tr> <td><i>v</i></td><td>specific
-     * volume</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>ft&sup3;/lb</td><td>ft&sup3;/lb</td>
-     * </tr> <!-- <tr> <td><i>w</i></td><td>speed of
-     * sound</td><td>m/s</td><td>m/s</td><td>m/s</td><td>ft/s</td><td>ft/s</td>
-     * </tr> --> <tr> <td><i>&sigma;</i></td><td>surface
-     * tension</td><td>N/m</td><td>N/m</td><td>N/m</td><td></td><td></td> </tr>
+     * <th></th><th></th><th>Default</th><th>Engineering</th><th>SI</th><th>Imperial</th>
+     * </tr>
      * <tr>
-     * <td><i>T</i></td><td>temperature</td><td>K</td><td>&deg;C</td><td>K</td><td>&deg;F</td><td>&deg;C</td>
-     * </tr> <tr> <td><i>&lambda;</i></td><td>thermal
-     * conductivity</td><td>W/m&middot;K</td><td>kW/m&middot;K</td><td>W/m&middot;K</td><td></td><td></td>
-     * </tr> <tr> <td><i>x</i></td><td>vapour
-     * fraction</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td> </tr>
-     * <tr> <td><i>&lambda;</i></td><td>wave
-     * length</td><td>&mu;m</td><td>&mu;m</td><td>m</td><td></td><td></td> </tr>
+     * <td><i>&rho;</i></td><td>density</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>lb/ft&sup3;</td>
+     * </tr>
+     * <tr>
+     * <td><i>&epsilon;</i></td><td>dielectric
+     * constant</td><td>-</td><td>-</td><td>-</td><td>-</td>
+     * </tr>
+     * <tr>
+     * <td><i>&eta;</i></td><td>dynamic
+     * viscosity</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td>cP</td>
+     * </tr>
+     * <tr>
+     * <td><i>&alpha;<sub>v</sub></i></td><td>isobaric cubic expansion
+     * coefficient</td><td>1/K</td><td>1/K</td><td>1/K</td><td>1/R</td>
+     * </tr>
+     * <tr>
+     * <td><i>&kappa;<sub>T</sub></i></td><td>isothermal
+     * compressibility</td><td>1/MPa</td><td>1/MPa</td><td>1/Pa</td><td>in&sup2;/lb</td>
+     * </tr>
+     * <tr>
+     * <td><i>&nu;</i></td><td>kinematic
+     * viscosity</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>cSt</td>
+     * </tr>
+     * <tr>
+     * <td><i>Pr</i></td><td>Prandtl
+     * number</td><td>-</td><td>-</td><td>-</td><td>-</td>
+     * </tr>
+     * <tr>
+     * <td><i>p</i></td><td>absolute
+     * pressure</td><td>MPa</td><td>bar</td><td>Pa</td><td>psi</td>
+     * </tr>
+     * <tr>
+     * <td><i>n</i></td><td>refractive
+     * index</td><td>-</td><td>-</td><td>-</td><td>-</td>
+     * </tr>
+     * <tr>
+     * <td><i>h</i></td><td>specific
+     * enthalpy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td>
+     * </tr>
+     * <tr>
+     * <td><i>s</i></td><td>specific
+     * entropy</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
+     * </tr>
+     * <tr>
+     * <td><i>u</i></td><td>specific internal
+     * energy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td>
+     * </tr>
+     * <tr>
+     * <td><i>c<sub>p</sub></i></td><td>specific isobaric heat
+     * capacity</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
+     * </tr>
+     * <tr>
+     * <td><i>c<sub>v</sub></i></td><td>specific isochoric heat
+     * capacity</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
+     * </tr>
+     * <tr>
+     * <td><i>v</i></td><td>specific
+     * volume</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>ft&sup3;/lb</td>
+     * </tr>
+     * <tr>
+     * <td><i>w</i></td><td>speed of
+     * sound</td><td>m/s</td><td>m/s</td><td>m/s</td><td>ft/s</td>
+     * </tr>
+     * <tr>
+     * <td><i>&sigma;</i></td><td>surface
+     * tension</td><td>N/m</td><td>N/m</td><td>N/m</td><td>lbf/ft</td>
+     * </tr>
+     * <tr>
+     * <td><i>T</i></td><td>temperature</td><td>K</td><td>&deg;C</td><td>K</td><td>&deg;F</td>
+     * </tr>
+     * <tr>
+     * <td><i>&lambda;</i></td><td>thermal
+     * conductivity</td><td>W/(m&middot;K)</td><td>kW/(m&middot;K)</td><td>W/(m&middot;K)</td><td>BTU/(hr&middot;ft&middot;R)</td>
+     * </tr>
+     * <tr>
+     * <td><i>x</i></td><td>vapour
+     * fraction</td><td>-</td><td>-</td><td>-</td><td>-</td>
+     * </tr>
+     * <tr>
+     * <td><i>&lambda;</i></td><td>wave
+     * length</td><td>&mu;m</td><td>&mu;m</td><td>m</td><td>in</td>
+     * </tr>
      * </table>
      */
     public enum UnitSystem {
@@ -1772,7 +1853,8 @@ public class IF97 {
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
-                new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0}),
+                new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
+                new double[]{1, 0}),
         /**
          * Engineering units.
          */
@@ -1787,10 +1869,11 @@ public class IF97 {
                 new double[]{1, 0}, // specific entropy
                 new double[]{1, 0}, // specific heat capacity
                 new double[]{1, 0}, // specific volume
+                new double[]{1, 0}, // speed of sound
                 new double[]{1, 0}, // surface tension
                 new double[]{1, 273.15}, // temperature
                 new double[]{1e3, 0}, // thermal conductivity
-                new double[]{1, 0}), // wave length
+                new double[]{1, 0}), // wavelength
         /**
          * SI unit system.
          */
@@ -1805,48 +1888,32 @@ public class IF97 {
                 new double[]{1e-3, 0}, // specific entropy
                 new double[]{1e-3, 0}, // specific heat capacity
                 new double[]{1, 0}, // specific volume
+                new double[]{1, 0}, // speed of sound
                 new double[]{1, 0}, // surface tension
                 new double[]{1, 0}, // temperature
                 new double[]{1, 0}, // thermal conductivity
-                new double[]{1e6, 0}); // wave length
-        ///**
-        //    * US customary unit system.
-        //    */
-        //US_CUSTOMARY(new double[]{1, 0}, // compressibility
-        //new double[]{1, 0}, // density
-        //new double[]{1, 0}, // dynamic viscosity
-        //new double[]{1, 0}, // isobaric cubic expansion coefficient
-        //new double[]{1, 0}, // kinematic viscosity
-        //new double[]{1, 0}, // pressure
-        //new double[]{1, 0}, // specific energy
-        //new double[]{1, 0}, // specific enthalpy
-        //new double[]{1, 0}, // specific entropy
-        //new double[]{1, 0}, // specific heat capacity
-        //new double[]{1, 0}, // specific volume
-        //new double[]{1, 0}, // surface tension
-        //new double[]{5d / 9, 459.67 * 5 / 9},// temperature
-        //new double[]{1, 0}, // thermal conductivity
-        //new double[]{1, 0}), // wave length
-        ///**
-        //    * British imperial unit system.
-        //    */
-        //IMPERIAL(new double[]{1, 0}, // compressibility
-        //new double[]{1, 0}, // density
-        //new double[]{1, 0}, // dynamic viscosity
-        //new double[]{1, 0}, // isobaric cubic expansion coefficient
-        //new double[]{1, 0}, // kinematic viscosity
-        //new double[]{1, 0}, // pressure
-        //new double[]{1, 0}, // specific energy
-        //new double[]{1, 0}, // specific enthalpy
-        //new double[]{1, 0}, // specific entropy
-        //new double[]{1, 0}, // specific heat capacity
-        //new double[]{1, 0}, // specific volume
-        //new double[]{1, 0}, // surface tension
-        //new double[]{1, 0}, // temperature
-        //new double[]{1, 0}, // thermal conductivity
-        //new double[]{1, 0}); // wave length
-        //BTU = 1054.5 J
-        double[] COMPRESSIBILITY,
+                new double[]{1e6, 0}), // wavelength
+        /**
+         * British imperial unit system.
+         */
+        IMPERIAL(new double[]{1e6 * in2 / lb, 0}, // compressibility
+                new double[]{lb / ft3, 0}, // density
+                new double[]{1e-3, 0}, // dynamic viscosity
+                new double[]{1 / Ra, 0}, // isobaric cubic expansion coefficient
+                new double[]{1e-6, 0}, // kinematic viscosity [centiStokes]
+                new double[]{psi, 0}, // pressure
+                new double[]{BTU / lb, 0}, // specific energy
+                new double[]{BTU / lb, 0}, // specific enthalpy
+                new double[]{BTU / (lb * Ra), 0}, // specific entropy
+                new double[]{BTU / (lb * Ra), 0}, // specific heat capacity
+                new double[]{ft3 / lb, 0}, // specific volume
+                new double[]{ft, 0}, // speed of sound
+                new double[]{lbf / ft, 0}, // surface tension
+                new double[]{5d / 9, 459.67 * 5 / 9},// temperature
+                new double[]{1e3 * BTU / (hr * ft * Ra), 0}, // thermal conductivity
+                new double[]{in * 1e6, 0}); // wavelength
+
+        final double[] COMPRESSIBILITY,
                 DENSITY,
                 DYNAMIC_VISCOSITY,
                 ISOBARIC_CUBIC_EXPANSION_COEFFICIENT,
@@ -1857,10 +1924,11 @@ public class IF97 {
                 SPECIFIC_ENTROPY,
                 SPECIFIC_HEAT_CAPACITY,
                 SPECIFIC_VOLUME,
+                SPEED_OF_SOUND,
                 SURFACE_TENSION,
                 TEMPERATURE,
                 THERMAL_CONDUCTIVITY,
-                WAVE_LENGTH;
+                WAVELENGTH;
 
         /**
          * Scale and bias values for conversion to default unit system.
@@ -1879,17 +1947,24 @@ public class IF97 {
          * @param surfaceTension
          * @param temperature
          * @param thermalConductivity
-         * @param waveLength
+         * @param wavelength
          */
-        UnitSystem(double[] compressibility, double[] density,
+        UnitSystem(double[] compressibility,
+                double[] density,
                 double[] dynamicViscosity,
                 double[] isobaricCubicExpansionCoefficient,
-                double[] kinematicViscosity, double[] pressure,
-                double[] specificEnergy, double[] specificEnthalpy,
-                double[] specificEntropy, double[] specificHeatCapacity,
-                double[] specificVolume, double[] surfaceTension,
-                double[] temperature, double[] thermalConductivity,
-                double[] waveLength) {
+                double[] kinematicViscosity,
+                double[] pressure,
+                double[] specificEnergy,
+                double[] specificEnthalpy,
+                double[] specificEntropy,
+                double[] specificHeatCapacity,
+                double[] specificVolume,
+                double[] speedOfSound,
+                double[] surfaceTension,
+                double[] temperature,
+                double[] thermalConductivity,
+                double[] wavelength) {
 
             COMPRESSIBILITY = compressibility;
             DENSITY = density;
@@ -1902,10 +1977,11 @@ public class IF97 {
             SPECIFIC_ENTROPY = specificEntropy;
             SPECIFIC_HEAT_CAPACITY = specificHeatCapacity;
             SPECIFIC_VOLUME = specificVolume;
+            SPEED_OF_SOUND = speedOfSound;
             SURFACE_TENSION = surfaceTension;
             TEMPERATURE = temperature;
             THERMAL_CONDUCTIVITY = thermalConductivity;
-            WAVE_LENGTH = waveLength;
+            WAVELENGTH = wavelength;
         }
     }
 }

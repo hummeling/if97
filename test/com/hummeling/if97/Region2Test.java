@@ -176,9 +176,9 @@ public class Region2Test {
         }
     }
 
-    @Ignore
     @Test
     public void testSpeedOfSoundPT() {
+        
         double tol = 1e-6;
         System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = new double[][]{

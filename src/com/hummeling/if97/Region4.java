@@ -24,30 +24,37 @@ package com.hummeling.if97;
 import static java.lang.Math.*;
 
 /**
- * Region 4. This class shouldn't be invoked directly.
+ * Region 4.
  *
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
 class Region4 extends Region {
 
-    private static final String NAME = "Region 4";
-    static final double Tref = 1, pRef = 1;
-    static final double[] n = new double[]{
-        00.11670521452767e4,
-        -0.72421316703206e6,
-        -0.17073846940092e2,
-        00.12020824702470e5,
-        -0.32325550322333e7,
-        00.14915108613530e2,
-        -0.48232657361591e4,
-        00.40511340542057e6,
-        -0.23855557567849,
-        00.65017534844798e3
-    };
+    private static final String NAME;
+    static final double Tref, pRef;
+    static final double[] n;
+
+    static {
+        NAME = "Region 4";
+        Tref = 1;
+        pRef = 1;
+        n = new double[]{
+            00.11670521452767e4,
+            -0.72421316703206e6,
+            -0.17073846940092e2,
+            00.12020824702470e5,
+            -0.32325550322333e7,
+            00.14915108613530e2,
+            -0.48232657361591e4,
+            00.40511340542057e6,
+            -0.23855557567849,
+            00.65017534844798e3};
+    }
 
     @Override
     String getName() {
+
         return NAME;
     }
 
@@ -60,6 +67,7 @@ class Region4 extends Region {
      * @throws OutOfRangeException
      */
     double saturationPressureHS(double enthalpy, double entropy) {
+
         return saturationPressureT(temperatureHS(enthalpy, entropy));
     }
 
@@ -72,7 +80,7 @@ class Region4 extends Region {
     static double saturationPressureH(double enthalpy) {
 
         double eta = enthalpy / 2600, out = 0;
-        double[][] IJn = new double[][]{
+        double[][] IJn = {
             {0, 0, 0.600073641753024},
             {1, 1, -.936203654849857e1},
             {1, 3, 0.246590798594147e2},
@@ -86,8 +94,7 @@ class Region4 extends Region {
             {22, 03, 0.356499469636328e11},
             {24, 18, -.148547544720641e27},
             {28, 8, 0.330611514838798e19},
-            {36, 24, 0.813641294467829e38}
-        };
+            {36, 24, 0.813641294467829e38}};
 
         for (double[] ijn : IJn) {
             out += ijn[2] * pow(eta - 1.02, ijn[0]) * pow(eta - 0.608, ijn[1]);
@@ -105,7 +112,7 @@ class Region4 extends Region {
 
         double sigma = entropy / 5.2, pi = 0;
         double[] x = {sigma - 1.03, sigma - 0.699, 22};
-        double[][] IJn = new double[][]{
+        double[][] IJn = {
             {0, 0, .639767553612785},
             {1, 1, -.129727445396014e2},
             {1, 32, -.224595125848403e16},
@@ -115,8 +122,7 @@ class Region4 extends Region {
             {16, 36, -.955586736431328e35},
             {24, 10, .187269814676188e24},
             {28, 0, .119254746466473e12},
-            {32, 18, .110649277244882e37}
-        };
+            {32, 18, .110649277244882e37}};
 
         for (double[] ijn : IJn) {
             pi += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -200,8 +206,7 @@ class Region4 extends Region {
             {18, 22, .355777682973575e7},
             {18, 36, .586062760258436e12},
             {20, 24, -.129887635078195e8},
-            {28, 36, .317247449371057e11}
-        };
+            {28, 36, .317247449371057e11}};
 
         for (double[] ijn : IJn) {
             theta += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -221,15 +226,13 @@ class Region4 extends Region {
      */
     static double saturationTemperatureP(double saturationPressure) {
 
-        double beta = pow(saturationPressure / pRef, 0.25);
-        double beta2 = beta * beta;
-
-        double E = beta2 + n[2] * beta + n[5];
-        double F = n[0] * beta2 + n[3] * beta + n[6];
-        double G = n[1] * beta2 + n[4] * beta + n[7];
-        double D = 2 * G / (-F - sqrt(F * F - 4 * E * G));
-
-        double n9plusD = n[9] + D;
+        double beta = pow(saturationPressure / pRef, 0.25),
+                beta2 = beta * beta,
+                E = beta2 + n[2] * beta + n[5],
+                F = n[0] * beta2 + n[3] * beta + n[6],
+                G = n[1] * beta2 + n[4] * beta + n[7],
+                D = 2 * G / (-F - sqrt(F * F - 4 * E * G)),
+                n9plusD = n[9] + D;
 
         return (n9plusD - sqrt(n9plusD * n9plusD - 4 * (n[8] + n[9] * D))) / 2 * Tref;
     }
@@ -243,6 +246,7 @@ class Region4 extends Region {
      */
     @Override
     double temperaturePH(double pressure, double dummy) {
+
         return saturationTemperatureP(pressure);
     }
 
@@ -272,11 +276,13 @@ class Region4 extends Region {
 
     @Override
     double isobaricCubicExpansionCoefficientPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double isothermalCompressibilityPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
@@ -291,41 +297,49 @@ class Region4 extends Region {
 
     @Override
     double specificEnthalpyPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificEnthalpyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificEntropyPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificEntropyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificEntropyRhoT(double rho, double T) {
+
         throw new UnsupportedOperationException("Region4.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificInternalEnergyPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificInternalEnergyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificIsobaricHeatCapacityPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificIsobaricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificIsochoricHeatCapacityPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificVolumePT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.specificVolumePT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double speedOfSoundPT(double p, double T) {
+
         throw new UnsupportedOperationException("Region4.speedOfSoundPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 }

@@ -123,6 +123,7 @@ public class IF97Test {
 
     @Test
     public void testSaturationPressureT() throws OutOfRangeException {
+
         double tol = 1e-7;
         System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = new double[][]{
@@ -133,23 +134,27 @@ public class IF97Test {
         for (double[] x : X) {
             assertEquals(x[0], if97.saturationPressureT(x[1]), tol);
         }
-        //IF97 if97 = new IF97(IF97.UnitSystem.ENGINEERING);
         if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
-        double Teng = 100;
-        System.out.format("PsatT(%f): %f bar", Teng,
-                if97.saturationPressureT(Teng));
+        double Teng = 100; // [Celsius]
+        System.out.format("PsatT(%.1f C): %f bar%n", Teng, if97.saturationPressureT(Teng));
+
+        if97.setUnitSystem(IF97.UnitSystem.IMPERIAL);
+        double Timp = 212; // [F]
+        System.out.format("PsatT(%.1f F): %f bar%n", Timp, if97.saturationPressureT(Timp) * IF97.psi * 10);
+
         if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
     }
 
     @Test
     public void testSaturationTemperatureP() throws OutOfRangeException {
+
         double tol = 1e-6;
         System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+        double[][] X = {
             {0.372755919e3, 0.1},
             {0.453035632e3, 1},
-            {0.584149488e3, 10}
-        };
+            {0.584149488e3, 10}};
+
         for (double[] x : X) {
             assertEquals(x[0], if97.saturationTemperatureP(x[1]), tol);
         }
@@ -193,9 +198,10 @@ public class IF97Test {
 
     @Test
     public void testSpecificVolumePT() throws OutOfRangeException {
+
         double tol = 1e-12;
         System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+        double[][] X = {
             {1.470853100e-3, 50, 630}, // region 3a
             {1.503831359e-3, 80, 670},
             {2.204728587e-3, 50, 710}, // region 3b
@@ -235,10 +241,37 @@ public class IF97Test {
             {1.932829079e-3, 19.1, 635}, // region 3s
             {1.985387227e-3, 20, 638},
             {8.483262001e-3, 17, 626}, // region 3t
-            {6.227528101e-3, 20, 640}
-        };
+            {6.227528101e-3, 20, 640}};
+
         for (double[] x : X) {
             assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), tol);
+        }
+    }
+
+    @Test
+    public void testSpeedOfSoundPT() throws OutOfRangeException {
+
+        double tol = 1e-5;
+        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
+        double[][] X = {
+            {0.150773921e4, 3, 300}, // region 1
+            {0.163469054e4, 80, 300},
+            {0.124071337e4, 3, 500},
+            {0.427920172e3, 0.0035, 300}, // region 2
+            {0.644289068e3, 0.0035, 700},
+            {0.480386523e3, 30, 700},
+            //{0.498408101e3, 1, 450}, // region 2 meta
+            //{0.489363295e3, 1, 440},
+            //{0.481941819e3, 1.5, 450},
+            //            {0.502005554e3, 500, 650}, // region 3
+            //            {0.383444594e3, 200, 650},
+            //            {0.760696041e3, 500, 750},
+            {0.917068690e3, 0.5, 1500}, // region 5
+            {0.928548002e3, 30, 1500},
+            {0.106736948e4, 30, 2000}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.speedOfSoundPT(x[1], x[2]), tol);
         }
     }
 
@@ -319,5 +352,14 @@ public class IF97Test {
         for (double[] x : X) {
             assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), tol);
         }
+    }
+
+    @Test
+    public void testUnitSystem() throws OutOfRangeException {
+        double tol = 1e-13;
+        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
+
+        assertEquals(4.4482216152605, IF97.lb * IF97.g, tol);
+
     }
 }

@@ -7,5 +7,5 @@ Steam tables for industrial use according to the international standard for the 
 
 Hummeling Engineering BV ([www.hummeling.com](http://www.hummeling.com)) develops engineering software in the fields of thermodynamics, mechanics, hydrodynamics, and digital signal processing.
 
-This library is developed using NetBeans IDE 7.4. The project files (nbproject folder) are included in the repository.
+This library is developed using NetBeans IDE 8.0. The project files (nbproject folder) are included in the repository.
 Other than JUnit for the test classes, there are no dependencies.

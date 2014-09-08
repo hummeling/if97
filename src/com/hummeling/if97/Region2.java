@@ -24,82 +24,86 @@ import static com.hummeling.if97.IF97.*;
 import static java.lang.Math.*;
 
 /**
- * Region 2. This class shouldn't be invoked directly.
+ * Region 2. 
  *
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
 class Region2 extends Region {
 
-// <editor-fold defaultstate="collapsed" desc="fields">
-    private static final String NAME = "Region 2";
-    static final double Tref = 540, pRef = 1;
-    static final double[][] Jno = new double[][]{
-        {0, -00.96927686500217e1},
-        {1, 000.10086655968018e2},
-        {-5, -0.56087911283020e-2},
-        {-4, 00.71452738081455e-1},
-        {-3, -0.40710498223928},
-        {-2, 00.14240819171444e1},
-        {-1, -0.43839511319450e1},
-        {2, -00.28408632460772},
-        {3, 000.21268463753307e-1}},
-            IJnr = new double[][]{
-                {1, 00, -1.7731742473213e-3},
-                {1, 01, -1.7834862292358e-2},
-                {1, 02, -4.5996013696365e-2},
-                {1, 03, -5.7581259083432e-2},
-                {1, 06, -5.0325278727930e-2},
-                {2, 01, -3.3032641670203e-5},
-                {2, 02, -1.8948987516315e-4},
-                {2, 04, -3.9392777243355e-3},
-                {2, 07, -4.3797295650573e-2},
-                {2, 36, -2.6674547914087e-5},
-                {3, 00, 2.0481737692309e-8},
-                {3, 01, 4.3870667284435e-7},
-                {3, 03, -3.2277677238570e-5},
-                {3, 06, -1.5033924542148e-3},
-                {3, 35, -4.0668253562649e-2},
-                {4, 01, -7.8847309559367e-10},
-                {4, 02, 1.2790717852285e-8},
-                {4, 03, 4.8225372718507e-7},
-                {5, 07, 2.2922076337661e-6},
-                {6, 03, -1.6714766451061e-11},
-                {6, 16, -2.1171472321355e-3},
-                {6, 35, -2.3895741934104e1},
-                {7, 00, -5.9059564324270e-18},
-                {7, 11, -1.2621808899101e-6},
-                {7, 25, -3.8946842435739e-2},
-                {8, 8, 1.1256211360459e-11},
-                {8, 36, -8.2311340897998},
-                {9, 13, 1.9809712802088e-8},
-                {10, 04, 1.0406965210174e-19},
-                {10, 10, -1.0234747095929e-13},
-                {10, 14, -1.0018179379511e-9},
-                {16, 29, -8.0882908646985e-11},
-                {16, 50, 1.0693031879409e-1},
-                {18, 57, -3.3662250574171e-1},
-                {20, 20, 8.9185845355421e-25},
-                {20, 35, 3.0629316876232e-13},
-                {20, 48, -4.2002467698208e-6},
-                {21, 21, -5.9056029685639e-26},
-                {22, 53, 3.7826947613457e-6},
-                {23, 39, -1.2768608934681e-15},
-                {24, 26, 7.3087610595061e-29},
-                {24, 40, 5.5414715350778e-17},
-                {24, 58, -9.4369707241210e-7}
-            };
-// </editor-fold>
+    private static final String NAME;
+    static final double Tref, pRef;
+    static final double[][] Jno, IJnr;
+
+    static {
+        NAME = "Region 2";
+        Tref = 540;
+        pRef = 1;
+        Jno = new double[][]{
+            {0, -00.96927686500217e1},
+            {1, 000.10086655968018e2},
+            {-5, -0.56087911283020e-2},
+            {-4, 00.71452738081455e-1},
+            {-3, -0.40710498223928},
+            {-2, 00.14240819171444e1},
+            {-1, -0.43839511319450e1},
+            {2, -00.28408632460772},
+            {3, 000.21268463753307e-1}};
+        IJnr = new double[][]{
+            {1, 00, -1.7731742473213e-3},
+            {1, 01, -1.7834862292358e-2},
+            {1, 02, -4.5996013696365e-2},
+            {1, 03, -5.7581259083432e-2},
+            {1, 06, -5.0325278727930e-2},
+            {2, 01, -3.3032641670203e-5},
+            {2, 02, -1.8948987516315e-4},
+            {2, 04, -3.9392777243355e-3},
+            {2, 07, -4.3797295650573e-2},
+            {2, 36, -2.6674547914087e-5},
+            {3, 00, 2.0481737692309e-8},
+            {3, 01, 4.3870667284435e-7},
+            {3, 03, -3.2277677238570e-5},
+            {3, 06, -1.5033924542148e-3},
+            {3, 35, -4.0668253562649e-2},
+            {4, 01, -7.8847309559367e-10},
+            {4, 02, 1.2790717852285e-8},
+            {4, 03, 4.8225372718507e-7},
+            {5, 07, 2.2922076337661e-6},
+            {6, 03, -1.6714766451061e-11},
+            {6, 16, -2.1171472321355e-3},
+            {6, 35, -2.3895741934104e1},
+            {7, 00, -5.9059564324270e-18},
+            {7, 11, -1.2621808899101e-6},
+            {7, 25, -3.8946842435739e-2},
+            {8, 8, 1.1256211360459e-11},
+            {8, 36, -8.2311340897998},
+            {9, 13, 1.9809712802088e-8},
+            {10, 04, 1.0406965210174e-19},
+            {10, 10, -1.0234747095929e-13},
+            {10, 14, -1.0018179379511e-9},
+            {16, 29, -8.0882908646985e-11},
+            {16, 50, 1.0693031879409e-1},
+            {18, 57, -3.3662250574171e-1},
+            {20, 20, 8.9185845355421e-25},
+            {20, 35, 3.0629316876232e-13},
+            {20, 48, -4.2002467698208e-6},
+            {21, 21, -5.9056029685639e-26},
+            {22, 53, 3.7826947613457e-6},
+            {23, 39, -1.2768608934681e-15},
+            {24, 26, 7.3087610595061e-29},
+            {24, 40, 5.5414715350778e-17},
+            {24, 58, -9.4369707241210e-7}};
+    }
 
     private static double enthalpy2bc(double pressure) {
 
-        double[] n = new double[]{
+        double[] n = {
             0.90584278514712e3,
             -.67955786399241,
             0.12809002730136e-3,
             0.26526571908428e4,
-            0.45257578905948e1
-        };
+            0.45257578905948e1};
+
         return n[3] + sqrt((pressure - n[4]) / n[2]);
     }
 
@@ -127,6 +131,7 @@ class Region2 extends Region {
      * @return
      */
     private static double gammaOPi(double pi) {
+
         return 1 / pi;
     }
 
@@ -137,6 +142,7 @@ class Region2 extends Region {
      * @return
      */
     private static double gammaOPiPi(double pi) {
+
         return -1 / (pi * pi);
     }
 
@@ -146,6 +152,7 @@ class Region2 extends Region {
      * @return
      */
     private static double gammaOPiTau() {
+
         return 0;
     }
 
@@ -291,36 +298,39 @@ class Region2 extends Region {
     private SubRegion getSubRegion(double pressure, double enthalpy) {
 
         if (pressure > 4) {
-            if (enthalpy < enthalpy2bc(pressure)) {
-                return SubRegion.C;
-            } else {
-                return SubRegion.B;
-            }
+            return enthalpy < enthalpy2bc(pressure) ? SubRegion.C : SubRegion.B;
+        } else {
+            return SubRegion.A;
         }
-        return SubRegion.A;
     }
 
     @Override
     double isobaricCubicExpansionCoefficientPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
         return (1 - tau * pi * gammaRPiTau(pi, tau) / (1 + pi * gammaRPi(pi, tau))) / temperature;
     }
 
     @Override
     double isothermalCompressibilityPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
         return (1 - pi * pi * gammaRPiPi(pi, tau)) / (1 + pi * gammaRPi(pi, tau)) / pressure;
     }
 
     @Override
     double pressureHS(double enthalpy, double entropy) {
 
-        double[] x = null, n = {
-            -.349898083432139e4,
-            0.257560716905876e4,
-            -.421073558227969e3,
-            0.276349063799944e2
-        };
+        double[] x = null,
+                n = {
+                    -.349898083432139e4,
+                    0.257560716905876e4,
+                    -.421073558227969e3,
+                    0.276349063799944e2};
         double pi = 0, sigma = entropy / 1,
                 eta = n[0] + (n[1] + (n[2] + n[3] * sigma) * sigma) * sigma,
                 h2ab = eta * 1;
@@ -363,8 +373,7 @@ class Region2 extends Region {
                     {6, 18, -.263963146312685e16},
                     {10, 7, -.107890854108088e10},
                     {12, 7, -.296492620980124e11},
-                    {16, 10, -.111754907323424e16}
-                };
+                    {16, 10, -.111754907323424e16}};
 
             } else {
                 // region 2b
@@ -402,8 +411,7 @@ class Region2 extends Region {
                     {8, 14, .109077066873024e12},
                     {8, 18, -.247964654258893e14},
                     {12, 10, .188801906865134e10},
-                    {14, 16, -.123651009018773e15}
-                };
+                    {14, 16, -.123651009018773e15}};
             }
 
         } else {
@@ -438,8 +446,7 @@ class Region2 extends Region {
                 {5, 3, 0.681500934948134e1},
                 {5, 16, -.633207286824489e4},
                 {6, 3, -.558919224465760e1},
-                {7, 1, 0.400645798472063e-1}
-            };
+                {7, 1, 0.400645798472063e-1}};
         }
 
         for (double[] ijn : thisIJn) {
@@ -450,78 +457,100 @@ class Region2 extends Region {
 
     @Override
     double specificEnthalpyPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
         return tau * (gammaOTau(tau) + gammaRTau(pi, tau)) * R * temperature;
     }
 
     @Override
     double specificEntropyPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
-        return (tau * (gammaOTau(tau) + gammaRTau(pi, tau))
-                - (gammaO(pi, tau) + gammaR(pi, tau))) * R;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
+        return (tau * (gammaOTau(tau) + gammaRTau(pi, tau)) - (gammaO(pi, tau) + gammaR(pi, tau))) * R;
     }
 
     @Override
     double specificInternalEnergyPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
-        return (tau * (gammaOTau(tau) + gammaRTau(pi, tau))
-                - pi * (gammaOPi(pi) + gammaRPi(pi, tau))) * R * temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
+        return (tau * (gammaOTau(tau) + gammaRTau(pi, tau)) - pi * (gammaOPi(pi) + gammaRPi(pi, tau))) * R * temperature;
     }
 
     @Override
     double specificIsobaricHeatCapacityPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
         return -tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)) * R;
     }
 
     @Override
     double specificIsochoricHeatCapacityPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature,
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature,
                 x = 1 + pi * gammaRPi(pi, tau) - tau * pi * gammaRPiTau(pi, tau);
-        return (-tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau))
-                - x * x / (1 - pi * pi * gammaRPiPi(pi, tau))) * R;
+
+        return (-tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)) - x * x / (1 - pi * pi * gammaRPiPi(pi, tau))) * R;
     }
 
     double specificVolumePH(double pressure, double enthalpy) {
+
         return Double.NaN;
     }
 
     @Override
     double specificVolumePT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature;
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
         return pi * (gammaOPi(pi) + gammaRPi(pi, tau)) / 1e3 * R * temperature / pressure;
     }
 
     @Override
     double speedOfSoundPT(double pressure, double temperature) {
-        double pi = pressure / pRef, tau = Tref / temperature,
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature,
                 gRPi = gammaRPi(pi, tau),
                 x = 1 + pi * gRPi - tau * pi * gammaRPiTau(pi, tau);
-        return sqrt((1 + 2 * pi * gRPi + pi * pi * gRPi * gRPi)
-                / (1 - pi * pi * gammaRPiPi(pi, tau)
-                + x * x / (tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau))))
-                * R * temperature);
+
+        return sqrt((1 + 2 * pi * gRPi + pi * pi * gRPi * gRPi) / (1 - pi * pi * gammaRPiPi(pi, tau) + x * x / (tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)))) * 1e3 * R * temperature);
     }
 
     @Override
     double temperatureHS(double enthalpy, double entropy) {
+
         return temperaturePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
     @Override
     double temperaturePH(double pressure, double enthalpy) {
 
-        double pi = pressure, eta = enthalpy / 2000;
+        double pi = pressure,
+                eta = enthalpy / 2000;
 
         switch (getSubRegion(pressure, enthalpy)) {
             case A:
                 return thetaA(pi, eta);
+
             case B:
                 return thetaB(pi, eta);
+
             case C:
                 return thetaC(pi, eta);
+
+            default:
+                return Double.NaN;
         }
-        return Double.NaN;
     }
 
     /**
@@ -534,7 +563,7 @@ class Region2 extends Region {
     private static double thetaA(double pi, double eta) {
 
         double out = 0;
-        double[][] IJn = new double[][]{
+        double[][] IJn = {
             {0, 0, 1.0898952318288e3},
             {0, 1, 8.4951654495535e2},
             {0, 2, -1.0781748091826e2},
@@ -568,8 +597,8 @@ class Region2 extends Region {
             {5, 42, 3.7154085996233e6},
             {6, 34, 1.9127729239660e4},
             {6, 44, -4.1535164835634e5},
-            {7, 28, -6.2459855192507e1}
-        };
+            {7, 28, -6.2459855192507e1}};
+
         for (double[] ijn : IJn) {
             out += ijn[2] * pow(pi, ijn[0]) * pow(eta - 2.1, ijn[1]);
         }
@@ -586,7 +615,7 @@ class Region2 extends Region {
     private static double thetaB(double pi, double eta) {
 
         double out = 0;
-        double[][] IJn = new double[][]{
+        double[][] IJn = {
             {0, 0, 1.4895041079516e3},
             {0, 1, 7.4307798314034e2},
             {0, 2, -9.7708318797837e1},
@@ -624,8 +653,8 @@ class Region2 extends Region {
             {7, 2, -8.1456365207833e-14},
             {7, 28, -2.5180545682962e-11},
             {9, 1, -1.7565233969407e-18},
-            {9, 40, 8.6934156344163e-15}
-        };
+            {9, 40, 8.6934156344163e-15}};
+
         for (double[] ijn : IJn) {
             out += ijn[2] * pow(pi - 2, ijn[0]) * pow(eta - 2.6, ijn[1]);
         }
@@ -642,7 +671,7 @@ class Region2 extends Region {
     private static double thetaC(double pi, double eta) {
 
         double out = 0;
-        double[][] IJn = new double[][]{
+        double[][] IJn = {
             {-7, 0, -3.2368398555242e12},
             {-7, 4, 7.3263350902181e12},
             {-6, 0, 3.5825089945447e11},
@@ -665,8 +694,8 @@ class Region2 extends Region {
             {6, 12, -1.1606921130984e-6},
             {6, 16, 2.7846367088554e-5},
             {6, 20, -5.9270038474176e-4},
-            {6, 22, 1.2918582991878e-3}
-        };
+            {6, 22, 1.2918582991878e-3}};
+
         for (double[] ijn : IJn) {
             out += ijn[2] * pow(pi + 25, ijn[0]) * pow(eta - 1.8, ijn[1]);
         }
@@ -675,15 +704,17 @@ class Region2 extends Region {
 
     @Override
     double specificEntropyRhoT(double rho, double T) {
+
         throw new UnsupportedOperationException("Region2.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double vapourFractionHS(double h, double s) {
+
         return 1;
     }
 
-    static enum SubRegion {
+    enum SubRegion {
 
         A, B, C;
     }

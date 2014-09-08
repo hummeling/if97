@@ -159,7 +159,6 @@ public class Region1Test {
         }
     }
 
-    @Ignore
     @Test
     public void testSpeedOfSoundPT() {
         double tol = 1e-5;
