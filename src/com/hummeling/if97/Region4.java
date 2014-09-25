@@ -29,7 +29,7 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-class Region4 extends Region {
+final class Region4 extends Region {
 
     private static final String NAME;
     static final double Tref, pRef;
@@ -58,17 +58,25 @@ class Region4 extends Region {
         return NAME;
     }
 
-    /**
-     * Saturation pressure.
-     *
-     * @param enthalpy specific enthalpy
-     * @param entropy specific entropy
-     * @return saturation pressure [MPa]
-     * @throws OutOfRangeException
-     */
-    double saturationPressureHS(double enthalpy, double entropy) {
+    @Override
+    double isobaricCubicExpansionCoefficientPT(double p, double T) {
 
-        return saturationPressureT(temperatureHS(enthalpy, entropy));
+        throw new UnsupportedOperationException("Region4.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double isothermalCompressibilityPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double pressureHS(double h, double s) {
+        try {
+            return saturationPressureHS(h, s);
+        } catch (OutOfRangeException ex) {
+            return Double.NaN;
+        }
     }
 
     /**
@@ -103,6 +111,19 @@ class Region4 extends Region {
     }
 
     /**
+     * Saturation pressure.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return saturation pressure [MPa]
+     * @throws OutOfRangeException
+     */
+    double saturationPressureHS(double enthalpy, double entropy) {
+
+        return saturationPressureT(temperatureHS(enthalpy, entropy));
+    }
+
+    /**
      * Boundary saturation pressure for the boundary between regions 3 and 4.
      *
      * @param entropy specific entropy
@@ -111,7 +132,7 @@ class Region4 extends Region {
     static double saturationPressureS(double entropy) {
 
         double sigma = entropy / 5.2, pi = 0;
-        double[] x = {sigma - 1.03, sigma - 0.699, 22};
+        double[] x = {sigma - 1.03, sigma - 0.699};
         double[][] IJn = {
             {0, 0, .639767553612785},
             {1, 1, -.129727445396014e2},
@@ -127,7 +148,7 @@ class Region4 extends Region {
         for (double[] ijn : IJn) {
             pi += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
-        return pi * x[2];
+        return pi * 22;
     }
 
     /**
@@ -155,6 +176,76 @@ class Region4 extends Region {
                 C = n[5] * theta2 + n[6] * theta + n[7];
 
         return pow(2 * C / (-B + sqrt(B * B - 4 * A * C)), 4) * pRef;
+    }
+
+    /**
+     * Saturation temperature.
+     *
+     * Out-of-range exceptions not thrown here because this method is also used
+     * for finding regions.
+     *
+     * @param saturationPressure saturation pressure [MPa]
+     * @return saturation temperature [K]
+     */
+    static double saturationTemperatureP(double saturationPressure) {
+
+        double beta = pow(saturationPressure / pRef, 0.25),
+                beta2 = beta * beta,
+                E = beta2 + n[2] * beta + n[5],
+                F = n[0] * beta2 + n[3] * beta + n[6],
+                G = n[1] * beta2 + n[4] * beta + n[7],
+                D = 2 * G / (-F - sqrt(F * F - 4 * E * G)),
+                n9plusD = n[9] + D;
+
+        return (n9plusD - sqrt(n9plusD * n9plusD - 4 * (n[8] + n[9] * D))) / 2 * Tref;
+    }
+
+    @Override
+    double specificEnthalpyPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificEnthalpyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificEntropyPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificEntropyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificEntropyRhoT(double rho, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificInternalEnergyPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificInternalEnergyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificIsobaricHeatCapacityPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificIsobaricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificIsochoricHeatCapacityPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double specificVolumePT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.specificVolumePT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double speedOfSoundPT(double p, double T) {
+
+        throw new UnsupportedOperationException("Region4.speedOfSoundPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     /**
@@ -215,37 +306,14 @@ class Region4 extends Region {
         return theta * 550;
     }
 
-    /**
-     * Saturation temperature.
-     *
-     * Out-of-range exceptions not thrown here because this method is also used
-     * for finding regions.
-     *
-     * @param saturationPressure saturation pressure [MPa]
-     * @return saturation temperature [K]
-     */
-    static double saturationTemperatureP(double saturationPressure) {
-
-        double beta = pow(saturationPressure / pRef, 0.25),
-                beta2 = beta * beta,
-                E = beta2 + n[2] * beta + n[5],
-                F = n[0] * beta2 + n[3] * beta + n[6],
-                G = n[1] * beta2 + n[4] * beta + n[7],
-                D = 2 * G / (-F - sqrt(F * F - 4 * E * G)),
-                n9plusD = n[9] + D;
-
-        return (n9plusD - sqrt(n9plusD * n9plusD - 4 * (n[8] + n[9] * D))) / 2 * Tref;
-    }
-
-    /**
-     * @todo Add more of these overriding methods
-     *
-     * @param pressure
-     * @param dummy
-     * @return
-     */
     @Override
     double temperaturePH(double pressure, double dummy) {
+
+        return saturationTemperatureP(pressure);
+    }
+
+    @Override
+    double temperaturePS(double pressure, double dummy) {
 
         return saturationTemperatureP(pressure);
     }
@@ -268,78 +336,19 @@ class Region4 extends Region {
         } catch (OutOfRangeException ex) {
             throw new IllegalArgumentException(ex);
         }
-        double h1 = (new Region1()).specificEnthalpyPT(pSat, Tsat),
-                h2 = (new Region2()).specificEnthalpyPT(pSat, Tsat);
+        double h1 = new Region1().specificEnthalpyPT(pSat, Tsat),
+                h2 = new Region2().specificEnthalpyPT(pSat, Tsat);
 
         return min(1, (enthalpy - h1) / (h2 - h1));
     }
 
     @Override
-    double isobaricCubicExpansionCoefficientPT(double p, double T) {
+    double vapourFractionPS(double pressure, double entropy) {
 
-        throw new UnsupportedOperationException("Region4.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
+        double Tsat = saturationTemperatureP(pressure),
+                s1 = new Region1().specificEntropyPT(pressure, Tsat),
+                s2 = new Region2().specificEntropyPT(pressure, Tsat);
 
-    @Override
-    double isothermalCompressibilityPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double pressureHS(double h, double s) {
-        try {
-            return saturationPressureHS(h, s);
-        } catch (OutOfRangeException ex) {
-            return Double.NaN;
-        }
-    }
-
-    @Override
-    double specificEnthalpyPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificEnthalpyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificEntropyPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificEntropyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificEntropyRhoT(double rho, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificInternalEnergyPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificInternalEnergyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificIsobaricHeatCapacityPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificIsobaricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificIsochoricHeatCapacityPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificVolumePT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.specificVolumePT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double speedOfSoundPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region4.speedOfSoundPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return min(1, (entropy - s1) / (s2 - s1));
     }
 }

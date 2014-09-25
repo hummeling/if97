@@ -29,17 +29,17 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-class Region1 extends Region {
+final class Region1 extends Region {
 
     private static final String NAME;
     static final double Tref, pRef;
-    static final double[][] IJn, IJnT;
+    private static final double[][] IJnPT;
 
     static {
         NAME = "Region 1";
         Tref = 1386;
         pRef = 16.53;
-        IJn = new double[][]{
+        IJnPT = new double[][]{
             {0, -2, +0.14632971213167},
             {0, -1, -0.84548187169114},
             {0, 00, -0.37563603672040e1},
@@ -74,30 +74,6 @@ class Region1 extends Region {
             {30, -39, -0.11947622640071e-22},
             {31, -40, +0.18228094581404e-23},
             {32, -41, -0.93537087292458e-25}};
-        IJnT = new double[][]{
-            {0, 00, -.23872489924521e3},
-            {0, 01, 0.40421188637945e3},
-            {0, 02, 0.11349746881718e3},
-            {0, 06, -.58457616048039e1},
-            {0, 22, -.15285482413140e-3},
-            {0, 32, -.10866707695377e-5},
-            {1, 00, -.13391744872602e2},
-            {1, 01, 0.43211039183559e2},
-            {1, 02, -.54010067170506e2},
-            {1, 03, 0.30535892203916e2},
-            {1, 04, -.65964749423638e1},
-            {1, 10, 0.93965400878363e-2},
-            {1, 32, 0.11573647505340e-6},
-            {2, 10, -.25858641282073e-4},
-            {2, 32, -.40644363084799e-8},
-            {3, 10, 0.66456186191635e-7},
-            {3, 32, 0.80670734103027e-10},
-            {4, 32, -.93477771213947e-12},
-            {5, 32, 0.58265442020601e-14},
-            {6, 32, -.15020185953503e-16}};
-    }
-
-    Region1() {
     }
 
     /**
@@ -105,14 +81,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return gamma
      */
     private static double gamma(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(7.1 - pi, ijn[0]) * pow(tau - 1.222, ijn[1]);
+        for (double[] ijn : IJnPT) {
+            out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
         return out;
     }
@@ -122,14 +99,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return d/dpi gamma
      */
     private static double gammaPi(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out -= ijn[2] * ijn[0] * pow(7.1 - pi, ijn[0] - 1) * pow(tau - 1.222, ijn[1]);
+        for (double[] ijn : IJnPT) {
+            out -= ijn[2] * ijn[0] * pow(x[0], ijn[0] - 1) * pow(x[1], ijn[1]);
         }
         return out;
     }
@@ -139,14 +117,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return d2/dpi2 gamma
      */
     private static double gammaPiPi(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out += ijn[2] * ijn[0] * (ijn[0] - 1) * pow(7.1 - pi, ijn[0] - 2) * pow(tau - 1.222, ijn[1]);
+        for (double[] ijn : IJnPT) {
+            out += ijn[2] * ijn[0] * (ijn[0] - 1) * pow(x[0], ijn[0] - 2) * pow(x[1], ijn[1]);
         }
         return out;
     }
@@ -156,14 +135,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return d/dpi d/dtau gamma
      */
     private static double gammaPiTau(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out -= ijn[2] * ijn[0] * pow(7.1 - pi, ijn[0] - 1) * ijn[1] * pow(tau - 1.222, ijn[1] - 1);
+        for (double[] ijn : IJnPT) {
+            out -= ijn[2] * ijn[0] * pow(x[0], ijn[0] - 1) * ijn[1] * pow(x[1], ijn[1] - 1);
         }
         return out;
     }
@@ -173,14 +153,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return d/dtau gamma
      */
     private static double gammaTau(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(7.1 - pi, ijn[0]) * ijn[1] * pow(tau - 1.222, ijn[1] - 1);
+        for (double[] ijn : IJnPT) {
+            out += ijn[2] * pow(x[0], ijn[0]) * ijn[1] * pow(x[1], ijn[1] - 1);
         }
         return out;
     }
@@ -190,14 +171,15 @@ class Region1 extends Region {
      *
      * @param pi dimensionless pressure [MPa]
      * @param tau dimensionless temperature [K]
-     * @return
+     * @return d2/dtau2 gamma
      */
     private static double gammaTauTau(double pi, double tau) {
 
         double out = 0;
+        double[] x = {7.1 - pi, tau - 1.222};
 
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(7.1 - pi, ijn[0]) * ijn[1] * (ijn[1] - 1) * pow(tau - 1.222, ijn[1] - 2);
+        for (double[] ijn : IJnPT) {
+            out += ijn[2] * pow(x[0], ijn[0]) * ijn[1] * (ijn[1] - 1) * pow(x[1], ijn[1] - 2);
         }
         return out;
     }
@@ -231,7 +213,7 @@ class Region1 extends Region {
 
         double pi = 0;
         double[] x = {enthalpy / 3400 + 0.05, entropy / 7.6 + 0.05};
-        double[][] thisIJn = {
+        double[][] IJn = {
             {0, 0, -.691997014660582},
             {0, 1, -.183612548787560e2},
             {0, 2, -.928332409297335e1},
@@ -252,7 +234,7 @@ class Region1 extends Region {
             {4, 4, .114284032569021e4},
             {5, 0, -.436407041874559e3}};
 
-        for (double[] ijn : thisIJn) {
+        for (double[] ijn : IJn) {
             pi += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
         return pi * 100;
@@ -336,31 +318,75 @@ class Region1 extends Region {
     @Override
     double temperaturePH(double pressure, double enthalpy) {
 
-        double pi = pressure,
-                eta = enthalpy / 2500;
+        double out = 0, x = enthalpy / 2500 + 1;
+        double[][] IJn = {
+            {0, 00, -.23872489924521e3},
+            {0, 01, 0.40421188637945e3},
+            {0, 02, 0.11349746881718e3},
+            {0, 06, -.58457616048039e1},
+            {0, 22, -.15285482413140e-3},
+            {0, 32, -.10866707695377e-5},
+            {1, 00, -.13391744872602e2},
+            {1, 01, 0.43211039183559e2},
+            {1, 02, -.54010067170506e2},
+            {1, 03, 0.30535892203916e2},
+            {1, 04, -.65964749423638e1},
+            {1, 10, 0.93965400878363e-2},
+            {1, 32, 0.11573647505340e-6},
+            {2, 10, -.25858641282073e-4},
+            {2, 32, -.40644363084799e-8},
+            {3, 10, 0.66456186191635e-7},
+            {3, 32, 0.80670734103027e-10},
+            {4, 32, -.93477771213947e-12},
+            {5, 32, 0.58265442020601e-14},
+            {6, 32, -.15020185953503e-16}};
 
-        return theta(pi, eta);
-    }
-
-    /**
-     * Dimensionless backward equation.
-     *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless enthalpy [kJ/kg]
-     * @return
-     */
-    private static double theta(double pi, double eta) {
-
-        double out = 0;
-
-        for (double[] ijnT : IJnT) {
-            out += ijnT[2] * pow(pi, ijnT[0]) * pow(eta + 1, ijnT[1]);
+        for (double[] ijn : IJn) {
+            out += ijn[2] * pow(pressure, ijn[0]) * pow(x, ijn[1]);
         }
         return out;
     }
 
     @Override
-    double vapourFractionHS(double h, double s) {
+    double temperaturePS(double pressure, double entropy) {
+
+        double out = 0;
+        double[][] IJn = {
+            {0, 0, 0.17478268058307e3},
+            {0, 1, 0.34806930892873e2},
+            {0, 2, 0.65292584978455e1},
+            {0, 3, 0.33039981775489},
+            {0, 11, -0.19281382923196e-6},
+            {0, 31, -0.24909197244573e-22},
+            {1, 0, -0.26107636489332},
+            {1, 1, 0.22592965981586},
+            {1, 2, -0.64256463395226e-1},
+            {1, 3, 0.78876289270526e-2},
+            {1, 12, 0.35672110607366e-9},
+            {1, 31, 0.17332496994895e-23},
+            {2, 0, 0.56608900654837e-3},
+            {2, 1, -0.32635483139717e-3},
+            {2, 2, 0.44778286690632e-4},
+            {2, 9, -0.51322156908507e-9},
+            {2, 31, -0.42522657042207e-25},
+            {3, 10, 0.26400441360689e-12},
+            {3, 32, 0.78124600459723e-28},
+            {4, 32, -0.30732199903668e-30}};
+
+        for (double[] ijn : IJn) {
+            out += ijn[2] * pow(pressure, ijn[0]) * pow(entropy + 2, ijn[1]);
+        }
+        return out;
+    }
+
+    @Override
+    double vapourFractionHS(double enthalpy, double entropy) {
+
+        return 0;
+    }
+
+    @Override
+    double vapourFractionPS(double pressure, double entropy) {
 
         return 0;
     }

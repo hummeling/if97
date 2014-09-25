@@ -20,8 +20,8 @@
  */
 package com.hummeling.if97;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *
@@ -30,45 +30,41 @@ import static org.junit.Assert.*;
  */
 public class IF97Test {
 
-    double TOLERANCE = 1e-8;
-    IF97 if97 = new IF97();
+    private final IF97 if97 = new IF97();
 
     @Test
-    public void testDielectricConstantPT() throws OutOfRangeException {
-        double tol = 1e-4;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testDielectricConstantPT() {
+
+        double[][] X = {
             {0.785907250e2, 5, 298.15},
             //meta {0.112620970e1, 10, 873.15},
-            {0.103126058e2, 40, 673.15}
-        };
+            {0.103126058e2, 40, 673.15}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.dielectricConstantPT(x[1], x[2]), tol);
+            assertEquals(x[0], if97.dielectricConstantPT(x[1], x[2]), 1e-4);
         }
     }
 
     @Test
-    public void testRefractiveIndexPTLambda() throws OutOfRangeException {
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testRefractiveIndexPTLambda() {
+
+        double[][] X = {
             {0.139277824e1, 0.1, 298.15, 0.2265},
             {0.133285819e1, 0.1, 298.15, 0.5893},
             //meta {0.101098988e1, 10, 773.15, 0.2265},
             //meta {0.100949307e1, 10, 773.15, 0.5893},
             {0.119757252e1, 40, 673.15, 0.2265},
-            {0.116968699e1, 40, 673.15, 0.5893}
-        };
+            {0.116968699e1, 40, 673.15, 0.5893}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.refractiveIndexPTLambda(x[1], x[2], x[3]), tol);
+            assertEquals(x[0], if97.refractiveIndexPTLambda(x[1], x[2], x[3]), 1e-6);
         }
     }
 
     @Test
-    public void testPressureHS() throws OutOfRangeException {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testPressureHS() {
+
+        double[][] X = {
             {9.800980612e-4, 0.001, 0}, // region 1: ok with tol = 1e-13
             {9.192954727e1, 90, 0},
             {5.868294423e1, 1500, 3.4},
@@ -86,97 +82,79 @@ public class IF97Test {
             {6.078123340e1, 2100, 4.3},
             {6.363924887e1, 2400, 4.7},
             {3.434999263e1, 2600, 5.1},
-            {8.839043281e1, 2700, 5.0}
-        };
+            {8.839043281e1, 2700, 5.0}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.pressureHS(x[1], x[2]), tol);
+            assertEquals(x[0], if97.pressureHS(x[1], x[2]), 1e-8);
         }
     }
 
     @Test
     public void testSaturationPressureH() {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {1.724175718e1, 1700},
             {2.193442957e1, 2000},
-            {2.018090839e1, 2400}
-        };
+            {2.018090839e1, 2400}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.saturationPressureH(x[1]), tol);
+            assertEquals(x[0], if97.saturationPressureH(x[1]), 1e-8);
         }
     }
 
     @Test
     public void testSaturationPressureS() {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {1.687755057e1, 3.8},
             {2.164451789e1, 4.2},
-            {1.668968482e1, 5.2}
-        };
+            {1.668968482e1, 5.2}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.saturationPressureS(x[1]), tol);
+            assertEquals(x[0], if97.saturationPressureS(x[1]), 1e-8);
         }
     }
 
     @Test
-    public void testSaturationPressureT() throws OutOfRangeException {
+    public void testSaturationPressureT() {
 
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+        double[][] X = {
             {0.353658941e-2, 300},
             {0.263889776e1, 500},
-            {0.123443146e2, 600}
-        };
+            {0.123443146e2, 600}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.saturationPressureT(x[1]), tol);
+            assertEquals(x[0], if97.saturationPressureT(x[1]), 1e-7);
         }
-        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
-        double Teng = 100; // [Celsius]
-        System.out.format("PsatT(%.1f C): %f bar%n", Teng, if97.saturationPressureT(Teng));
-
-        if97.setUnitSystem(IF97.UnitSystem.IMPERIAL);
-        double Timp = 212; // [F]
-        System.out.format("PsatT(%.1f F): %f bar%n", Timp, if97.saturationPressureT(Timp) * IF97.psi * 10);
-
-        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
     }
 
     @Test
-    public void testSaturationTemperatureP() throws OutOfRangeException {
+    public void testSaturationTemperatureP() {
 
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = {
             {0.372755919e3, 0.1},
             {0.453035632e3, 1},
             {0.584149488e3, 10}};
 
         for (double[] x : X) {
-            assertEquals(x[0], if97.saturationTemperatureP(x[1]), tol);
+            assertEquals(x[0], if97.saturationTemperatureP(x[1]), 1e-6);
         }
     }
 
     @Test
-    public void testPartialDerivativePT() throws OutOfRangeException {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{};
+    public void testPartialDerivativePT() {
+
+        double[][] X = {};
         for (double[] x : X) {
-            System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
-            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2],
-                    IF97.Quantity.p, IF97.Quantity.nu, IF97.Quantity.u), tol);
+            //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
+            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2], IF97.Quantity.p, IF97.Quantity.nu, IF97.Quantity.u), 1e-5);
         }
     }
 
     @Test
-    public void testSpecificEnthalpyPT() throws OutOfRangeException {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testSpecificEnthalpyPT() {
+
+        double[][] X = {
             {0.115331273e3, 3, 300}, // region 1
             {0.184142828e3, 80, 300},
             {0.975542239e3, 3, 500},
@@ -188,19 +166,17 @@ public class IF97Test {
             //{0.272134539e4, 1.5, 450},
             {0.521976855e4, 0.5, 1500}, // region 5
             {0.516723514e4, 30, 1500},
-            {0.657122604e4, 30, 2000}
-        };
+            {0.657122604e4, 30, 2000}};
+
         for (double[] x : X) {
-            System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
-            assertEquals(x[0], if97.specificEnthalpyPT(x[1], x[2]), tol);
+            //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
+            assertEquals(x[0], if97.specificEnthalpyPT(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
-    public void testSpecificVolumePT() throws OutOfRangeException {
+    public void testSpecificVolumePT() {
 
-        double tol = 1e-12;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = {
             {1.470853100e-3, 50, 630}, // region 3a
             {1.503831359e-3, 80, 670},
@@ -244,15 +220,13 @@ public class IF97Test {
             {6.227528101e-3, 20, 640}};
 
         for (double[] x : X) {
-            assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), tol);
+            assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), 1e-12);
         }
     }
 
     @Test
-    public void testSpeedOfSoundPT() throws OutOfRangeException {
+    public void testSpeedOfSoundPT() {
 
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
         double[][] X = {
             {0.150773921e4, 3, 300}, // region 1
             {0.163469054e4, 80, 300},
@@ -271,43 +245,40 @@ public class IF97Test {
             {0.106736948e4, 30, 2000}};
 
         for (double[] x : X) {
-            assertEquals(x[0], if97.speedOfSoundPT(x[1], x[2]), tol);
+            assertEquals(x[0], if97.speedOfSoundPT(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
-    public void testSurfaceTensionT() throws OutOfRangeException {
-        double tol = 1e-10;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testSurfaceTensionT() {
+
+        double[][] X = {
             {0.0716859625, 300},
             {0.0428914992, 450},
             {0.00837561087, 600}
         };
         for (double[] x : X) {
-            assertEquals(x[0], if97.surfaceTensionT(x[1]), tol);
+            assertEquals(x[0], if97.surfaceTensionT(x[1]), 1e-10);
         }
     }
 
     @Test
-    public void testTemperatureHS() throws OutOfRangeException {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testTemperatureHS() {
+
+        double[][] X = {
             {3.468475498e2, 1800, 5.3}, // region 4
             {4.251373305e2, 2400, 6},
-            {5.225579013e2, 2500, 5.5}
-        };
+            {5.225579013e2, 2500, 5.5}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.temperatureHS(x[1], x[2]), tol);
+            assertEquals(x[0], if97.temperatureHS(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
-    public void testTemperaturePH() throws OutOfRangeException {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testTemperaturePH() {
+
+        double[][] X = {
             {0.391798509e3, 3, 500}, // region 1
             {0.378108626e3, 80, 500},
             {0.611041229e3, 80, 1500},
@@ -319,47 +290,80 @@ public class IF97Test {
             {0.875279054e3, 25, 3500},
             {0.743056411e3, 40, 2700}, // region 2c
             {0.791137067e3, 60, 2700},
-            {0.882756860e3, 60, 3200}
-        };
+            {0.882756860e3, 60, 3200}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.temperaturePH(x[1], x[2]), tol);
+            assertEquals(x[0], if97.temperaturePH(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
-    public void testThermalConductivityPT() throws OutOfRangeException {
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testTemperaturePS() {
+
+        double[][] X = {
+            {0.307842258e3, 3, 0.5},
+            {0.309979785e3, 80, 0.5},
+            {0.565899909e3, 80, 3},
+            {0.399517097e3, 0.1, 7.5},
+            {0.514127081e3, 0.1, 8},
+            {0.103984917e4, 2.5, 8},
+            {0.600484040e3, 8, 6},
+            {0.106495556e4, 8, 7.5},
+            {0.103801126e4, 90, 6},
+            {0.697992849e3, 20, 5.75},
+            {0.854011484e3, 80, 5.25},
+            {0.949017998e3, 80, 5.75},
+            {6.282959869e2, 20, 3.8},
+            {6.297158726e2, 50, 3.6},
+            {7.056880237e2, 100, 4.0},
+            {6.401176443e2, 20, 5.0},
+            {7.163687517e2, 50, 4.5},
+            {8.474332825e2, 100, 5.0}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.temperaturePS(x[1], x[2]), 1e-5);
+        }
+    }
+
+    @Test
+    public void testThermalConductivityPT() {
+
+        double[][] X = {
             {0.607509806, 0.1, 298.15},
             //meta {0.867570353e-1, 10, 873.15},
-            {0.398506911, 40, 673.15}
-        };
+            {0.398506911, 40, 673.15}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.thermalConductivityPT(x[1], x[2]), tol);
+            assertEquals(x[0], if97.thermalConductivityPT(x[1], x[2]), 1e-6);
         }
     }
 
     @Test
-    public void testViscosityPT() throws OutOfRangeException {
-        double tol = 1e-12;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testViscosityPT() {
+
+        double[][] X = {
             {0.890022551e-3, .1, 298.15},
             {0.339743835e-4, 20, 873.15},
-            {0.726093560e-4, 60, 673.15}
-        };
+            {0.726093560e-4, 60, 673.15}};
+
         for (double[] x : X) {
-            assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), tol);
+            assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), 1e-12);
         }
     }
 
     @Test
-    public void testUnitSystem() throws OutOfRangeException {
-        double tol = 1e-13;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
+    public void testUnitSystem() {
 
-        assertEquals(4.4482216152605, IF97.lb * IF97.g, tol);
+        assertEquals(4.4482216152605, IF97.lb * IF97.g, 1e-13);
 
+        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
+        double Teng = 100; // [Celsius]
+        //System.out.format("PsatT(%.1f C): %f bar%n", Teng, if97.saturationPressureT(Teng));
+
+        if97.setUnitSystem(IF97.UnitSystem.IMPERIAL);
+        double Timp = 212; // [F]
+        //System.out.format("PsatT(%.1f F): %f bar%n", Timp, if97.saturationPressureT(Timp) * IF97.psi * 10);
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
     }
 }

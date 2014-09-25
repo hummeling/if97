@@ -30,10 +30,10 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-class Region3 extends Region {
+final class Region3 extends Region {
 
     private static final String NAME;
-    static final double rhoRef, Tref, n1, s3ab;
+    static final double rhoRef, Tref, n1;
     static final double[][] IJn;
 
     static {
@@ -41,7 +41,6 @@ class Region3 extends Region {
         rhoRef = 322;
         Tref = 647.096;
         n1 = 0.10658070028513e1;
-        s3ab = 4.41202148223476;
         IJn = new double[][]{
             {0, 0, -0.15732845290239e2},
             {0, 1, 00.20944396974307e2},
@@ -84,9 +83,6 @@ class Region3 extends Region {
             {11, 26, -.44923899061815e-4}};
     }
 
-    protected Region3() {
-    }
-
     @Override
     String getName() {
 
@@ -95,7 +91,7 @@ class Region3 extends Region {
 
     private SubRegion getSubRegionS(double entropy) {
 
-        return entropy <= s3ab ? SubRegion.a : SubRegion.b;
+        return entropy > 4.41202148223476 ? SubRegion.b : SubRegion.a;
     }
 
     private SubRegion getSubRegionPH(double pressure, double enthalpy) {
@@ -524,6 +520,14 @@ class Region3 extends Region {
         return out;
     }
 
+    @Override
+    double isobaricCubicExpansionCoefficientPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return isobaricCubicExpansionCoefficientRhoT(rho, temperature);
+    }
+
     double isobaricCubicExpansionCoefficientRhoT(double density, double temperature) {
 
         double delta = density / rhoc,
@@ -531,6 +535,14 @@ class Region3 extends Region {
                 phiDelta = phiDelta(delta, tau);
 
         return (phiDelta - tau * phiDeltaTau(delta, tau)) / (2 * phiDelta + delta * phiDeltaDelta(delta, tau)) / temperature;
+    }
+
+    @Override
+    double isothermalCompressibilityPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return isothermalCompressibilityRhoT(rho, temperature);
     }
 
     double isothermalCompressibilityRhoT(double density, double temperature) {
@@ -555,18 +567,20 @@ class Region3 extends Region {
         switch (getSubRegionS(s)) {
             case a:
                 return piA(h / 2300, s / 4.4) * 99;
+
             case b:
                 return piB(h / 2800, s / 5.3) * 16.6;
+
+            default:
+                return NaN;
         }
-        return NaN;
     }
 
     double pressureRhoT(double rho, double T) {
 
-        double delta = rho / rhoc,
-                tau = Tc / T;
+        double delta = rho / rhoc;
 
-        return delta * phiDelta(delta, tau) * rho * R * T / 1e3;
+        return delta * phiDelta(delta, Tc / T) * rho * R * T / 1e3;
     }
 
     /**
@@ -627,10 +641,9 @@ class Region3 extends Region {
 
     double specificInternalEnergyRhoT(double density, double temperature) {
 
-        double delta = density / rhoc,
-                tau = Tc / temperature;
+        double tau = Tc / temperature;
 
-        return tau * phiTau(delta, tau) * R * temperature;
+        return tau * phiTau(density / rhoc, tau) * R * temperature;
     }
 
     @Override
@@ -651,12 +664,19 @@ class Region3 extends Region {
         return (-tau * tau * phiTauTau(delta, tau) + x * x / (2 * delta * phiDelta + delta * delta * phiDeltaDelta(delta, tau))) * R;
     }
 
+    @Override
+    double specificIsochoricHeatCapacityPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return specificIsochoricHeatCapacityRhoT(rho, temperature);
+    }
+
     double specificIsochoricHeatCapacityRhoT(double density, double temperature) {
 
-        double delta = density / rhoc,
-                tau = Tc / temperature;
+        double tau = Tc / temperature;
 
-        return -tau * tau * phiTauTau(delta, tau) * R;
+        return -tau * tau * phiTauTau(density / rhoc, tau) * R;
     }
 
     double specificVolumeHS(double enthalpy, double entropy) {
@@ -688,10 +708,7 @@ class Region3 extends Region {
 
         switch (getSubRegionS(entropy)) {
             case a:
-                x = new double[]{
-                    pressure / 100 + 0.187,
-                    entropy / 4.4 - 0.755,
-                    0.0028};
+                x = new double[]{pressure / 100 + 0.187, entropy / 4.4 - 0.755, 0.0028};
                 IJnOmega = new double[][]{
                     {-12, 10, .795544074093975e2},
                     {-12, 12, -.238261242984590e4},
@@ -724,10 +741,7 @@ class Region3 extends Region {
                 break;
 
             case b:
-                x = new double[]{
-                    pressure / 100 + 0.298,
-                    entropy / 5.3 - 0.816,
-                    0.0088};
+                x = new double[]{pressure / 100 + 0.298, entropy / 5.3 - 0.816, 0.0088};
                 IJnOmega = new double[][]{
                     {-12, 0, .591599780322238e-4},
                     {-12, 1, -.185465997137856e-2},
@@ -1148,7 +1162,9 @@ class Region3 extends Region {
     @Override
     double speedOfSoundPT(double pressure, double temperature) {
 
-        return speedOfSoundRhoT(1 / specificVolumePT(pressure, temperature), temperature);
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return speedOfSoundRhoT(rho, temperature);
     }
 
     double speedOfSoundRhoT(double density, double temperature) {
@@ -1182,6 +1198,7 @@ class Region3 extends Region {
         }
     }
 
+    @Override
     double temperaturePS(double pressure, double entropy) {
 
         double theta = 0;
@@ -1190,10 +1207,7 @@ class Region3 extends Region {
 
         switch (getSubRegionS(entropy)) {
             case a:
-                x = new double[]{
-                    pressure / 100 + 0.240,
-                    entropy / 4.4 - 0.703,
-                    760};
+                x = new double[]{pressure / 100 + 0.240, entropy / 4.4 - 0.703, 760};
                 IJnTheta = new double[][]{
                     {-12, 28, .150042008263875e10},
                     {-12, 32, -.159397258480424e12},
@@ -1231,10 +1245,7 @@ class Region3 extends Region {
                 break;
 
             case b:
-                x = new double[]{
-                    pressure / 100 + 0.760,
-                    entropy / 5.3 - 0.818,
-                    860};
+                x = new double[]{pressure / 100 + 0.760, entropy / 5.3 - 0.818, 860};
                 IJnTheta = new double[][]{
                     {-12, 1, .527111701601660},
                     {-12, 3, -.401317830052742e2},
@@ -1273,25 +1284,13 @@ class Region3 extends Region {
     }
 
     @Override
-    double isobaricCubicExpansionCoefficientPT(double p, double T) {
+    double vapourFractionHS(double enthalpy, double entropy) {
 
-        throw new UnsupportedOperationException("Region3.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return NaN;
     }
 
     @Override
-    double isothermalCompressibilityPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region3.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificIsochoricHeatCapacityPT(double p, double T) {
-
-        throw new UnsupportedOperationException("Region3.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double vapourFractionHS(double h, double s) {
+    double vapourFractionPS(double pressure, double entropy) {
 
         return NaN;
     }

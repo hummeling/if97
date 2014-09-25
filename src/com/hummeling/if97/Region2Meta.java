@@ -65,9 +65,6 @@ class Region2Meta extends Region {
             {5, 10, -.26456501482810e-2}};
     }
 
-    protected Region2Meta() {
-    }
-
     /**
      * Dimensionless Gibbs free energy.
      *
@@ -366,7 +363,18 @@ class Region2Meta extends Region {
     }
 
     @Override
+    double temperaturePS(double p, double s) {
+        throw new UnsupportedOperationException("Region2Meta.temperaturePS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
     double vapourFractionHS(double h, double s) {
+
+        return 1;
+    }
+
+    @Override
+    double vapourFractionPS(double pressure, double entropy) {
 
         return 1;
     }

@@ -29,7 +29,7 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-class Region5 extends Region {
+final class Region5 extends Region {
 
     private static final String NAME;
     static final double Tref, pRef;
@@ -151,9 +151,6 @@ class Region5 extends Region {
             {6, 16, 2.7846367088554e-5},
             {6, 20, -5.9270038474176e-4},
             {6, 22, 1.2918582991878e-3}};
-    }
-
-    protected Region5() {
     }
 
     private static double enthalpy2bc(double pressure) {
@@ -359,7 +356,7 @@ class Region5 extends Region {
 
     private SubRegion getSubRegion(double pressure, double enthalpy) {
 
-        return pressure > 4 ? enthalpy < enthalpy2bc(pressure) ? SubRegion.C : SubRegion.B : SubRegion.A;
+        return pressure > 4 ? (enthalpy < enthalpy2bc(pressure) ? SubRegion.C : SubRegion.B) : SubRegion.A;
     }
 
     @Override
@@ -449,16 +446,15 @@ class Region5 extends Region {
     @Override
     double temperaturePH(double pressure, double enthalpy) {
 
-        double pi = pressure,
-                eta = enthalpy / 2000;
+        double eta = enthalpy / 2000;
 
         switch (getSubRegion(pressure, enthalpy)) {
             case A:
-                return thetaA(pi, eta);
+                return thetaA(pressure, eta);
             case B:
-                return thetaB(pi, eta);
+                return thetaB(pressure, eta);
             case C:
-                return thetaC(pi, eta);
+                return thetaC(pressure, eta);
         }
         return Double.NaN;
     }
@@ -466,11 +462,11 @@ class Region5 extends Region {
     /**
      * Dimensionless backward equation for region 2a.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless enthalpy
      * @return
      */
-    private static double thetaA(double pi, double eta) {
+    private double thetaA(double pi, double eta) {
 
         double out = 0;
 
@@ -483,11 +479,11 @@ class Region5 extends Region {
     /**
      * Dimensionless backward equation for region 2b.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless enthalpy
      * @return
      */
-    private static double thetaB(double pi, double eta) {
+    private double thetaB(double pi, double eta) {
 
         double out = 0;
 
@@ -500,11 +496,11 @@ class Region5 extends Region {
     /**
      * Dimensionless backward equation for region 2c.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless enthalpy
      * @return
      */
-    private static double thetaC(double pi, double eta) {
+    private double thetaC(double pi, double eta) {
 
         double out = 0;
 
@@ -533,12 +529,24 @@ class Region5 extends Region {
     }
 
     @Override
-    double vapourFractionHS(double h, double s) {
+    double temperaturePS(double p, double s) {
+
+        throw new UnsupportedOperationException("Region5.temperaturePS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    @Override
+    double vapourFractionHS(double enthalpy, double entropy) {
 
         return 1;
     }
 
-    static enum SubRegion {
+    @Override
+    double vapourFractionPS(double pressure, double entropy) {
+
+        return 1;
+    }
+
+    enum SubRegion {
 
         A, B, C;
     }

@@ -20,12 +20,8 @@
  */
 package com.hummeling.if97;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -37,44 +33,55 @@ public class Region4Test {
     static Region region = new Region4();
 
     @Test
-    public void testSaturationPressureT() throws OutOfRangeException {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+    public void testSaturationPressureT() {
+
+        double[][] X = {
             {0.353658941e-2, 300},
             {0.263889776e1, 500},
-            {0.123443146e2, 600}
-        };
+            {0.123443146e2, 600}};
+
         for (double[] x : X) {
-            assertEquals(x[0], Region4.saturationPressureT(x[1]), tol);
+            assertEquals(x[0], Region4.saturationPressureT(x[1]), 1e-7);
         }
     }
 
     @Test
-    public void testTemperatureHS() throws OutOfRangeException {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
-            {3.468475498e2, 1800, 5.3},
-            {4.251373305e2, 2400, 6},
-            {5.225579013e2, 2500, 5.5}
-        };
-        for (double[] x : X) {
-            assertEquals(x[0], region.temperatureHS(x[1], x[2]), tol);
-        }
-    }
+    public void testSaturationTemperatureP() {
 
-    @Test
-    public void testSaturationTemperatureP() throws OutOfRangeException {
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+        double[][] X = {
             {0.372755919e3, 0.1},
             {0.453035632e3, 1},
-            {0.584149488e3, 10}
-        };
+            {0.584149488e3, 10}};
+
         for (double[] x : X) {
-            assertEquals(x[0], Region4.saturationTemperatureP(x[1]), tol);
+            assertEquals(x[0], Region4.saturationTemperatureP(x[1]), 1e-6);
         }
     }
+
+    @Test
+    public void testTemperatureHS() {
+
+        double[][] X = {
+            {3.468475498e2, 1800, 5.3},
+            {4.251373305e2, 2400, 6},
+            {5.225579013e2, 2500, 5.5}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], region.temperatureHS(x[1], x[2]), 1e-7);
+        }
+    }
+
+    //@Test
+    //public void testVapourFractionPS() {
+    //
+    //    double[][] X = {
+    //        {1, 2.8},
+    //        {1, 4.8},
+    //        {10, 5.4}};
+    //
+    //    for (double[] x : X) {
+    //        assertEquals(x[0], new Region4().vapourFractionPS(x[1]), 1e-6);
+    //        System.out.format("vapourFractionPS(%.1f, %.1f): %f%n", x[0], x[1], new Region4().vapourFractionPS(x[0], x[1]));
+    //    }
+    //}
 }

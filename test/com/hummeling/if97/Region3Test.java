@@ -20,8 +20,8 @@
  */
 package com.hummeling.if97;
 
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import org.junit.Test;
 
 /**
  *
@@ -34,184 +34,170 @@ public class Region3Test {
 
     @Test
     public void testEnthalpy2bc() {
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
-            {2.095936454e3, 25}
-        };
+
+        double[][] X = {{2.095936454e3, 25}};
+
         for (double[] x : X) {
-            assertEquals(x[0], Region3.enthalpy3ab(x[1]), tol);
+            assertEquals(x[0], Region3.enthalpy3ab(x[1]), 1e-6);
         }
     }
 
     @Test
     public void testIsobaricCubicExpansionCoefficientRhoT() {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.168653107e-1, 500, 650},
             {0.685312229e-1, 200, 650},
-            {0.441515098e-2, 500, 750}
-        };
+            {0.441515098e-2, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.isobaricCubicExpansionCoefficientRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.isobaricCubicExpansionCoefficientRhoT(x[1], x[2]), 1e-7);
         }
     }
 
     @Test
     public void testIsothermalCompressibilityRhoT() {
-        double tol = 1e-9;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.345506956e-1, 500, 650},
             {0.375798565, 200, 650},
-            {0.806710817e-2, 500, 750}
-        };
+            {0.806710817e-2, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.isothermalCompressibilityRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.isothermalCompressibilityRhoT(x[1], x[2]), 1e-9);
         }
     }
 
     @Test
     public void testPressureHS() {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {2.555703246e1, 1700, 3.8},
             {4.540873468e1, 2000, 4.2},
             {6.078123340e1, 2100, 4.3},
             {6.363924887e1, 2400, 4.7},
             {3.434999263e1, 2600, 5.1},
-            {8.839043281e1, 2700, 5.0}
-        };
+            {8.839043281e1, 2700, 5.0}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.pressureHS(x[1], x[2]), tol);
+            assertEquals(x[0], region.pressureHS(x[1], x[2]), 1e-8);
         }
     }
 
     @Test
     public void testPressureRhoT() {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.255837018e2, 500, 650},
             {0.222930643e2, 200, 650},
-            {0.783095639e2, 500, 750}
-        };
+            {0.783095639e2, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.pressureRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.pressureRhoT(x[1], x[2]), 1e-7);
         }
     }
 
     @Test
     public void testSpecificEnthalpyRhoT() {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.186343019e4, 500, 650},
             {0.237512401e4, 200, 650},
-            {0.225868845e4, 500, 750}
-        };
+            {0.225868845e4, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificEnthalpyRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificEnthalpyRhoT(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
     public void testSpecificEntropyRhoT() {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.405427273e1, 500, 650},
             {0.485438792e1, 200, 650},
-            {0.446971906e1, 500, 750}
-        };
+            {0.446971906e1, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificEntropyRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificEntropyRhoT(x[1], x[2]), 1e-8);
         }
     }
 
     @Test
     public void testSpecificInternalEnergyRhoT() {
-        double tol = 1e-5;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.181226279e4, 500, 650},
             {0.226365868e4, 200, 650},
-            {0.210206932e4, 500, 750}
-        };
+            {0.210206932e4, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificInternalEnergyRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificInternalEnergyRhoT(x[1], x[2]), 1e-5);
         }
     }
 
     @Test
     public void testSpecificIsobaricHeatCapacityRhoT() {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.138935717e2, 500, 650},
             {0.446579342e2, 200, 650},
-            {0.634165359e1, 500, 750}
-        };
+            {0.634165359e1, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificIsobaricHeatCapacityRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificIsobaricHeatCapacityRhoT(x[1], x[2]), 1e-7);
         }
     }
 
     @Test
     public void testSpecificIsochoricHeatCapacityRhoT() {
-        double tol = 1e-8;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.319131787e1, 500, 650},
             {0.404118076e1, 200, 650},
-            {0.271701677e1, 500, 750}
-        };
+            {0.271701677e1, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificIsochoricHeatCapacityRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificIsochoricHeatCapacityRhoT(x[1], x[2]), 1e-8);
         }
     }
 
     @Test
     public void testSpecificVolumePH() {
-        double tol = 1e-12;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {1.749903962e-3, 20, 1700},
             {1.908139035e-3, 50, 2000},
             {1.676229776e-3, 100, 2100},
             {6.670547043e-3, 20, 2500},
             {2.801244590e-3, 50, 2400},
-            {2.404234998e-3, 100, 2700}
-        };
+            {2.404234998e-3, 100, 2700}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePH(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificVolumePH(x[1], x[2]), 1e-12);
         }
     }
 
     @Test
     public void testSpecificVolumePS() {
-        double tol = 1e-12;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {1.733791463e-3, 20, 3.8},
             {1.469680170e-3, 50, 3.6},
             {1.555893131e-3, 100, 4.0},
             {6.262101987e-3, 20, 5.0},
             {2.332634294e-3, 50, 4.5},
-            {2.449610757e-3, 100, 5.0}
-        };
+            {2.449610757e-3, 100, 5.0}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePS(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificVolumePS(x[1], x[2]), 1e-12);
         }
     }
 
     @Test
     public void testSpecificVolumePT() {
-        double tol = 1e-12;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {1.470853100e-3, 50, 630}, // a
             {1.503831359e-3, 80, 670},
             {2.204728587e-3, 50, 710}, // b
@@ -263,58 +249,55 @@ public class Region3Test {
             {2.698354719e-3, 22, 646.84}, // y
             {2.717655648e-3, 22.064, 647.05},
             {3.798732962e-3, 22, 646.89}, // z
-            {3.701940010e-3, 22.064, 647.15}
-        };
+            {3.701940010e-3, 22.064, 647.15}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePT(x[1], x[2]), tol);
+            assertEquals(x[0], region.specificVolumePT(x[1], x[2]), 1e-12);
         }
     }
 
     @Test
     public void testSpeedOfSoundRhoT() {
-        double tol = 1e-6;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {0.502005554e3, 500, 650},
             {0.383444594e3, 200, 650},
-            {0.760696041e3, 500, 750}
-        };
+            {0.760696041e3, 500, 750}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.speedOfSoundRhoT(x[1], x[2]), tol);
+            assertEquals(x[0], region.speedOfSoundRhoT(x[1], x[2]), 1e-6);
         }
     }
 
     @Test
     public void testTemperaturePH() {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {6.293083892e2, 20, 1700},
             {6.905718338e2, 50, 2000},
             {7.336163014e2, 100, 2100},
             {6.418418053e2, 20, 2500},
             {7.351848618e2, 50, 2400},
-            {8.420460876e2, 100, 2700}
-        };
+            {8.420460876e2, 100, 2700}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.temperaturePH(x[1], x[2]), tol);
+            assertEquals(x[0], region.temperaturePH(x[1], x[2]), 1e-7);
         }
     }
 
     @Test
     public void testTemperaturePS() {
-        double tol = 1e-7;
-        System.out.println(getClass().getSimpleName() + " tolerance: " + tol);
-        double[][] X = new double[][]{
+
+        double[][] X = {
             {6.282959869e2, 20, 3.8},
             {6.297158726e2, 50, 3.6},
             {7.056880237e2, 100, 4.0},
             {6.401176443e2, 20, 5.0},
             {7.163687517e2, 50, 4.5},
-            {8.474332825e2, 100, 5.0}
-        };
+            {8.474332825e2, 100, 5.0}};
+
         for (double[] x : X) {
-            assertEquals(x[0], region.temperaturePS(x[1], x[2]), tol);
+            assertEquals(x[0], region.temperaturePS(x[1], x[2]), 1e-7);
         }
     }
 }
