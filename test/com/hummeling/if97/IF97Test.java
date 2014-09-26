@@ -175,6 +175,77 @@ public class IF97Test {
     }
 
     @Test
+    public void testSpecificEnthalpyPX() {
+
+        double[][] X = {
+            {0.1, 0},
+            {1, 0.5},
+            {0.1, 1}};
+
+        for (double[] x : X) {
+            System.out.format("specificEnthalpyPX(%.2f bar, %.2f): %.2f%n", x[0] * 10, x[1], if97.specificEnthalpyPX(x[0], x[1]));
+        }
+    }
+
+    @Test
+    public void testSpecificEnthalpyTX() {
+
+        double[][] X = {
+            {373.15, 0},
+            {373.15, 0.5},
+            {373.15, 1}};
+
+        for (double[] x : X) {
+            System.out.format("specificEnthalpyTX(%.2f K, %.2f): %.2f%n", x[0], x[1], if97.specificEnthalpyTX(x[0], x[1]));
+        }
+    }
+
+    @Test
+    public void testSpecificEntropyPT() {
+
+        double[][] X = {
+            {0.392294792, 3, 300},
+            {0.368563852, 80, 300},
+            {0.258041912e1, 3, 500},
+            {0.852238967e1, 0.0035, 300},
+            {0.101749996e2, 0.0035, 700},
+            {0.517540298e1, 30, 700},
+            {0.965408875e1, 0.5, 1500},
+            {0.772970133e1, 30, 1500},
+            {0.853640523e1, 30, 2000}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.specificEntropyPT(x[1], x[2]), 1e-5);
+        }
+    }
+
+    @Test
+    public void testSpecificEntropyPX() {
+
+        double[][] X = {
+            {0.1, 0},
+            {1, 0.5},
+            {0.1, 1}};
+
+        for (double[] x : X) {
+            System.out.format("specificEntropyPX(%.2f bar, %.2f): %.2f%n", x[0] * 10, x[1], if97.specificEntropyPX(x[0], x[1]));
+        }
+    }
+
+    @Test
+    public void testSpecificEntropyTX() {
+
+        double[][] X = {
+            {373.15, 0},
+            {373.15, 0.5},
+            {373.15, 1}};
+
+        for (double[] x : X) {
+            System.out.format("specificEntropyTX(%.2f K, %.2f): %.2f%n", x[0], x[1], if97.specificEntropyTX(x[0], x[1]));
+        }
+    }
+
+    @Test
     public void testSpecificVolumePT() {
 
         double[][] X = {

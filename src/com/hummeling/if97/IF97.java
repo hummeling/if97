@@ -303,6 +303,42 @@ public class IF97 {
     }
 
     /**
+     * Density as a function of pressure & specific enthalpy.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>1/specificVolumePH(pressure, enthalpy)</code>.
+     *
+     * @param pressure pressure
+     * @param enthalpy specific enthalpy
+     * @return density
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificVolumePH(double, double)
+     */
+    public double densityPH(double pressure, double enthalpy) throws OutOfRangeException {
+
+        return 1 / specificVolumePH(pressure, enthalpy);
+    }
+
+    /**
+     * Density as a function of pressure & temperature.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>1/specificVolumePT(pressure, temperature)</code>.
+     *
+     * @param pressure pressure
+     * @param temperature temperature
+     * @return density
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificVolumePT(double, double)
+     */
+    public double densityPT(double pressure, double temperature) throws OutOfRangeException {
+
+        return 1 / specificVolumePT(pressure, temperature);
+    }
+
+    /**
      * Dielectric constant.
      *
      * @param pressure pressure
@@ -914,6 +950,130 @@ public class IF97 {
     }
 
     /**
+     * Specific enthalpy as a function of pressure & vapour fraction.
+     *
+     * @param pressure pressure
+     * @param vapourFraction vapour fraction [-]
+     * @return specific enthalpy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificEnthalpyPX(double pressure, double vapourFraction) throws OutOfRangeException {
+
+        if (vapourFraction < 0) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 0);
+
+        } else if (vapourFraction > 1) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 1);
+        }
+
+        try {
+            double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                    h = new Region4().specificEnthalpyPX(p, vapourFraction);
+
+            return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Specific enthalpy as a function of pressure for saturated liquid.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEnthalpyPX(pressure, 0)</code>.
+     *
+     * @param pressure saturation pressure
+     * @return specific enthalpy
+     * @throws OutOfRangeException
+     * @see #specificEnthalpyPX(double, double)
+     */
+    public double specificEnthalpySaturatedLiquidP(double pressure) throws OutOfRangeException {
+
+        return specificEnthalpyPX(pressure, 0);
+    }
+
+    /**
+     * Specific enthalpy as a function of temperature for saturated liquid.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEnthalpyTX(temperature, 0)</code>.
+     *
+     * @param temperature saturation temperature
+     * @return specific enthalpy
+     * @throws OutOfRangeException
+     * @see #specificEnthalpyTX(double, double)
+     */
+    public double specificEnthalpySaturatedLiquidT(double temperature) throws OutOfRangeException {
+
+        return specificEnthalpyTX(temperature, 0);
+    }
+
+    /**
+     * Specific enthalpy as a function of pressure for saturated vapour.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEnthalpyPX(pressure, 1)</code>.
+     *
+     * @param pressure saturation pressure
+     * @return specific enthalpy
+     * @throws OutOfRangeException
+     * @see #specificEnthalpyPX(double, double)
+     */
+    public double specificEnthalpySaturatedVapourP(double pressure) throws OutOfRangeException {
+
+        return specificEnthalpyPX(pressure, 1);
+    }
+
+    /**
+     * Specific enthalpy as a function of temperature for saturated vapour.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEnthalpyTX(temperature, 1)</code>.
+     *
+     * @param temperature saturation temperature
+     * @return specific enthalpy
+     * @throws OutOfRangeException
+     * @see #specificEnthalpyTX(double, double)
+     */
+    public double specificEnthalpySaturatedVapourT(double temperature) throws OutOfRangeException {
+
+        return specificEnthalpyTX(temperature, 1);
+    }
+
+    /**
+     * Specific enthalpy as a function of temperature & vapour fraction.
+     *
+     * @param temperature temperature
+     * @param vapourFraction vapour fraction [-]
+     * @return specific enthalpy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificEnthalpyTX(double temperature, double vapourFraction) throws OutOfRangeException {
+
+        if (vapourFraction < 0) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 0);
+
+        } else if (vapourFraction > 1) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 1);
+        }
+
+        try {
+            double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                    h = new Region4().specificEnthalpyTX(T, vapourFraction);
+
+            return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
      * Specific entropy as a function of pressure & specific enthalpy.
      *
      * @param pressure pressure
@@ -952,6 +1112,130 @@ public class IF97 {
         try {
             Region region = getRegionPT(p, T);
             double s = region.specificEntropyPT(p, T);
+
+            return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Specific entropy as a function of pressure & vapour fraction.
+     *
+     * @param pressure pressure
+     * @param vapourFraction vapour fraction [-]
+     * @return specific entropy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificEntropyPX(double pressure, double vapourFraction) throws OutOfRangeException {
+
+        if (vapourFraction < 0) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 0);
+
+        } else if (vapourFraction > 1) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 1);
+        }
+
+        try {
+            double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                    s = new Region4().specificEntropyPX(p, vapourFraction);
+
+            return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Specific entropy as a function of pressure for saturated liquid.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEntropyPX(pressure, 0)</code>.
+     *
+     * @param pressure saturation pressure
+     * @return specific entropy
+     * @throws OutOfRangeException
+     * @see #specificEntropyPX(double, double)
+     */
+    public double specificEntropySaturatedLiquidP(double pressure) throws OutOfRangeException {
+
+        return specificEntropyPX(pressure, 0);
+    }
+
+    /**
+     * Specific entropy as a function of temperature for saturated liquid.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEntropyTX(temperature, 0)</code>.
+     *
+     * @param temperature saturation temperature
+     * @return specific entropy
+     * @throws OutOfRangeException
+     * @see #specificEntropyTX(double, double)
+     */
+    public double specificEntropySaturatedLiquidT(double temperature) throws OutOfRangeException {
+
+        return specificEntropyTX(temperature, 0);
+    }
+
+    /**
+     * Specific entropy as a function of pressure for saturated vapour.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEntropyPX(pressure, 1)</code>.
+     *
+     * @param pressure saturation pressure
+     * @return specific entropy
+     * @throws OutOfRangeException
+     * @see #specificEntropyPX(double, double)
+     */
+    public double specificEntropySaturatedVapourP(double pressure) throws OutOfRangeException {
+
+        return specificEntropyPX(pressure, 1);
+    }
+
+    /**
+     * Specific entropy as a function of temperature for saturated vapour.
+     *
+     * <p>
+     * This is a convenience method which simply calls
+     * <code>specificEntropyTX(temperature, 1)</code>.
+     *
+     * @param temperature saturation temperature
+     * @return specific entropy
+     * @throws OutOfRangeException
+     * @see #specificEntropyTX(double, double)
+     */
+    public double specificEntropySaturatedVapourT(double temperature) throws OutOfRangeException {
+
+        return specificEntropyTX(temperature, 1);
+    }
+
+    /**
+     * Specific entropy as a function of temperature & vapour fraction.
+     *
+     * @param temperature temperature
+     * @param vapourFraction vapour fraction [-]
+     * @return specific entropy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificEntropyTX(double temperature, double vapourFraction) throws OutOfRangeException {
+
+        if (vapourFraction < 0) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 0);
+
+        } else if (vapourFraction > 1) {
+            throw new OutOfRangeException(Quantity.x, vapourFraction, 1);
+        }
+
+        try {
+            double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                    s = new Region4().specificEntropyTX(T, vapourFraction);
 
             return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
 
@@ -1276,8 +1560,8 @@ public class IF97 {
      * Vapour fraction as a function of pressure & specific entropy.
      *
      * <p>
-     * Note: whenever possible, use enthalpy to determine vapour fraction
-     * ({@link #vapourFractionHS(double, double)}) for highest accuracy.
+     * Note: for highest accuracy, use enthalpy to determine vapour fraction
+     * ({@link #vapourFractionHS(double, double)}).
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -1311,7 +1595,7 @@ public class IF97 {
      * @throws OutOfRangeException out-of-range exception
      * @see #vapourFractionHS(double, double)
      */
-    double vapourFractionTS(double temperature, double entropy) {
+    public double vapourFractionTS(double temperature, double entropy) {
 
         double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
@@ -1833,7 +2117,11 @@ public class IF97 {
         /**
          * Specific Helmholtz free energy.
          */
-        f;
+        f,
+        /**
+         * Vapour fraction.
+         */
+        x;
 
         @Override
         public String toString() {
@@ -1862,6 +2150,9 @@ public class IF97 {
 
                 case rho:
                     return "density";
+
+                case x:
+                    return "vapour fraction";
 
                 default:
                     return name().toLowerCase().replaceAll("_", " ");

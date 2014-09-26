@@ -206,16 +206,80 @@ final class Region4 extends Region {
         throw new UnsupportedOperationException("Region4.specificEnthalpyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
+    /**
+     * Specific enthalpy as a function of pressure & vapour fraction.
+     *
+     * @param p pressure [MPa]
+     * @param x vapour fraction [-]
+     * @return specific enthalpy [kJ/kg]
+     */
+    double specificEnthalpyPX(double p, double x) {
+
+        double Tsat = saturationTemperatureP(p),
+                h1 = new Region1().specificEnthalpyPT(p, Tsat),
+                h2 = new Region2().specificEnthalpyPT(p, Tsat);
+
+        return h1 + (h2 - h1) * x;
+    }
+
+    /**
+     * Specific enthalpy as a function of temperature & vapour fraction.
+     *
+     * @param T temperature [K]
+     * @param x vapour fraction [-]
+     * @return specific enthalpy [kJ/kg]
+     */
+    double specificEnthalpyTX(double T, double x) {
+
+        double pSat = saturationPressureT(T),
+                h1 = new Region1().specificEnthalpyPT(pSat, T),
+                h2 = new Region2().specificEnthalpyPT(pSat, T);
+
+        return h1 + (h2 - h1) * x;
+    }
+
     @Override
     double specificEntropyPT(double p, double T) {
 
         throw new UnsupportedOperationException("Region4.specificEntropyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
+    /**
+     * Specific entropy as a function of pressure & vapour fraction.
+     *
+     * @param p pressure [MPa]
+     * @param x vapour fraction [-]
+     * @return specific entropy [kJ/(kg K)]
+     */
+    double specificEntropyPX(double p, double x) {
+
+        double Tsat = saturationTemperatureP(p),
+                s1 = new Region1().specificEntropyPT(p, Tsat),
+                s2 = new Region2().specificEntropyPT(p, Tsat);
+
+        return s1 + (s2 - s1) * x;
+    }
+
     @Override
     double specificEntropyRhoT(double rho, double T) {
 
         throw new UnsupportedOperationException("Region4.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+    }
+
+    /**
+     * Specific entropy as a function of temperature & vapour fraction.
+     *
+     * @param T temperature [K]
+     * @param x vapour fraction [-]
+     * @return specific entropy [kJ/(kg K)]
+     */
+    double specificEntropyTX(double T, double x) {
+
+        double pSat = saturationPressureT(T),
+                s1 = new Region1().specificEntropyPT(pSat, T),
+                s2 = new Region2().specificEntropyPT(pSat, T);
+
+        return s1 + (s2 - s1) * x;
     }
 
     @Override
