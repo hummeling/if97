@@ -1621,10 +1621,12 @@ public class IF97 {
          */
         static double PrandtlPT(double p, double T) throws OutOfRangeException {
 
-            double rho = 1 / specificVolumePT(p, T),
+            Region region = getRegionPT(p, T);
+
+            double rho = 1 / region.specificVolumePT(p, T),
                     eta = dynamicViscosityRhoT(rho, T),
-                    cp = getRegionPT(p, T).specificIsobaricHeatCapacityPT(p, T),
-                    lambda = thermalConductivityPT(p, T) / 1e3;
+                    cp = region.specificIsobaricHeatCapacityPT(p, T),
+                    lambda = thermalConductivityRhoT(rho, T) / 1e3;
 
             return eta * cp / lambda;
         }
@@ -2046,6 +2048,11 @@ public class IF97 {
          */
         static double thermalConductivityPT(double p, double T) throws OutOfRangeException {
 
+            return thermalConductivityRhoT(1 / specificVolumePT(p, T), T);
+        }
+
+        static double thermalConductivityRhoT(double rho, double T) throws OutOfRangeException {
+
             /*
              * Coefficients
              */
@@ -2055,7 +2062,6 @@ public class IF97 {
 
             double theta = T / 647.26,
                     DeltaTheta = abs(theta - 1) + n2[9],
-                    rho = 1 / specificVolumePT(p, T),
                     delta = rho / 317.7,
                     Lambda0 = 0,
                     A, B = 2 + n2[7] * pow(DeltaTheta, -0.6);
