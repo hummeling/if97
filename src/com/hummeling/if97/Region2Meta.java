@@ -29,16 +29,13 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-class Region2Meta extends Region {
+class Region2Meta extends Region2 {
 
     private static final String NAME;
-    static final double Tref, pRef;
-    static final double[][] Jno, IJnr;
+    private static final double[][] Jno, IJnr;
 
     static {
         NAME = "Region 2 metastable-vapour";
-        Tref = 540;
-        pRef = 1;
         Jno = new double[][]{
             {0, -00.96937268393049e1},
             {1, 000.10087275970006e2},
@@ -336,46 +333,5 @@ class Region2Meta extends Region {
                 x = 1 + pi * gRPi - tau * pi * gammaRPiTau(pi, tau);
 
         return sqrt((1 + 2 * pi * gRPi + pi * pi * gRPi * gRPi) / (1 - pi * pi * gammaRPiPi(pi, tau) + x * x / (tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)))) * 1e3 * R * temperature);
-    }
-
-    @Override
-    double pressureHS(double h, double s) {
-
-        throw new UnsupportedOperationException("Region2Meta.pressureHS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double specificEntropyRhoT(double rho, double T) {
-
-        throw new UnsupportedOperationException("Region2Meta.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double temperatureHS(double h, double s) {
-
-        throw new UnsupportedOperationException("Region2Meta.temperatureHS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double temperaturePH(double p, double h) {
-
-        throw new UnsupportedOperationException("Region2Meta.temperaturePH() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double temperaturePS(double p, double s) {
-        throw new UnsupportedOperationException("Region2Meta.temperaturePS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
-    }
-
-    @Override
-    double vapourFractionHS(double h, double s) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionPS(double pressure, double entropy) {
-
-        return 1;
     }
 }

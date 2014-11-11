@@ -32,22 +32,42 @@ package com.hummeling.if97;
  */
 public class OutOfRangeException extends IllegalArgumentException {
 
-    private final IF97.Quantity QUANTITY;
-    private final double VALUE, LIMIT;
+    private final IF97.Quantity[] QUANTITIES;
+    private final double[] VALUES, LIMITS;
 
     OutOfRangeException(IF97.Quantity quantity, double value, double limit) {
 
-        QUANTITY = quantity;
-        VALUE = value;
-        LIMIT = limit;
+        this(new IF97.Quantity[]{quantity}, new double[]{value}, new double[]{limit});
+    }
+
+    OutOfRangeException(IF97.Quantity[] quantities, double[] values, double[] limits) {
+
+        if (quantities == null || values == null || limits == null) {
+            throw new IllegalArgumentException("Arguments shouldn't be null.");
+
+        } else if (quantities.length == 0 || values.length == 0 || limits.length == 0) {
+            throw new IllegalArgumentException("Argument arrays shouldn't be empty.");
+
+        } else if (quantities.length != values.length || values.length != limits.length) {
+            throw new IllegalArgumentException("Argument arrays should have equal lengths.");
+        }
+
+        QUANTITIES = quantities.clone();
+        VALUES = values.clone();
+        LIMITS = limits.clone();
     }
 
     OutOfRangeException convertFromDefault(IF97.UnitSystem unitSystem) {
 
-        double value = IF97.convertFromDefault(unitSystem, QUANTITY, VALUE),
-                limit = IF97.convertFromDefault(unitSystem, QUANTITY, LIMIT);
+        double[] values = new double[QUANTITIES.length],
+                limits = new double[QUANTITIES.length];
 
-        return new OutOfRangeException(QUANTITY, value, limit);
+        for (int i = 0; i < QUANTITIES.length; i++) {
+            values[i] = IF97.convertFromDefault(unitSystem, QUANTITIES[i], VALUES[i]);
+            limits[i] = IF97.convertFromDefault(unitSystem, QUANTITIES[i], LIMITS[i]);
+        }
+
+        return new OutOfRangeException(QUANTITIES, values, limits);
     }
 
     /**
@@ -56,13 +76,34 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return limit value
      */
     public double getLimit() {
-        return LIMIT;
+
+        return LIMITS[0];
     }
 
     @Override
     public String getMessage() {
-        return String.format("%s value %g should be %s than %g.",
-                QUANTITY, VALUE, VALUE > LIMIT ? "lower" : "higher", LIMIT);
+
+        String out = "";
+
+        for (int i = 0; i < QUANTITIES.length; i++) {
+            String quantity = QUANTITIES[i].toString();
+
+            switch (i) {
+                case 0:
+                    quantity = quantity.substring(0, 1).toUpperCase() + quantity.substring(1);
+
+                    out += String.format("%s value %g should be %s than %g",
+                            quantity, VALUES[i], VALUES[i] > LIMITS[i] ? "lower" : "higher", LIMITS[i]);
+                    break;
+
+                default:
+                    out += String.format(", when %s value %g is %s than %g",
+                            quantity, VALUES[i], VALUES[i] > LIMITS[i] ? "higher" : "lower", LIMITS[i]);
+            }
+        }
+        out += ".";
+
+        return out;
     }
 
     /**
@@ -71,7 +112,8 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return quantity
      */
     public String getQuantity() {
-        return QUANTITY.toString();
+
+        return QUANTITIES[0].toString();
     }
 
     /**
@@ -80,6 +122,7 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return value
      */
     public double getValue() {
-        return VALUE;
+
+        return VALUES[0];
     }
 }

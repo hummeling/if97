@@ -29,7 +29,7 @@ import static java.lang.Math.*;
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
-final class Region2 extends Region {
+class Region2 extends Region {
 
     private static final String NAME;
     static final double Tref, pRef;
@@ -292,6 +292,7 @@ final class Region2 extends Region {
 
     @Override
     String getName() {
+
         return NAME;
     }
 
@@ -904,7 +905,19 @@ final class Region2 extends Region {
     }
 
     @Override
+    double vapourFractionPH(double pressure, double enthalpy) {
+
+        return 1;
+    }
+
+    @Override
     double vapourFractionPS(double pressure, double entropy) {
+
+        return 1;
+    }
+
+    @Override
+    double vapourFractionTS(double temperature, double entropy) {
 
         return 1;
     }

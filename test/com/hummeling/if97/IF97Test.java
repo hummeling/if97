@@ -32,6 +32,46 @@ public class IF97Test {
 
     private final IF97 if97 = new IF97();
 
+    /**
+     * Bug filed by Klaus Heckmann on SourceForge forum.
+     * 
+     * First tested with new release which show consistent results.
+     */
+    @Test
+    public void bug20141015() {
+
+        double s = 2.222172673702562, // [kJ/kg-K]
+                p0 = 1.2165; // [MPa]
+
+        for (int i = 0; i < 5; i++) {
+            double p = p0 + 0.0001 * i, // [MPa]
+                    x = if97.vapourFractionPS(p, s), // [-]
+                    T = if97.temperaturePS(p, s), // [K]
+                    h = if97.specificEnthalpyPS(p, s), // [kJ/kg]
+                    vPH = if97.specificVolumePH(p, h), // [m3/kg]
+                    vPT = if97.specificVolumePT(p, T); // [m3/kg]
+            System.out.format("s=%.12f J/kg-K, p=%.1f Pa%n  if97: x=%f, v(p,h)=%.12f m\u00b3/kg, v(p,T)=%.12f m\u00b3/kg, T=%.6f K, h=%.3f J/kg%n", s * 1e3, p * 1e6, x, vPH, vPT, T, h * 1e3);
+        }
+    }
+
+    /**
+     * Bug filed by Klaus Heckmann on SourceForge forum.
+     * 
+     * Given pressure isn't the saturation pressure.
+     */
+    @Test
+    public void bug20141020() {
+
+        double p = 63.8325 / 10, // [MPa]
+                s = 3064 / 1e3; // [kJ/kg-K]
+
+        double T = if97.temperaturePS(p, s), // [K]
+                pSat = if97.saturationPressureT(T), // [MPa]
+                x = if97.vapourFractionPS(p, s), // [-]
+                Tsat = if97.saturationTemperatureP(p); // [K]
+        System.out.format("p=%f bar, s=%.1f J/kg-K%n  if97: pSat=%f bar, T=%.6f K, x=%f, Tsat=%.6f K%n", p * 10, s * 1e3, pSat * 10, T, x, Tsat);
+    }
+
     @Test
     public void testDielectricConstantPT() {
 
@@ -90,32 +130,6 @@ public class IF97Test {
     }
 
     @Test
-    public void testSaturationPressureH() {
-
-        double[][] X = {
-            {1.724175718e1, 1700},
-            {2.193442957e1, 2000},
-            {2.018090839e1, 2400}};
-
-        for (double[] x : X) {
-            assertEquals(x[0], if97.saturationPressureH(x[1]), 1e-8);
-        }
-    }
-
-    @Test
-    public void testSaturationPressureS() {
-
-        double[][] X = {
-            {1.687755057e1, 3.8},
-            {2.164451789e1, 4.2},
-            {1.668968482e1, 5.2}};
-
-        for (double[] x : X) {
-            assertEquals(x[0], if97.saturationPressureS(x[1]), 1e-8);
-        }
-    }
-
-    @Test
     public void testSaturationPressureT() {
 
         double[][] X = {
@@ -147,7 +161,7 @@ public class IF97Test {
         double[][] X = {};
         for (double[] x : X) {
             //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
-            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2], IF97.Quantity.p, IF97.Quantity.nu, IF97.Quantity.u), 1e-5);
+            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2], IF97.Quantity.p, IF97.Quantity.v, IF97.Quantity.u), 1e-5);
         }
     }
 
@@ -200,17 +214,26 @@ public class IF97Test {
         }
     }
 
+    /**
+     * Tests specific entropy as a function of pressure and temperature.
+     *
+     * Disabled region 2 and region 2 meta tests aren't actually in these
+     * regions.
+     */
     @Test
     public void testSpecificEntropyPT() {
 
         double[][] X = {
-            {0.392294792, 3, 300},
+            {0.392294792, 3, 300}, // region 1 tests
             {0.368563852, 80, 300},
             {0.258041912e1, 3, 500},
-            {0.852238967e1, 0.0035, 300},
-            {0.101749996e2, 0.0035, 700},
+            //{0.852238967e1, 0.0035, 300}, // region 2 tests
+            //{0.101749996e2, 0.0035, 700},
             {0.517540298e1, 30, 700},
-            {0.965408875e1, 0.5, 1500},
+            //{0.656660377e1, 1, 450}, // region 2 meta tests
+            //{0.650218759e1, 1, 440},
+            //{0.629170440e1, 1.5, 450},
+            {0.965408875e1, 0.5, 1500}, // region 5 tests
             {0.772970133e1, 30, 1500},
             {0.853640523e1, 30, 2000}};
 
@@ -299,19 +322,19 @@ public class IF97Test {
     public void testSpeedOfSoundPT() {
 
         double[][] X = {
-            {0.150773921e4, 3, 300}, // region 1
+            {0.150773921e4, 3, 300}, // region 1 tests
             {0.163469054e4, 80, 300},
             {0.124071337e4, 3, 500},
-            {0.427920172e3, 0.0035, 300}, // region 2
-            {0.644289068e3, 0.0035, 700},
+            //            {0.427920172e3, 0.0035, 300}, // region 2 tests
+            //            {0.644289068e3, 0.0035, 700},
             {0.480386523e3, 30, 700},
-            //{0.498408101e3, 1, 450}, // region 2 meta
+            //{0.498408101e3, 1, 450}, // region 2 meta tests
             //{0.489363295e3, 1, 440},
             //{0.481941819e3, 1.5, 450},
-            //            {0.502005554e3, 500, 650}, // region 3
+            //            {0.502005554e3, 500, 650}, // region 3 tests
             //            {0.383444594e3, 200, 650},
             //            {0.760696041e3, 500, 750},
-            {0.917068690e3, 0.5, 1500}, // region 5
+            {0.917068690e3, 0.5, 1500}, // region 5 tests
             {0.928548002e3, 30, 1500},
             {0.106736948e4, 30, 2000}};
 
@@ -397,15 +420,15 @@ public class IF97Test {
     }
 
     @Test
-    public void testThermalConductivityPT() {
+    public void testThermalConductivityRhoT() {
 
         double[][] X = {
             {0.607509806, 0.1, 298.15},
-            //meta {0.867570353e-1, 10, 873.15},
+            //{0.867570353e-1, 10, 873.15},
             {0.398506911, 40, 673.15}};
 
         for (double[] x : X) {
-            assertEquals(x[0], if97.thermalConductivityPT(x[1], x[2]), 1e-6);
+            assertEquals(x[0], if97.thermalConductivityRhoT(if97.densityPT(x[1], x[2]), x[2]), 1e-6);
         }
     }
 
