@@ -785,13 +785,28 @@ abstract class Region {
      */
     //abstract double specificIsochoricHeatCapacityRhoT(double rho, double T);
     /**
-     * Specific volume.
+     * Specific volume as a function of specific enthalpy & specific entropy.
      *
      * @param h specific enthalpy [kJ/kg]
      * @param s specific entropy [kJ/kg-K]
      * @return specific volume [m&sup3;/kg]
+     * @throws OutOfRangeException out-of-range exception
      */
-    //abstract double specificVolumeHS(double h, double s);
+    double specificVolumeHS(double h, double s) throws OutOfRangeException {
+
+        double p = pressureHS(h, s);
+
+        if (this instanceof Region4) {
+            double x = vapourFractionHS(h, s);
+
+            return Region4.specificVolumePX(p, x);
+        }
+
+        double T = temperaturePS(p, s);
+
+        return specificVolumePT(p, T);
+    }
+
     /**
      * Specific volume.
      *

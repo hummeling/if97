@@ -480,6 +480,34 @@ public class IF97 {
     }
 
     /**
+     * Dielectric constant as a function of specific enthalpy and specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return dielectric constant [-]
+     * @throws OutOfRangeException out-of-range exception
+     * @see #dielectricConstantRhoT(double, double)
+     */
+    public double dielectricConstantHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double v = region.specificVolumeHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            return Calculate.dielectricConstantRhoT(1 / v, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
      * Dielectric constant as a function of pressure and specific enthalpy.
      *
      * @param pressure pressure
@@ -580,12 +608,43 @@ public class IF97 {
     }
 
     /**
+     * Dynamic viscosity as a function of specific enthalpy & specific entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return dynamic viscosity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #dynamicViscosityRhoT(double, double)
+     */
+    public double dynamicViscosityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                eta;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double v = region.specificVolumeHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            eta = Calculate.dynamicViscosityRhoT(1 / v, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
+    }
+
+    /**
      * Dynamic viscosity as a function of pressure & specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #dynamicViscosityRhoT(double, double)
      */
     public double dynamicViscosityPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -615,6 +674,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #dynamicViscosityRhoT(double, double)
      */
     public double dynamicViscosityPS(double pressure, double entropy) throws OutOfRangeException {
 
@@ -638,12 +698,13 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity.
+     * Dynamic viscosity as a function of pressure & temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #dynamicViscosityRhoT(double, double)
      */
     public double dynamicViscosityPT(double pressure, double temperature) throws OutOfRangeException {
 
@@ -664,7 +725,7 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity.
+     * Dynamic viscosity as a function of density & temperature.
      *
      * @param density density
      * @param temperature temperature
@@ -688,12 +749,45 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient.
+     * Isobaric cubic expansion coefficient as a function of specific enthalpy &
+     * specific entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return isobaric cubic expansion coefficient
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricCubicExpansionCoefficientPT(double, double)
+     */
+    public double isobaricCubicExpansionCoefficientHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                alphaV;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            alphaV = region.isobaricCubicExpansionCoefficientPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
+    }
+
+    /**
+     * Isobaric cubic expansion coefficient as a function of pressure & specific
+     * enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
      * @return isobaric cubic expansion coefficient
      * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricCubicExpansionCoefficientPT(double, double)
      */
     public double isobaricCubicExpansionCoefficientPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -716,7 +810,38 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient.
+     * Isobaric cubic expansion coefficient as a function of pressure & specific
+     * entropy.
+     *
+     * @param pressure pressure
+     * @param entropy specific entropy
+     * @return isobaric cubic expansion coefficient
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricCubicExpansionCoefficientPT(double, double)
+     */
+    public double isobaricCubicExpansionCoefficientPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                alphaV;
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
+
+            alphaV = region.isobaricCubicExpansionCoefficientPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
+    }
+
+    /**
+     * Isobaric cubic expansion coefficient as a function of pressure &
+     * temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -740,6 +865,37 @@ public class IF97 {
     }
 
     /**
+     * Specific isobaric heat capacity as a function of specific enthalpy &
+     * specific entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return specific isobaric heat capacity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricHeatCapacityPT(double, double)
+     */
+    public double isobaricHeatCapacityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                cp;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
+    }
+
+    /**
      * Specific isobaric heat capacity as a function of pressure & specific
      * enthalpy.
      *
@@ -747,6 +903,7 @@ public class IF97 {
      * @param enthalpy specific enthalpy
      * @return specific isobaric heat capacity
      * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricHeatCapacityPT(double, double)
      */
     public double isobaricHeatCapacityPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -758,6 +915,36 @@ public class IF97 {
             Region region = getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
+
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
+    }
+
+    /**
+     * Specific isobaric heat capacity as a function of pressure & specific
+     * entropy.
+     *
+     * @param pressure pressure
+     * @param entropy specific entropy
+     * @return specific isobaric heat capacity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricHeatCapacityPT(double, double)
+     */
+    public double isobaricHeatCapacityPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                cp;
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
 
             cp = region.specificIsobaricHeatCapacityPT(p, T);
 
@@ -793,6 +980,37 @@ public class IF97 {
     }
 
     /**
+     * Specific isochoric heat capacity as a function of specific enthalpy &
+     * specific entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return specific isochoric heat capacity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isochoricHeatCapacityPT(double, double)
+     */
+    public double isochoricHeatCapacityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                cv;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            cv = region.specificIsochoricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
+    }
+
+    /**
      * Specific isochoric heat capacity as a function of pressure & specific
      * enthalpy.
      *
@@ -800,6 +1018,7 @@ public class IF97 {
      * @param enthalpy specific enthalpy
      * @return specific isochoric heat capacity
      * @throws OutOfRangeException out-of-range exception
+     * @see #isochoricHeatCapacityPT(double, double)
      */
     public double isochoricHeatCapacityPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -811,6 +1030,36 @@ public class IF97 {
             Region region = getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
+
+            cv = region.specificIsochoricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
+    }
+
+    /**
+     * Specific isochoric heat capacity as a function of pressure & specific
+     * entropy.
+     *
+     * @param pressure pressure
+     * @param entropy specific entropy
+     * @return specific isochoric heat capacity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isochoricHeatCapacityPT(double, double)
+     */
+    public double isochoricHeatCapacityPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                cv;
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
 
             cv = region.specificIsochoricHeatCapacityPT(p, T);
 
@@ -846,12 +1095,44 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity.
+     * Kinematic viscosity as a function of specific enthalpy & specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return kinematic viscosity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #kinematicViscosityRhoT(double, double)
+     */
+    public double kinematicViscosityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                nu;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double v = region.specificVolumeHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            nu = Calculate.dynamicViscosityRhoT(1 / v, T) * v;
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, nu);
+    }
+
+    /**
+     * Kinematic viscosity as a function of pressure & specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #kinematicViscosityRhoT(double, double)
      */
     public double kinematicViscosityPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -881,6 +1162,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #kinematicViscosityRhoT(double, double)
      */
     public double kinematicViscosityPS(double pressure, double entropy) throws OutOfRangeException {
 
@@ -904,12 +1186,13 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity.
+     * Kinematic viscosity as a function of pressure & temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
+     * @see #kinematicViscosityRhoT(double, double)
      */
     public double kinematicViscosityPT(double pressure, double temperature) throws OutOfRangeException {
 
@@ -930,7 +1213,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity.
+     * Kinematic viscosity as a function of density & temperature.
      *
      * @param density density
      * @param temperature temperature
@@ -1041,7 +1324,94 @@ public class IF97 {
     }
 
     /**
-     * Refractive index.
+     * Refractive index as a function of specific enthalpy, specific entropy &
+     * wave length.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @param wavelength wavelength
+     * @return refractive index [-]
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double refractiveIndexHSLambda(double enthalpy, double entropy, double wavelength) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double v = region.specificVolumeHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            return Calculate.refractiveIndexRhoTLambda(1 / v, T, lambda);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Refractive index as a function of pressure, specific enthalpy & wave
+     * length.
+     *
+     * @param pressure pressure
+     * @param enthalpy specific enthalpy
+     * @param wavelength wavelength
+     * @return refractive index [-]
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double refractiveIndexPHLambda(double pressure, double enthalpy, double wavelength) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
+
+        try {
+            Region region = getRegionPH(p, h);
+
+            double v = region.specificVolumePH(p, h),
+                    T = region.temperaturePH(p, h);
+
+            return Calculate.refractiveIndexRhoTLambda(1 / v, T, lambda);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Refractive index as a function of pressure, specific entropy & wave
+     * length.
+     *
+     * @param pressure pressure
+     * @param entropy specific entropy
+     * @param wavelength wavelength
+     * @return refractive index [-]
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double refractiveIndexPSLambda(double pressure, double entropy, double wavelength) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double v = region.specificVolumePS(p, s),
+                    T = region.temperaturePS(p, s);
+
+            return Calculate.refractiveIndexRhoTLambda(1 / v, T, lambda);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Refractive index as a function of pressure, temperature & wave length.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1066,7 +1436,7 @@ public class IF97 {
     }
 
     /**
-     * Refractive index.
+     * Refractive index as a function of density, temperature & wave length.
      *
      * @param density density
      * @param temperature temperature
@@ -1509,6 +1879,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyPT(double, double)
      */
     public double specificInternalEnergyHS(double enthalpy, double entropy) throws OutOfRangeException {
 
@@ -1538,6 +1909,7 @@ public class IF97 {
      * @param enthalpy specific enthalpy
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyPT(double, double)
      */
     public double specificInternalEnergyPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -1566,6 +1938,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyPT(double, double)
      */
     public double specificInternalEnergyPS(double pressure, double entropy) throws OutOfRangeException {
 
@@ -1626,11 +1999,7 @@ public class IF97 {
                 v;
 
         try {
-            Region region = getRegionHS(h, s);
-
-            double p = region.pressureHS(h, s);
-
-            v = region.specificVolumePS(p, s);
+            v = getRegionHS(h, s).specificVolumeHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1764,6 +2133,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
+     * @see #speedOfSoundPT(double, double)
      */
     public double speedOfSoundHS(double enthalpy, double entropy) throws OutOfRangeException {
 
@@ -1793,6 +2163,7 @@ public class IF97 {
      * @param enthalpy specific enthalpy
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
+     * @see #speedOfSoundPT(double, double)
      */
     public double speedOfSoundPH(double pressure, double enthalpy) throws OutOfRangeException {
 
@@ -1821,6 +2192,7 @@ public class IF97 {
      * @param entropy specific entropy
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
+     * @see #speedOfSoundPT(double, double)
      */
     public double speedOfSoundPS(double pressure, double entropy) throws OutOfRangeException {
 
@@ -1987,6 +2359,37 @@ public class IF97 {
     }
 
     /**
+     * Thermal conductivity as a function of specific enthalpy & specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return thermal conductivity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #thermalConductivityRhoT(double, double)
+     */
+    public double thermalConductivityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double v = region.specificVolumeHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
+    }
+
+    /**
      * Thermal conductivity as a function of pressure & specific enthalpy.
      *
      * @param pressure pressure
@@ -2017,13 +2420,71 @@ public class IF97 {
     }
 
     /**
+     * Thermal conductivity as a function of pressure & specific entropy.
+     *
+     * @param pressure pressure
+     * @param entropy specific entropy
+     * @return thermal conductivity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #thermalConductivityRhoT(double, double)
+     */
+    public double thermalConductivityPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda;
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double v = region.specificVolumePS(p, s),
+                    T = region.temperaturePS(p, s);
+
+            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
+    }
+
+    /**
+     * Thermal conductivity as a function of pressure & temperature.
+     *
+     * Note that is method is not accurate in the two-phase region.
+     *
+     * @param pressure pressure
+     * @param temperature temperature
+     * @return thermal conductivity
+     * @throws OutOfRangeException out-of-range exception
+     * @see #thermalConductivityRhoT(double, double)
+     */
+    public double thermalConductivityPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                lambda;
+
+        try {
+            double v = getRegionPT(p, T).specificVolumePT(p, T);
+
+            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
+    }
+
+    /**
      * Thermal conductivity as a function of density & temperature.
      *
      * @param density density
      * @param temperature temperature
      * @return thermal conductivity
      * @throws OutOfRangeException out-of-range exception
-     * @see #thermalConductivityPH(double, double)
      */
     public double thermalConductivityRhoT(double density, double temperature) throws OutOfRangeException {
 
