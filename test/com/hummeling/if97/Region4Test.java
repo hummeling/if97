@@ -33,6 +33,32 @@ public class Region4Test {
     static Region region = new Region4();
 
     @Test
+    public void testSaturationPressureH() {
+
+        double[][] X = {
+            {1.724175718e1, 1700},
+            {2.193442957e1, 2000},
+            {2.018090839e1, 2400}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], Region4.saturationPressureH(x[1]), 1e-8);
+        }
+    }
+
+    @Test
+    public void testSaturationPressureS() {
+
+        double[][] X = {
+            {1.687755057e1, 3.8},
+            {2.164451789e1, 4.2},
+            {1.668968482e1, 5.2}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], Region4.saturationPressureS(x[1]), 1e-8);
+        }
+    }
+
+    @Test
     public void testSaturationPressureT() {
 
         double[][] X = {
@@ -73,12 +99,10 @@ public class Region4Test {
 
     //@Test
     //public void testVapourFractionPS() {
-    //
     //    double[][] X = {
     //        {1, 2.8},
     //        {1, 4.8},
     //        {10, 5.4}};
-    //
     //    for (double[] x : X) {
     //        assertEquals(x[0], new Region4().vapourFractionPS(x[1]), 1e-6);
     //        System.out.format("vapourFractionPS(%.1f, %.1f): %f%n", x[0], x[1], new Region4().vapourFractionPS(x[0], x[1]));

@@ -386,7 +386,19 @@ final class Region1 extends Region {
     }
 
     @Override
+    double vapourFractionPH(double pressure, double enthalpy) {
+
+        return 0;
+    }
+
+    @Override
     double vapourFractionPS(double pressure, double entropy) {
+
+        return 0;
+    }
+
+    @Override
+    double vapourFractionTS(double temperature, double entropy) {
 
         return 0;
     }

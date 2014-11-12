@@ -33,13 +33,12 @@ import static java.lang.Math.*;
 final class Region3 extends Region {
 
     private static final String NAME;
-    static final double rhoRef, Tref, n1;
+    static final double rhoRef, n1;
     static final double[][] IJn;
 
     static {
         NAME = "Region 3";
         rhoRef = 322;
-        Tref = 647.096;
         n1 = 0.10658070028513e1;
         IJn = new double[][]{
             {0, 0, -0.15732845290239e2},
@@ -91,7 +90,7 @@ final class Region3 extends Region {
 
     private SubRegion getSubRegionS(double entropy) {
 
-        return entropy > 4.41202148223476 ? SubRegion.b : SubRegion.a;
+        return entropy > IF97.sc ? SubRegion.b : SubRegion.a;
     }
 
     private SubRegion getSubRegionPH(double pressure, double enthalpy) {
@@ -832,7 +831,7 @@ final class Region3 extends Region {
             theta += in[1] * pow(pi, in[0]);
         }
         double T3cd = theta,
-                T3ef = dTheta_dPi * (pi - 22.064) + 647.096;
+                T3ef = dTheta_dPi * (pi - IF97.pc) + IF97.Tc;
 
         theta = 0;
         In = new double[][]{
@@ -1290,7 +1289,19 @@ final class Region3 extends Region {
     }
 
     @Override
+    double vapourFractionPH(double pressure, double enthalpy) {
+
+        return NaN;
+    }
+
+    @Override
     double vapourFractionPS(double pressure, double entropy) {
+
+        return NaN;
+    }
+
+    @Override
+    double vapourFractionTS(double temperature, double entropy) {
 
         return NaN;
     }

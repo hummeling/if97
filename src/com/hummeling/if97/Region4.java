@@ -26,6 +26,9 @@ import static java.lang.Math.*;
 /**
  * Region 4.
  *
+ * Note that methods as a function of pressure & temperature are relayed to
+ * region 1. However, for these arguments (p, T) this region is never selected.
+ *
  * @author Ralph Hummeling (<a
  * href="http://www.hummeling.com">www.hummeling.com</a>)
  */
@@ -52,6 +55,37 @@ final class Region4 extends Region {
             00.65017534844798e3};
     }
 
+    static void checkP(double pressure) throws OutOfRangeException {
+
+        if (pressure < IF97.p0) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, IF97.p0);
+
+        } else if (pressure > IF97.pc) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, IF97.pc);
+        }
+    }
+
+    static void checkT(double temperature) throws OutOfRangeException {
+
+        if (temperature < IF97.T0) {
+            throw new OutOfRangeException(IF97.Quantity.T, temperature, IF97.T0);
+
+        } else if (temperature > IF97.Tc) {
+            throw new OutOfRangeException(IF97.Quantity.T, temperature, IF97.Tc);
+        }
+    }
+
+    static void checkX(double vapourFraction) throws OutOfRangeException {
+
+        if (vapourFraction < 0) {
+            throw new OutOfRangeException(IF97.Quantity.x, vapourFraction, 0);
+
+        } else if (vapourFraction > 1) {
+            throw new OutOfRangeException(IF97.Quantity.x, vapourFraction, 1);
+        }
+
+    }
+
     @Override
     String getName() {
 
@@ -61,19 +95,27 @@ final class Region4 extends Region {
     @Override
     double isobaricCubicExpansionCoefficientPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.isobaricCubicExpansionCoefficientPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().isobaricCubicExpansionCoefficientPT(p, T);
     }
 
     @Override
     double isothermalCompressibilityPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.isothermalCompressibilityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().isothermalCompressibilityPT(p, T);
     }
 
+    /**
+     * Saturation pressure.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return saturation pressure [MPa]
+     * @throws OutOfRangeException
+     */
     @Override
-    double pressureHS(double h, double s) {
+    double pressureHS(double enthalpy, double entropy) {
         try {
-            return saturationPressureHS(h, s);
+            return saturationPressureT(temperatureHS(enthalpy, entropy));
         } catch (OutOfRangeException ex) {
             return Double.NaN;
         }
@@ -111,25 +153,12 @@ final class Region4 extends Region {
     }
 
     /**
-     * Saturation pressure.
-     *
-     * @param enthalpy specific enthalpy
-     * @param entropy specific entropy
-     * @return saturation pressure [MPa]
-     * @throws OutOfRangeException
-     */
-    double saturationPressureHS(double enthalpy, double entropy) {
-
-        return saturationPressureT(temperatureHS(enthalpy, entropy));
-    }
-
-    /**
      * Boundary saturation pressure for the boundary between regions 3 and 4.
      *
      * @param entropy specific entropy
      * @return saturation pressure
      */
-    static double saturationPressureS(double entropy) {
+    static double saturationPressureS(double entropy) { //TODO saturationPressureS throw OutOfRangeException
 
         double sigma = entropy / 5.2, pi = 0;
         double[] x = {sigma - 1.03, sigma - 0.699};
@@ -154,20 +183,14 @@ final class Region4 extends Region {
     /**
      * Saturation pressure.
      *
+     * Out-of-range exceptions not thrown because this method is also used for
+     * finding regions.
+     *
      * @param saturationTemperature saturation temperature [K]
      * @return saturation pressure [MPa]
-     * @throws OutOfRangeException
      */
     static double saturationPressureT(double saturationTemperature) {
 
-        double[] Tlimits = {273.15, 647.096};
-
-        if (saturationTemperature < Tlimits[0]) {
-            throw new OutOfRangeException(IF97.Quantity.T, saturationTemperature, Tlimits[0]);
-
-        } else if (saturationTemperature > Tlimits[1]) {
-            throw new OutOfRangeException(IF97.Quantity.T, saturationTemperature, Tlimits[1]);
-        }
         double Ts_Tref = saturationTemperature / Tref,
                 theta = Ts_Tref + n[8] / (Ts_Tref - n[9]),
                 theta2 = theta * theta,
@@ -181,8 +204,8 @@ final class Region4 extends Region {
     /**
      * Saturation temperature.
      *
-     * Out-of-range exceptions not thrown here because this method is also used
-     * for finding regions.
+     * Out-of-range exceptions not thrown because this method is also used for
+     * finding regions.
      *
      * @param saturationPressure saturation pressure [MPa]
      * @return saturation temperature [K]
@@ -203,7 +226,7 @@ final class Region4 extends Region {
     @Override
     double specificEnthalpyPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificEnthalpyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().specificEnthalpyPT(p, T);
     }
 
     /**
@@ -212,8 +235,12 @@ final class Region4 extends Region {
      * @param p pressure [MPa]
      * @param x vapour fraction [-]
      * @return specific enthalpy [kJ/kg]
+     * @throws OutOfRangeException out-of-range exception
      */
-    double specificEnthalpyPX(double p, double x) {
+    static double specificEnthalpyPX(double p, double x) throws OutOfRangeException {
+
+        checkP(p);
+        checkX(x);
 
         double Tsat = saturationTemperatureP(p),
                 h1 = new Region1().specificEnthalpyPT(p, Tsat),
@@ -228,8 +255,12 @@ final class Region4 extends Region {
      * @param T temperature [K]
      * @param x vapour fraction [-]
      * @return specific enthalpy [kJ/kg]
+     * @throws OutOfRangeException out-of-range exception
      */
-    double specificEnthalpyTX(double T, double x) {
+    static double specificEnthalpyTX(double T, double x) throws OutOfRangeException {
+
+        checkT(T);
+        checkX(x);
 
         double pSat = saturationPressureT(T),
                 h1 = new Region1().specificEnthalpyPT(pSat, T),
@@ -238,10 +269,23 @@ final class Region4 extends Region {
         return h1 + (h2 - h1) * x;
     }
 
+    /**
+     * Specific entropy as a function of pressure & specific enthalpy.
+     *
+     * @param p pressure [MPa]
+     * @param h specific enthalpy [kJ/kg]
+     * @return specific entropy [kJ/(kg K)]
+     * @throws OutOfRangeException out-of-range exception
+     */
+    static double specificEntropyPH(double p, double h) throws OutOfRangeException {
+
+        return specificEntropyPX(p, new Region4().vapourFractionPH(p, h));
+    }
+
     @Override
     double specificEntropyPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificEntropyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return Double.NaN;
     }
 
     /**
@@ -250,8 +294,12 @@ final class Region4 extends Region {
      * @param p pressure [MPa]
      * @param x vapour fraction [-]
      * @return specific entropy [kJ/(kg K)]
+     * @throws OutOfRangeException out-of-range exception
      */
-    double specificEntropyPX(double p, double x) {
+    static double specificEntropyPX(double p, double x) throws OutOfRangeException {
+
+        checkP(p);
+        checkX(x);
 
         double Tsat = saturationTemperatureP(p),
                 s1 = new Region1().specificEntropyPT(p, Tsat),
@@ -273,7 +321,10 @@ final class Region4 extends Region {
      * @param x vapour fraction [-]
      * @return specific entropy [kJ/(kg K)]
      */
-    double specificEntropyTX(double T, double x) {
+    static double specificEntropyTX(double T, double x) throws OutOfRangeException {
+
+        checkT(T);
+        checkX(x);
 
         double pSat = saturationPressureT(T),
                 s1 = new Region1().specificEntropyPT(pSat, T),
@@ -285,31 +336,71 @@ final class Region4 extends Region {
     @Override
     double specificInternalEnergyPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificInternalEnergyPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().specificInternalEnergyPT(p, T);
     }
 
     @Override
     double specificIsobaricHeatCapacityPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificIsobaricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().specificIsobaricHeatCapacityPT(p, T);
     }
 
     @Override
     double specificIsochoricHeatCapacityPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificIsochoricHeatCapacityPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().specificIsochoricHeatCapacityPT(p, T);
     }
 
     @Override
     double specificVolumePT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.specificVolumePT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().specificVolumePT(p, T);
+    }
+
+    static double specificVolumePX(double p, double x) throws OutOfRangeException {//TODO Check specificVolumePX
+
+        checkP(p);
+        checkX(x);
+
+        double Tsat = saturationTemperatureP(p),
+                v1 = new Region1().specificVolumePT(p, Tsat),
+                v2 = new Region2().specificVolumePT(p, Tsat);
+
+        return v1 + (v2 - v1) * x;
+    }
+
+    static double specificVolumeTX(double T, double x) throws OutOfRangeException {//TODO Check specificVolumeTX
+
+        checkT(T);
+        checkX(x);
+
+        double pSat = saturationPressureT(T),
+                v1 = new Region1().specificVolumePT(pSat, T),
+                v2 = new Region2().specificVolumePT(pSat, T);
+
+        return v1 + (v2 - v1) * x;
     }
 
     @Override
     double speedOfSoundPT(double p, double T) {
 
-        throw new UnsupportedOperationException("Region4.speedOfSoundPT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
+        return new Region1().speedOfSoundPT(p, T);
+    }
+
+    /**
+     * Surface tension as a function of temperature.
+     *
+     * @param T temperature [K]
+     * @return surface tension [N/m]
+     * @throws OutOfRangeException out-of-range exception
+     */
+    static double surfaceTensionT(double T) throws OutOfRangeException {
+
+        checkT(T);
+
+        double theta = T / IF97.Tc;
+
+        return 235.8 * pow(1 - theta, 1.256) * (1 - 0.625 * (1 - theta)) * 1e-3;
     }
 
     /**
@@ -393,15 +484,26 @@ final class Region4 extends Region {
     @Override
     double vapourFractionHS(double enthalpy, double entropy) {
 
-        double Tsat = temperatureHS(enthalpy, entropy), pSat;
-
-        try {
-            pSat = saturationPressureT(Tsat);
-        } catch (OutOfRangeException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-        double h1 = new Region1().specificEnthalpyPT(pSat, Tsat),
+        double Tsat = temperatureHS(enthalpy, entropy),
+                pSat = saturationPressureT(Tsat),
+                h1 = new Region1().specificEnthalpyPT(pSat, Tsat),
                 h2 = new Region2().specificEnthalpyPT(pSat, Tsat);
+
+        return min(1, (enthalpy - h1) / (h2 - h1));
+    }
+
+    @Override
+    double vapourFractionPH(double pressure, double enthalpy) throws OutOfRangeException {
+
+        checkP(pressure);
+
+        if (pressure < saturationPressureT(IF97.T0)) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, saturationPressureT(IF97.T0));
+        }
+
+        double Tsat = saturationTemperatureP(pressure),
+                h1 = new Region1().specificEnthalpyPT(pressure, Tsat),
+                h2 = new Region2().specificEnthalpyPT(pressure, Tsat);
 
         return min(1, (enthalpy - h1) / (h2 - h1));
     }
@@ -409,9 +511,23 @@ final class Region4 extends Region {
     @Override
     double vapourFractionPS(double pressure, double entropy) {
 
+        checkP(pressure);
+
         double Tsat = saturationTemperatureP(pressure),
                 s1 = new Region1().specificEntropyPT(pressure, Tsat),
                 s2 = new Region2().specificEntropyPT(pressure, Tsat);
+
+        return min(1, (entropy - s1) / (s2 - s1));
+    }
+
+    @Override
+    double vapourFractionTS(double temperature, double entropy) throws OutOfRangeException {
+
+        checkT(temperature);
+
+        double pSat = Region4.saturationPressureT(temperature),
+                s1 = new Region1().specificEntropyPT(pSat, temperature),
+                s2 = new Region2().specificEntropyPT(pSat, temperature);
 
         return min(1, (entropy - s1) / (s2 - s1));
     }
