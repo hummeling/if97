@@ -34,7 +34,7 @@ public class IF97Test {
 
     /**
      * Bug filed by Klaus Heckmann on SourceForge forum.
-     * 
+     *
      * First tested with new release which show consistent results.
      */
     @Test
@@ -56,7 +56,7 @@ public class IF97Test {
 
     /**
      * Bug filed by Klaus Heckmann on SourceForge forum.
-     * 
+     *
      * Given pressure isn't the saturation pressure.
      */
     @Test
@@ -70,6 +70,24 @@ public class IF97Test {
                 x = if97.vapourFractionPS(p, s), // [-]
                 Tsat = if97.saturationTemperatureP(p); // [K]
         System.out.format("p=%f bar, s=%.1f J/kg-K%n  if97: pSat=%f bar, T=%.6f K, x=%f, Tsat=%.6f K%n", p * 10, s * 1e3, pSat * 10, T, x, Tsat);
+    }
+
+    /**
+     * Bug filed by Philippe Mack.
+     *
+     * Returned enthalpy not as expected (Region2 value).
+     */
+    @Test
+    public void bug20150113() {
+        System.out.print("bug20150113: ");
+
+        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
+
+        double p = 86.643, // [bar(a)]
+                T = 480; // [Celsius]
+        System.out.format("p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
+        System.out.format("Region2:     p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2().specificEnthalpyPT(p / 10, T + IF97.T0));
+        System.out.format("Region2Meta: p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2Meta().specificEnthalpyPT(p / 10, T + IF97.T0));
     }
 
     @Test
@@ -172,10 +190,10 @@ public class IF97Test {
             {0.115331273e3, 3, 300}, // region 1
             {0.184142828e3, 80, 300},
             {0.975542239e3, 3, 500},
-            //meta {0.254991145e4, 0.0035, 300}, // region 2
-            //meta {0.333568375e4, 0.0035, 700},
-            {0.263149474e4, 30, 700},
-            //{0.276881115e4, 1, 450}, // region 2 metastable-vapour
+            {0.254991145e4, 0.0035, 300}, // region 2 ==> actually metastable region
+            {0.333568375e4, 0.0035, 700}, // region 2 ==> actually metastable region
+            {0.263149474e4, 30, 700}, // region 2
+            //{0.276881115e4, 1, 450}, // region 2 metastable-vapour ==> actually region 1
             //{0.274015123e4, 1, 440},
             //{0.272134539e4, 1.5, 450},
             {0.521976855e4, 0.5, 1500}, // region 5
