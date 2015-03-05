@@ -214,8 +214,8 @@ public class IF97 {
     }
 
     /**
-     * Isothermal compressibility as a function of specific enthalpy & specific
-     * entropy.
+     * Isothermal compressibility as a function of specific enthalpy &amp;
+     * specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -244,7 +244,8 @@ public class IF97 {
     }
 
     /**
-     * Isothermal compressibility as a function of pressure & specific enthalpy.
+     * Isothermal compressibility as a function of pressure &amp; specific
+     * enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -272,7 +273,8 @@ public class IF97 {
     }
 
     /**
-     * Isothermal compressibility as a function of pressure & specific entropy.
+     * Isothermal compressibility as a function of pressure &amp; specific
+     * entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -300,7 +302,7 @@ public class IF97 {
     }
 
     /**
-     * Isothermal compressibility as a function of pressure & temperature.
+     * Isothermal compressibility as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -372,7 +374,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of specific enthalpy & specific entropy.
+     * Density as a function of specific enthalpy &amp; specific entropy.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -390,7 +392,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of pressure & specific enthalpy.
+     * Density as a function of pressure &amp; specific enthalpy.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -408,7 +410,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of pressure & specific entropy.
+     * Density as a function of pressure &amp; specific entropy.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -426,7 +428,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of pressure & temperature.
+     * Density as a function of pressure &amp; temperature.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -444,7 +446,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of pressure & vapour fraction.
+     * Density as a function of pressure &amp; vapour fraction.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -462,7 +464,7 @@ public class IF97 {
     }
 
     /**
-     * Density as a function of temperature & vapour fraction.
+     * Density as a function of temperature &amp; vapour fraction.
      *
      * <p>
      * This is a convenience method which simply calls
@@ -608,7 +610,8 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity as a function of specific enthalpy & specific entropy.
+     * Dynamic viscosity as a function of specific enthalpy &amp; specific
+     * entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -638,7 +641,7 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity as a function of pressure & specific enthalpy.
+     * Dynamic viscosity as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -668,7 +671,7 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity as a function of pressure & specific entropy.
+     * Dynamic viscosity as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -698,7 +701,7 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity as a function of pressure & temperature.
+     * Dynamic viscosity as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -725,7 +728,7 @@ public class IF97 {
     }
 
     /**
-     * Dynamic viscosity as a function of density & temperature.
+     * Dynamic viscosity as a function of density &amp; temperature.
      *
      * @param density density
      * @param temperature temperature
@@ -749,8 +752,8 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient as a function of specific enthalpy &
-     * specific entropy.
+     * Isobaric cubic expansion coefficient as a function of specific enthalpy
+     * &amp; specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -780,8 +783,8 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient as a function of pressure & specific
-     * enthalpy.
+     * Isobaric cubic expansion coefficient as a function of pressure &amp;
+     * specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -810,8 +813,8 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient as a function of pressure & specific
-     * entropy.
+     * Isobaric cubic expansion coefficient as a function of pressure &amp;
+     * specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -840,7 +843,7 @@ public class IF97 {
     }
 
     /**
-     * Isobaric cubic expansion coefficient as a function of pressure &
+     * Isobaric cubic expansion coefficient as a function of pressure &amp;
      * temperature.
      *
      * @param pressure pressure
@@ -865,7 +868,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isobaric heat capacity as a function of specific enthalpy &
+     * Specific isobaric heat capacity as a function of specific enthalpy &amp;
      * specific entropy.
      *
      * @param enthalpy specific enthalpy
@@ -896,7 +899,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isobaric heat capacity as a function of pressure & specific
+     * Specific isobaric heat capacity as a function of pressure &amp; specific
      * enthalpy.
      *
      * @param pressure pressure
@@ -926,7 +929,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isobaric heat capacity as a function of pressure & specific
+     * Specific isobaric heat capacity as a function of pressure &amp; specific
      * entropy.
      *
      * @param pressure pressure
@@ -956,7 +959,8 @@ public class IF97 {
     }
 
     /**
-     * Specific isobaric heat capacity as a function of pressure & temperature.
+     * Specific isobaric heat capacity as a function of pressure &amp;
+     * temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -980,7 +984,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isochoric heat capacity as a function of specific enthalpy &
+     * Specific isochoric heat capacity as a function of specific enthalpy &amp;
      * specific entropy.
      *
      * @param enthalpy specific enthalpy
@@ -1011,7 +1015,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isochoric heat capacity as a function of pressure & specific
+     * Specific isochoric heat capacity as a function of pressure &amp; specific
      * enthalpy.
      *
      * @param pressure pressure
@@ -1041,7 +1045,7 @@ public class IF97 {
     }
 
     /**
-     * Specific isochoric heat capacity as a function of pressure & specific
+     * Specific isochoric heat capacity as a function of pressure &amp; specific
      * entropy.
      *
      * @param pressure pressure
@@ -1071,7 +1075,8 @@ public class IF97 {
     }
 
     /**
-     * Specific isochoric heat capacity as a function of pressure & temperature.
+     * Specific isochoric heat capacity as a function of pressure &amp;
+     * temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1095,7 +1100,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity as a function of specific enthalpy & specific
+     * Kinematic viscosity as a function of specific enthalpy &amp; specific
      * entropy.
      *
      * @param enthalpy specific enthalpy
@@ -1126,7 +1131,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity as a function of pressure & specific enthalpy.
+     * Kinematic viscosity as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -1156,7 +1161,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity as a function of pressure & specific entropy.
+     * Kinematic viscosity as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -1186,7 +1191,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity as a function of pressure & temperature.
+     * Kinematic viscosity as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1213,7 +1218,7 @@ public class IF97 {
     }
 
     /**
-     * Kinematic viscosity as a function of density & temperature.
+     * Kinematic viscosity as a function of density &amp; temperature.
      *
      * @param density density
      * @param temperature temperature
@@ -1300,7 +1305,7 @@ public class IF97 {
     }
 
     /**
-     * Pressure as a function of specific enthalpy & specific entropy.
+     * Pressure as a function of specific enthalpy &amp; specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -1324,8 +1329,8 @@ public class IF97 {
     }
 
     /**
-     * Refractive index as a function of specific enthalpy, specific entropy &
-     * wave length.
+     * Refractive index as a function of specific enthalpy, specific entropy
+     * &amp; wave length.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -1353,7 +1358,7 @@ public class IF97 {
     }
 
     /**
-     * Refractive index as a function of pressure, specific enthalpy & wave
+     * Refractive index as a function of pressure, specific enthalpy &amp; wave
      * length.
      *
      * @param pressure pressure
@@ -1382,7 +1387,7 @@ public class IF97 {
     }
 
     /**
-     * Refractive index as a function of pressure, specific entropy & wave
+     * Refractive index as a function of pressure, specific entropy &amp; wave
      * length.
      *
      * @param pressure pressure
@@ -1411,7 +1416,8 @@ public class IF97 {
     }
 
     /**
-     * Refractive index as a function of pressure, temperature & wave length.
+     * Refractive index as a function of pressure, temperature &amp; wave
+     * length.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1436,7 +1442,7 @@ public class IF97 {
     }
 
     /**
-     * Refractive index as a function of density, temperature & wave length.
+     * Refractive index as a function of density, temperature &amp; wave length.
      *
      * @param density density
      * @param temperature temperature
@@ -1539,7 +1545,7 @@ public class IF97 {
     }
 
     /**
-     * Specific enthalpy as a function of pressure & specific entropy.
+     * Specific enthalpy as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -1563,7 +1569,7 @@ public class IF97 {
     }
 
     /**
-     * Specific enthalpy as a function of pressure & temperature.
+     * Specific enthalpy as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1587,7 +1593,7 @@ public class IF97 {
     }
 
     /**
-     * Specific enthalpy as a function of pressure & vapour fraction.
+     * Specific enthalpy as a function of pressure &amp; vapour fraction.
      *
      * @param pressure pressure
      * @param vapourFraction vapour fraction [-]
@@ -1678,7 +1684,7 @@ public class IF97 {
     }
 
     /**
-     * Specific enthalpy as a function of temperature & vapour fraction.
+     * Specific enthalpy as a function of temperature &amp; vapour fraction.
      *
      * @param temperature temperature
      * @param vapourFraction vapour fraction [-]
@@ -1701,7 +1707,7 @@ public class IF97 {
     }
 
     /**
-     * Specific entropy as a function of pressure & specific enthalpy.
+     * Specific entropy as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -1734,7 +1740,7 @@ public class IF97 {
     }
 
     /**
-     * Specific entropy as a function of pressure & temperature.
+     * Specific entropy as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1758,7 +1764,7 @@ public class IF97 {
     }
 
     /**
-     * Specific entropy as a function of pressure & vapour fraction.
+     * Specific entropy as a function of pressure &amp; vapour fraction.
      *
      * @param pressure pressure
      * @param vapourFraction vapour fraction [-]
@@ -1849,7 +1855,7 @@ public class IF97 {
     }
 
     /**
-     * Specific entropy as a function of temperature & vapour fraction.
+     * Specific entropy as a function of temperature &amp; vapour fraction.
      *
      * @param temperature temperature
      * @param vapourFraction vapour fraction [-]
@@ -1872,8 +1878,8 @@ public class IF97 {
     }
 
     /**
-     * Specific internal energy as a function of specific enthalpy & specific
-     * entropy.
+     * Specific internal energy as a function of specific enthalpy &amp;
+     * specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -1903,7 +1909,8 @@ public class IF97 {
     }
 
     /**
-     * Specific internal energy as a function of pressure & specific enthalpy.
+     * Specific internal energy as a function of pressure &amp; specific
+     * enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -1932,7 +1939,8 @@ public class IF97 {
     }
 
     /**
-     * Specific internal energy as a function of pressure & specific entropy.
+     * Specific internal energy as a function of pressure &amp; specific
+     * entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -1961,7 +1969,7 @@ public class IF97 {
     }
 
     /**
-     * Specific internal energy as a function of pressure & temperature.
+     * Specific internal energy as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -1985,7 +1993,8 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of specific enthalpy & specific entropy.
+     * Specific volume as a function of specific enthalpy &amp; specific
+     * entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -2009,7 +2018,7 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of pressure & specific enthalpy.
+     * Specific volume as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -2033,7 +2042,7 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of pressure & specific entropy.
+     * Specific volume as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -2057,7 +2066,7 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of pressure & temperature.
+     * Specific volume as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -2081,7 +2090,7 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of pressure & vapour fraction.
+     * Specific volume as a function of pressure &amp; vapour fraction.
      *
      * @param pressure pressure
      * @param vapourFraction vapour fraction [-]
@@ -2104,7 +2113,7 @@ public class IF97 {
     }
 
     /**
-     * Specific volume as a function of temperature & vapour fraction.
+     * Specific volume as a function of temperature &amp; vapour fraction.
      *
      * @param temperature temperature
      * @param vapourFraction vapour fraction [-]
@@ -2127,7 +2136,7 @@ public class IF97 {
     }
 
     /**
-     * Speed of sound as a function of specific enthalpy & specific entropy.
+     * Speed of sound as a function of specific enthalpy &amp; specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -2157,7 +2166,7 @@ public class IF97 {
     }
 
     /**
-     * Speed of sound as a function of pressure & specific enthalpy.
+     * Speed of sound as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -2186,7 +2195,7 @@ public class IF97 {
     }
 
     /**
-     * Speed of sound as a function of pressure & specific entropy.
+     * Speed of sound as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -2215,7 +2224,7 @@ public class IF97 {
     }
 
     /**
-     * Speed of sound as a function of pressure & temperature.
+     * Speed of sound as a function of pressure &amp; temperature.
      *
      * @param pressure pressure
      * @param temperature temperature
@@ -2359,7 +2368,7 @@ public class IF97 {
     }
 
     /**
-     * Thermal conductivity as a function of specific enthalpy & specific
+     * Thermal conductivity as a function of specific enthalpy &amp; specific
      * entropy.
      *
      * @param enthalpy specific enthalpy
@@ -2390,7 +2399,7 @@ public class IF97 {
     }
 
     /**
-     * Thermal conductivity as a function of pressure & specific enthalpy.
+     * Thermal conductivity as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure pressure
      * @param enthalpy specific enthalpy
@@ -2420,7 +2429,7 @@ public class IF97 {
     }
 
     /**
-     * Thermal conductivity as a function of pressure & specific entropy.
+     * Thermal conductivity as a function of pressure &amp; specific entropy.
      *
      * @param pressure pressure
      * @param entropy specific entropy
@@ -2450,7 +2459,7 @@ public class IF97 {
     }
 
     /**
-     * Thermal conductivity as a function of pressure & temperature.
+     * Thermal conductivity as a function of pressure &amp; temperature.
      *
      * Note that is method is not accurate in the two-phase region.
      *
@@ -2479,7 +2488,7 @@ public class IF97 {
     }
 
     /**
-     * Thermal conductivity as a function of density & temperature.
+     * Thermal conductivity as a function of density &amp; temperature.
      *
      * @param density density
      * @param temperature temperature
@@ -2503,7 +2512,8 @@ public class IF97 {
     }
 
     /**
-     * Vapour fraction as a function of specific enthalpy & specific entropy.
+     * Vapour fraction as a function of specific enthalpy &amp; specific
+     * entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -2524,7 +2534,7 @@ public class IF97 {
     }
 
     /**
-     * Vapour fraction as a function of pressure & specific enthalpy.
+     * Vapour fraction as a function of pressure &amp; specific enthalpy.
      *
      * <p>
      * Note: for highest accuracy, use enthalpy and entropy to determine vapour
@@ -2550,7 +2560,7 @@ public class IF97 {
     }
 
     /**
-     * Vapour fraction as a function of pressure & specific entropy.
+     * Vapour fraction as a function of pressure &amp; specific entropy.
      *
      * <p>
      * Note: for highest accuracy, use enthalpy and entropy to determine vapour
@@ -2576,7 +2586,7 @@ public class IF97 {
     }
 
     /**
-     * Vapour fraction as a function of temperature & specific entropy.
+     * Vapour fraction as a function of temperature &amp; specific entropy.
      *
      * <p>
      * Note: whenever possible, use enthalpy to determine vapour fraction
@@ -3096,9 +3106,9 @@ public class IF97 {
     }
 
     /**
-     * Unit systems.
-     *
-     * <table border="1"> <tr>
+     * <table border="1">
+     * <caption>Unit systems.</caption>
+     * <tr>
      * <th></th><th></th><th>Default</th><th>Engineering</th><th>SI</th><th>Imperial</th>
      * </tr>
      * <tr>
