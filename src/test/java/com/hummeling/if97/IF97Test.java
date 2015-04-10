@@ -90,6 +90,27 @@ public class IF97Test {
         System.out.format("Region2Meta: p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2Meta().specificEnthalpyPT(p / 10, T + IF97.T0));
     }
 
+    /**
+     * Bug filed by Philippe Mack.
+     *
+     * Returned enthalpy not as expected using Imperial units.
+     */
+    @Test
+    public void bug20150410() {
+        System.out.print("bug20150410: ");
+
+        if97.setUnitSystem(IF97.UnitSystem.IMPERIAL);
+
+        double p = 720, // [psia]
+                T = 704; // [Fahrenheit]
+        System.out.format("p=%f psi(a), T=%f\u00b0F: h=%f BTU/lb%n", p, T, if97.specificEnthalpyPT(p, T));
+
+        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
+        p = 49.6422525; // [bara]
+        T = 373.333333; // [Celsius]
+        System.out.format("p=%f bar(a), T=%f\u00b0C: h=%f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
+    }
+
     @Test
     public void testDielectricConstantPT() {
 

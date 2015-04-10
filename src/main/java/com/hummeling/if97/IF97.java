@@ -84,21 +84,31 @@ public class IF97 {
      * Critical density [kg/m3].
      */
     public static final double rhoc = 322;
-    static final double BTU, ft, ft2, ft3, g, hr, in, in2, lb, lbf, psi, Ra;
+    /**
+     * British thermal unit acc. International standard ISO 31-4 on Quantities
+     * and units—Part 4: Heat, Appendix A [kJ]
+     */
+    public static final double BTU = 1.055056;
+    /**
+     * Gravitational accelleration [m/s^2]
+     */
+    public static final double g = 9.80665;
+    /**
+     * International avoirdupois pound-mass [kg]
+     */
+    public static final double lb = 0.45359237;
+    private static final double ft, ft2, ft3, hr, in, in2, lbf, psi, Ra;
 // </editor-fold>
 
     static {
-        BTU = 1.055056; // British thermal unit acc. International standard ISO 31-4 on Quantities and units—Part 4: Heat, Appendix A [kJ]
         ft = 0.3048; // foot [m]
         ft2 = ft * ft; // square foot [m^2]
         ft3 = ft * ft2; // cubic foot [m^3]
-        g = 9.80665; // gravitational accelleration [m/s^2]
         hr = 3600; // hour [s]
         in = ft / 12; // inch [m]
         in2 = in * in; // square inch [m^2]
-        lb = 0.45359237; // pound [kg]
         lbf = lb * g;
-        psi = 1e-6 * lb / in2; // pounds per square inch [MPa]
+        psi = 1e-6 * lbf / in2; // pounds per square inch [MPa]
         Ra = 5.0 / 9.0; // Rankine [K]
     }
 
