@@ -507,11 +507,6 @@ class Region2 extends Region {
         return (-tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)) - x * x / (1 - pi * pi * gammaRPiPi(pi, tau))) * R;
     }
 
-    double specificVolumePH(double pressure, double enthalpy) {
-
-        return Double.NaN;
-    }
-
     @Override
     double specificVolumePT(double pressure, double temperature) {
 

@@ -111,6 +111,29 @@ public class IF97Test {
         System.out.format("p=%f bar(a), T=%f\u00b0C: h=%f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
     }
 
+    /**
+     * Bug filed by Philippe Mack.
+     *
+     * We have a critical issue with your library (latest version) when we
+     * compute steam enthalpy for a steam turbine.
+     *
+     * Verified correct.
+     */
+    @Test
+    public void bug20150611() {
+        System.out.println("bug20150611: ");
+
+        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
+
+        double p = 51, // [bar(a)
+                T = 446; // [Celsius]
+        System.out.format("  p=%6.2f bar(a), T=%6.2f\u00b0C: h=%8.3f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
+
+        p = 0.07; // [bara]
+        T = 39; // [Celsius]
+        System.out.format("  p=%6.2f bar(a), T=%6.2f\u00b0C: h=%8.3f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
+    }
+
     @Test
     public void testDielectricConstantPT() {
 
@@ -308,9 +331,43 @@ public class IF97Test {
     }
 
     @Test
+    public void testSpecificVolumePH() {
+
+        double[][] X = {
+            {1.749903962e-3, 20, 1700}, // region 3
+            {1.908139035e-3, 50, 2000},
+            {1.676229776e-3, 100, 2100},
+            {6.670547043e-3, 20, 2500},
+            {2.801244590e-3, 50, 2400},
+            {2.404234998e-3, 100, 2700}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.specificVolumePH(x[1], x[2]), 1e-12);
+        }
+    }
+
+    @Test
     public void testSpecificVolumePT() {
 
         double[][] X = {
+            {0.100215168e-2, 3, 300}, // region 1
+            {0.971180894e-3, 80, 300},
+            {0.120241800e-2, 3, 500}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), 1e-11);
+        }
+
+        X = new double[][]{
+            {0.394913866e2, 0.0035, 300}, // region 2
+            {0.923015898e2, 0.0035, 700},
+            {0.542946619e-2, 30, 700}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), 1e-4);
+        }
+
+        X = new double[][]{
             {1.470853100e-3, 50, 630}, // region 3a
             {1.503831359e-3, 80, 670},
             {2.204728587e-3, 50, 710}, // region 3b
@@ -354,6 +411,15 @@ public class IF97Test {
 
         for (double[] x : X) {
             assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), 1e-12);
+        }
+
+        X = new double[][]{
+            {0.138455090e1, 0.5, 1500}, // region 5
+            {0.230761299e-1, 30, 1500},
+            {0.311385219e-1, 30, 2000}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.specificVolumePT(x[1], x[2]), 1e-8);
         }
     }
 

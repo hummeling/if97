@@ -678,12 +678,14 @@ final class Region3 extends Region {
         return -tau * tau * phiTauTau(density / rhoc, tau) * R;
     }
 
+    @Override
     double specificVolumeHS(double enthalpy, double entropy) {
 
         return specificVolumePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
-    double specificVolumePH(double pressure, double enthalpy) {
+    @Override
+    double specificVolumePH(double pressure, double enthalpy) { //TODO Explain why specificVolumePT() is called instead.
 
         double pi = pressure / 100;
 
@@ -699,6 +701,7 @@ final class Region3 extends Region {
         }
     }
 
+    @Override
     double specificVolumePS(double pressure, double entropy) {
 
         double omega = 0;
@@ -787,20 +790,12 @@ final class Region3 extends Region {
         double dTheta_dPi = 3.727888004,
                 omega = 0,
                 pi = p,
-                pSat623,
-                pSat643,
                 p3cd = 19.00881189,
                 theta,
                 logPi = log(pi),
-                Tsat;
-        try {
-            pSat623 = Region4.saturationPressureT(623.15);
-            pSat643 = Region4.saturationPressureT(643.15);
-            Tsat = Region4.saturationTemperatureP(p);
-
-        } catch (OutOfRangeException ex) {
-            throw new IllegalArgumentException(ex);
-        }
+                pSat623 = Region4.saturationPressureT(623.15),
+                pSat643 = Region4.saturationPressureT(643.15),
+                Tsat = Region4.saturationTemperatureP(p);
 
         double[][] In;
 
@@ -950,7 +945,7 @@ final class Region3 extends Region {
         /*
          Subregions
          */
-        SubRegion subRegion = null;
+        SubRegion subRegion;
 
         if (22.5 >= p && p > pSat643
                 && T3rx > T && T > T3qu) {
@@ -1126,6 +1121,9 @@ final class Region3 extends Region {
 
         } else if (pSat623 < p) {
             subRegion = T <= Tsat ? SubRegion.c : SubRegion.t;
+
+        } else {
+            return Double.NaN;
         }
 
         pi = p / subRegion.pRed;
@@ -2195,8 +2193,8 @@ final class Region3 extends Region {
             {8, -8, -.248488015614543e-3},
             {8, -4, .394536049497068e7}});
 
-        double nuRed, pRed, Tred, A, B, C, D, E;
-        double[][] IJn;
+        final double nuRed, pRed, Tred, A, B, C, D, E;
+        final double[][] IJn;
 
         SubRegion(double nu, double p, double T, double a, double b, double c, double d, double e, double[][] IJn) {
 
