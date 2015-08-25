@@ -159,7 +159,7 @@ public class IF97 {
     /**
      * Prandtl number.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return Prandtl number
      * @throws OutOfRangeException out-of-range exception
@@ -182,7 +182,7 @@ public class IF97 {
     /**
      * Prandtl number.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return Prandtl number
      * @throws OutOfRangeException out-of-range exception
@@ -205,7 +205,7 @@ public class IF97 {
     /**
      * Prandtl number.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return Prandtl number
      * @throws OutOfRangeException out-of-range exception
@@ -257,7 +257,7 @@ public class IF97 {
      * Isothermal compressibility as a function of pressure &amp; specific
      * enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return isothermal compressibility
      * @throws OutOfRangeException out-of-range exception
@@ -286,7 +286,7 @@ public class IF97 {
      * Isothermal compressibility as a function of pressure &amp; specific
      * entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return isothermal compressibility
      * @throws OutOfRangeException out-of-range exception
@@ -314,7 +314,7 @@ public class IF97 {
     /**
      * Isothermal compressibility as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return isothermal compressibility
      * @throws OutOfRangeException out-of-range exception
@@ -408,7 +408,7 @@ public class IF97 {
      * This is a convenience method which simply calls
      * <code>1/specificVolumePH(pressure, enthalpy)</code>.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return density
      * @throws OutOfRangeException out-of-range exception
@@ -426,7 +426,7 @@ public class IF97 {
      * This is a convenience method which simply calls
      * <code>1/specificVolumePS(pressure, entropy)</code>.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return density
      * @throws OutOfRangeException out-of-range exception
@@ -444,7 +444,7 @@ public class IF97 {
      * This is a convenience method which simply calls
      * <code>1/specificVolumePT(pressure, temperature)</code>.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return density
      * @throws OutOfRangeException out-of-range exception
@@ -462,7 +462,7 @@ public class IF97 {
      * This is a convenience method which simply calls
      * <code>1/specificVolumePX(pressure, vapour fraction)</code>.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param vapourFraction vapour fraction
      * @return density
      * @throws OutOfRangeException out-of-range exception
@@ -522,7 +522,7 @@ public class IF97 {
     /**
      * Dielectric constant as a function of pressure and specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return dielectric constant [-]
      * @throws OutOfRangeException out-of-range exception
@@ -549,7 +549,7 @@ public class IF97 {
     /**
      * Dielectric constant as a function of pressure and specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return dielectric constant [-]
      * @throws OutOfRangeException out-of-range exception
@@ -576,7 +576,7 @@ public class IF97 {
     /**
      * Dielectric constant as a function of pressure and temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return dielectric constant [-]
      * @throws OutOfRangeException out-of-range exception
@@ -653,7 +653,7 @@ public class IF97 {
     /**
      * Dynamic viscosity as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -683,7 +683,7 @@ public class IF97 {
     /**
      * Dynamic viscosity as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -713,7 +713,7 @@ public class IF97 {
     /**
      * Dynamic viscosity as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return dynamic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -796,7 +796,7 @@ public class IF97 {
      * Isobaric cubic expansion coefficient as a function of pressure &amp;
      * specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return isobaric cubic expansion coefficient
      * @throws OutOfRangeException out-of-range exception
@@ -826,7 +826,7 @@ public class IF97 {
      * Isobaric cubic expansion coefficient as a function of pressure &amp;
      * specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return isobaric cubic expansion coefficient
      * @throws OutOfRangeException out-of-range exception
@@ -856,7 +856,7 @@ public class IF97 {
      * Isobaric cubic expansion coefficient as a function of pressure &amp;
      * temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return isobaric cubic expansion coefficient
      * @throws OutOfRangeException out-of-range exception
@@ -912,7 +912,7 @@ public class IF97 {
      * Specific isobaric heat capacity as a function of pressure &amp; specific
      * enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return specific isobaric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -942,7 +942,7 @@ public class IF97 {
      * Specific isobaric heat capacity as a function of pressure &amp; specific
      * entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return specific isobaric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -972,7 +972,7 @@ public class IF97 {
      * Specific isobaric heat capacity as a function of pressure &amp;
      * temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific isobaric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -1028,7 +1028,7 @@ public class IF97 {
      * Specific isochoric heat capacity as a function of pressure &amp; specific
      * enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return specific isochoric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -1058,7 +1058,7 @@ public class IF97 {
      * Specific isochoric heat capacity as a function of pressure &amp; specific
      * entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return specific isochoric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -1088,7 +1088,7 @@ public class IF97 {
      * Specific isochoric heat capacity as a function of pressure &amp;
      * temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific isochoric heat capacity
      * @throws OutOfRangeException out-of-range exception
@@ -1143,7 +1143,7 @@ public class IF97 {
     /**
      * Kinematic viscosity as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -1173,7 +1173,7 @@ public class IF97 {
     /**
      * Kinematic viscosity as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -1203,7 +1203,7 @@ public class IF97 {
     /**
      * Kinematic viscosity as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return kinematic viscosity
      * @throws OutOfRangeException out-of-range exception
@@ -1258,7 +1258,7 @@ public class IF97 {
      * <p>
      * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, T) </p>
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @param x any {@link Quantity}
      * @param y any {@link Quantity}
@@ -1371,7 +1371,7 @@ public class IF97 {
      * Refractive index as a function of pressure, specific enthalpy &amp; wave
      * length.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @param wavelength wavelength
      * @return refractive index [-]
@@ -1400,7 +1400,7 @@ public class IF97 {
      * Refractive index as a function of pressure, specific entropy &amp; wave
      * length.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @param wavelength wavelength
      * @return refractive index [-]
@@ -1429,7 +1429,7 @@ public class IF97 {
      * Refractive index as a function of pressure, temperature &amp; wave
      * length.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @param wavelength wavelength
      * @return refractive index [-]
@@ -1557,7 +1557,7 @@ public class IF97 {
     /**
      * Specific enthalpy as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return specific enthalpy
      * @throws OutOfRangeException out-of-range exception
@@ -1581,7 +1581,7 @@ public class IF97 {
     /**
      * Specific enthalpy as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific enthalpy
      * @throws OutOfRangeException out-of-range exception
@@ -1605,7 +1605,7 @@ public class IF97 {
     /**
      * Specific enthalpy as a function of pressure &amp; vapour fraction.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param vapourFraction vapour fraction [-]
      * @return specific enthalpy
      * @throws OutOfRangeException out-of-range exception
@@ -1719,7 +1719,7 @@ public class IF97 {
     /**
      * Specific entropy as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return specific entropy
      * @throws OutOfRangeException out-of-range exception
@@ -1752,7 +1752,7 @@ public class IF97 {
     /**
      * Specific entropy as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific entropy
      * @throws OutOfRangeException out-of-range exception
@@ -1776,7 +1776,7 @@ public class IF97 {
     /**
      * Specific entropy as a function of pressure &amp; vapour fraction.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param vapourFraction vapour fraction [-]
      * @return specific entropy
      * @throws OutOfRangeException out-of-range exception
@@ -1922,7 +1922,7 @@ public class IF97 {
      * Specific internal energy as a function of pressure &amp; specific
      * enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
@@ -1952,7 +1952,7 @@ public class IF97 {
      * Specific internal energy as a function of pressure &amp; specific
      * entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
@@ -1981,7 +1981,7 @@ public class IF97 {
     /**
      * Specific internal energy as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific internal energy
      * @throws OutOfRangeException out-of-range exception
@@ -2030,7 +2030,7 @@ public class IF97 {
     /**
      * Specific volume as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return specific volume
      * @throws OutOfRangeException out-of-range exception
@@ -2054,7 +2054,7 @@ public class IF97 {
     /**
      * Specific volume as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return specific volume
      * @throws OutOfRangeException out-of-range exception
@@ -2078,7 +2078,7 @@ public class IF97 {
     /**
      * Specific volume as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return specific volume
      * @throws OutOfRangeException out-of-range exception
@@ -2102,7 +2102,7 @@ public class IF97 {
     /**
      * Specific volume as a function of pressure &amp; vapour fraction.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param vapourFraction vapour fraction [-]
      * @return specific volume
      * @throws OutOfRangeException out-of-range exception
@@ -2178,7 +2178,7 @@ public class IF97 {
     /**
      * Speed of sound as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
@@ -2207,7 +2207,7 @@ public class IF97 {
     /**
      * Speed of sound as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
@@ -2236,7 +2236,7 @@ public class IF97 {
     /**
      * Speed of sound as a function of pressure &amp; temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return speed of sound
      * @throws OutOfRangeException out-of-range exception
@@ -2260,7 +2260,7 @@ public class IF97 {
     /**
      * Surface tension as a function of pressure.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @return surface tension
      * @throws OutOfRangeException out-of-range exception
      */
@@ -2332,7 +2332,7 @@ public class IF97 {
     /**
      * Temperature.
      *
-     * @param pressure pressure [MPa]
+     * @param pressure absolute pressure [MPa]
      * @param enthalpy specific enthalpy [kJ/(kg)]
      * @return temperature [K]
      * @throws OutOfRangeException out-of-range exception
@@ -2356,7 +2356,7 @@ public class IF97 {
     /**
      * Temperature.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return temperature
      * @throws OutOfRangeException out-of-range exception
@@ -2411,7 +2411,7 @@ public class IF97 {
     /**
      * Thermal conductivity as a function of pressure &amp; specific enthalpy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return thermal conductivity
      * @throws OutOfRangeException out-of-range exception
@@ -2441,7 +2441,7 @@ public class IF97 {
     /**
      * Thermal conductivity as a function of pressure &amp; specific entropy.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return thermal conductivity
      * @throws OutOfRangeException out-of-range exception
@@ -2473,7 +2473,7 @@ public class IF97 {
      *
      * Note that is method is not accurate in the two-phase region.
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param temperature temperature
      * @return thermal conductivity
      * @throws OutOfRangeException out-of-range exception
@@ -2522,6 +2522,133 @@ public class IF97 {
     }
 
     /**
+     * Thermal diffusivity as a function of specific enthalpy &amp; specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return thermal diffusivity
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double thermalDiffusivityHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda,
+                rho,
+                cp;
+
+        try {
+            Region region = getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+            rho = 1 / region.specificVolumeHS(h, s);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+    }
+
+    /**
+     * Thermal diffusivity as a function of pressure &amp; specific enthalpy.
+     *
+     * @param pressure absolute pressure
+     * @param enthalpy specific enthalpy
+     * @return thermal diffusivity
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double thermalDiffusivityPH(double pressure, double enthalpy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                lambda,
+                rho,
+                cp;
+
+        try {
+            Region region = getRegionPH(p, h);
+
+            double T = region.temperaturePH(p, h);
+            rho = 1 / region.specificVolumePH(p, h);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+    }
+
+    /**
+     * Thermal diffusivity as a function of pressure &amp; specific entropy.
+     *
+     * @param pressure absolute pressure
+     * @param entropy specific entropy
+     * @return thermal diffusivity
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double thermalDiffusivityPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                lambda,
+                rho,
+                cp;
+
+        try {
+            Region region = getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
+            rho = 1 / region.specificVolumePS(p, s);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+    }
+
+    /**
+     * Thermal diffusivity as a function of pressure &amp; temperature.
+     *
+     * Note that is method is not accurate in the two-phase region.
+     *
+     * @param pressure absolute pressure
+     * @param temperature temperature
+     * @return thermal diffusivity
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double thermalDiffusivityPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                lambda,
+                rho,
+                cp;
+
+        try {
+            Region region = Region.getRegionPT(p, T);
+
+            rho = 1 / region.specificVolumePT(p, T);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
+            cp = region.specificIsobaricHeatCapacityPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+    }
+
+    /**
      * Vapour fraction as a function of specific enthalpy &amp; specific
      * entropy.
      *
@@ -2550,7 +2677,7 @@ public class IF97 {
      * Note: for highest accuracy, use enthalpy and entropy to determine vapour
      * fraction ({@link #vapourFractionHS(double, double)}).
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return vapour fraction [-]
      * @throws OutOfRangeException out-of-range exception
@@ -2576,7 +2703,7 @@ public class IF97 {
      * Note: for highest accuracy, use enthalpy and entropy to determine vapour
      * fraction ({@link #vapourFractionHS(double, double)}).
      *
-     * @param pressure pressure
+     * @param pressure absolute pressure
      * @param entropy specific entropy
      * @return vapour fraction [-]
      * @throws OutOfRangeException out-of-range exception
@@ -3033,9 +3160,6 @@ public class IF97 {
         /**
          * Pressure.
          */
-        /**
-         * Pressure.
-         */
         p,
         /**
          * Temperature.
@@ -3105,6 +3229,12 @@ public class IF97 {
 
                 case rho:
                     return "density";
+
+                case g:
+                    return "specific Gibbs free energy";
+
+                case f:
+                    return "specific Helmholtz free energy";
 
                 case x:
                     return "vapour fraction";
@@ -3196,6 +3326,10 @@ public class IF97 {
      * conductivity</td><td>W/(m&middot;K)</td><td>kW/(m&middot;K)</td><td>W/(m&middot;K)</td><td>BTU/(hr&middot;ft&middot;R)</td>
      * </tr>
      * <tr>
+     * <td><i>a</i></td><td>thermal
+     * diffusivity</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>cSt</td>
+     * </tr>
+     * <tr>
      * <td><i>x</i></td><td>vapour
      * fraction</td><td>-</td><td>-</td><td>-</td><td>-</td>
      * </tr>
@@ -3214,8 +3348,7 @@ public class IF97 {
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
                 new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
-                new double[]{1, 0}, new double[]{1, 0}, new double[]{1, 0},
-                new double[]{1, 0}),
+                new double[]{1, 0}, new double[]{1, 0}),
         /**
          * Engineering units.
          */
@@ -3226,9 +3359,7 @@ public class IF97 {
                 new double[]{1, 0}, // kinematic viscosity
                 new double[]{0.1, 0}, // pressure
                 new double[]{1, 0}, // specific energy
-                new double[]{1, 0}, // specific enthalpy
                 new double[]{1, 0}, // specific entropy
-                new double[]{1, 0}, // specific heat capacity
                 new double[]{1, 0}, // specific volume
                 new double[]{1, 0}, // speed of sound
                 new double[]{1, 0}, // surface tension
@@ -3244,10 +3375,8 @@ public class IF97 {
                 new double[]{1, 0}, // isobaric cubic expansion coefficient
                 new double[]{1, 0}, // kinematic viscosity
                 new double[]{1e-6, 0}, // pressure
-                new double[]{1, 0}, // specific energy
-                new double[]{1e-3, 0}, // specific enthalpy
+                new double[]{1e-3, 0}, // specific energy
                 new double[]{1e-3, 0}, // specific entropy
-                new double[]{1e-3, 0}, // specific heat capacity
                 new double[]{1, 0}, // specific volume
                 new double[]{1, 0}, // speed of sound
                 new double[]{1, 0}, // surface tension
@@ -3264,9 +3393,7 @@ public class IF97 {
                 new double[]{1e-6, 0}, // kinematic viscosity [centiStokes]
                 new double[]{psi, 0}, // pressure
                 new double[]{BTU / lb, 0}, // specific energy
-                new double[]{BTU / lb, 0}, // specific enthalpy
                 new double[]{BTU / (lb * Ra), 0}, // specific entropy
-                new double[]{BTU / (lb * Ra), 0}, // specific heat capacity
                 new double[]{ft3 / lb, 0}, // specific volume
                 new double[]{ft, 0}, // speed of sound
                 new double[]{lbf / ft, 0}, // surface tension
@@ -3289,6 +3416,7 @@ public class IF97 {
                 SURFACE_TENSION,
                 TEMPERATURE,
                 THERMAL_CONDUCTIVITY,
+                THERMAL_DIFFUSIVITY,
                 WAVELENGTH;
 
         /**
@@ -3301,9 +3429,7 @@ public class IF97 {
          * @param kinematicViscosity
          * @param pressure
          * @param specificEnergy
-         * @param specificEnthalpy
          * @param specificEntropy
-         * @param specificHeatCapacity
          * @param specificVolume
          * @param surfaceTension
          * @param temperature
@@ -3317,9 +3443,7 @@ public class IF97 {
                 double[] kinematicViscosity,
                 double[] pressure,
                 double[] specificEnergy,
-                double[] specificEnthalpy,
                 double[] specificEntropy,
-                double[] specificHeatCapacity,
                 double[] specificVolume,
                 double[] speedOfSound,
                 double[] surfaceTension,
@@ -3334,14 +3458,15 @@ public class IF97 {
             KINEMATIC_VISCOSITY = kinematicViscosity;
             PRESSURE = pressure;
             SPECIFIC_ENERGY = specificEnergy;
-            SPECIFIC_ENTHALPY = specificEnthalpy;
+            SPECIFIC_ENTHALPY = specificEnergy.clone(); // same unit
             SPECIFIC_ENTROPY = specificEntropy;
-            SPECIFIC_HEAT_CAPACITY = specificHeatCapacity;
+            SPECIFIC_HEAT_CAPACITY = specificEntropy.clone(); // same unit
             SPECIFIC_VOLUME = specificVolume;
             SPEED_OF_SOUND = speedOfSound;
             SURFACE_TENSION = surfaceTension;
             TEMPERATURE = temperature;
             THERMAL_CONDUCTIVITY = thermalConductivity;
+            THERMAL_DIFFUSIVITY = kinematicViscosity.clone(); // same unit
             WAVELENGTH = wavelength;
         }
     }
