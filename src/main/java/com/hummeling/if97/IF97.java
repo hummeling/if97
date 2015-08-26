@@ -1888,6 +1888,30 @@ public class IF97 {
     }
 
     /**
+     * Specific Gibbs free energy as a function of pressure &amp; temperature.
+     *
+     * @param pressure absolute pressure
+     * @param temperature temperature
+     * @return specific Gibbs free energy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificGibbsFreeEnergyPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                g;
+
+        try {
+            g = getRegionPT(p, T).specificGibbsFreeEnergyPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, g);
+    }
+
+    /**
      * Specific internal energy as a function of specific enthalpy &amp;
      * specific entropy.
      *

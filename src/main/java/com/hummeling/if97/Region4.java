@@ -334,6 +334,12 @@ final class Region4 extends Region {
     }
 
     @Override
+    double specificGibbsFreeEnergyPT(double pressure, double temperature) {
+
+        return new Region1().specificGibbsFreeEnergyPT(pressure, temperature);
+    }
+
+    @Override
     double specificInternalEnergyPT(double p, double T) {
 
         return new Region1().specificInternalEnergyPT(p, T);

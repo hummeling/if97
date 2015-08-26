@@ -631,6 +631,16 @@ final class Region3 extends Region {
     }
 
     @Override
+    double specificGibbsFreeEnergyPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature),
+                delta = rho / rhoc,
+                tau = Tc / temperature;
+
+        return phi(delta, tau) * R * temperature + pressure / rho;
+    }
+
+    @Override
     double specificInternalEnergyPT(double pressure, double temperature) {
 
         double rho = 1 / specificVolumePT(pressure, temperature);

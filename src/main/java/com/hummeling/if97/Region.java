@@ -686,6 +686,8 @@ abstract class Region {
      */
     abstract double specificEntropyRhoT(double rho, double T);
 
+    abstract double specificGibbsFreeEnergyPT(double pressure, double temperature);
+
     /**
      * Specific internal energy.
      *

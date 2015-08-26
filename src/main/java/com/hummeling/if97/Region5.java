@@ -405,6 +405,15 @@ final class Region5 extends Region {
     }
 
     @Override
+    double specificGibbsFreeEnergyPT(double pressure, double temperature) {
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature;
+
+        return (gammaO(pi, tau) + gammaR(pi, tau)) * R * temperature;
+    }
+
+    @Override
     double specificIsobaricHeatCapacityPT(double pressure, double temperature) {
 
         double pi = pressure / pRef,
