@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 

@@ -16,13 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static com.hummeling.if97.IF97.*;
 import static java.lang.Double.NaN;
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
 
 /**
  * Region 3.
@@ -32,15 +32,16 @@ import static java.lang.Math.*;
  */
 final class Region3 extends Region {
 
-    private static final String NAME;
-    static final double rhoRef, n1;
-    static final double[][] IJn;
+    private final double rhoRef, n1;
+    private final double[][] IJnPi, IJnOmegaA, IJnOmegaB, IJnOa, IJnOb, IJnPiA, IJnPiB, IJnThetaA, IJnThetaB, IJnTa, IJnTb;
 
-    static {
-        NAME = "Region 3";
+    Region3() {
+
+        super("Region 3");
+
         rhoRef = 322;
         n1 = 0.10658070028513e1;
-        IJn = new double[][]{
+        IJnPi = new double[][]{
             {0, 0, -0.15732845290239e2},
             {0, 1, 00.20944396974307e2},
             {0, 2, -0.76867707878716e1},
@@ -80,50 +81,7 @@ final class Region3 extends Region {
             {10, 0, 0.80964802996215e-4},
             {10, 1, -.16557679795037e-3},
             {11, 26, -.44923899061815e-4}};
-    }
-
-    @Override
-    String getName() {
-
-        return NAME;
-    }
-
-    private SubRegion getSubRegionS(double entropy) {
-
-        return entropy > IF97.sc ? SubRegion.b : SubRegion.a;
-    }
-
-    private SubRegion getSubRegionPH(double pressure, double enthalpy) {
-
-        return enthalpy < enthalpy3ab(pressure) ? SubRegion.a : SubRegion.b;
-    }
-
-    static double enthalpy3ab(double pressure) {
-
-        double out = 0, pi = pressure;
-        double[] n = {
-            0.201464004206875e4,
-            0.374696550136983e1,
-            -.219921901054187e-1,
-            0.875131686009950e-4};
-
-        for (int i = 0; i < n.length; i++) {
-            out += n[i] * pow(pi, i);
-        }
-        return out;
-    }
-
-    /**
-     * Dimensionless specific volume for subregion 3a.
-     *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
-     * @return dimensionless specific volume
-     */
-    private static double omegaA(double pi, double eta) {
-
-        double out = 0;
-        double[][] IJnA = {
+        IJnOmegaA = new double[][]{
             {-12, 6, 5.29944062966028e-3},
             {-12, 8, -1.70099690234461e-1},
             {-12, 12, 1.11323814312927e1},
@@ -156,24 +114,7 @@ final class Region3 extends Region {
             {4, 2, -2.24503486668184},
             {5, 2, 1.10533464706142},
             {8, 2, -4.08757344495612e-2}};
-
-        for (double[] ijn : IJnA) {
-            out += ijn[2] * pow(pi + 0.128, ijn[0]) * pow(eta - 0.727, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Dimensionless specific volume for subregion 3b.
-     *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
-     * @return dimensionless specific volume
-     */
-    private static double omegaB(double pi, double eta) {
-
-        double out = 0;
-        double[][] IJnB = {
+        IJnOmegaB = new double[][]{
             {-12, 0, -2.25196934336318e-9},
             {-12, 1, 1.40674363313486e-8},
             {-8, 0, 2.33784085280560e-6},
@@ -204,127 +145,68 @@ final class Region3 extends Region {
             {1, 1, 3.71810116332674e-2},
             {2, 2, -5.36288335065096e-2},
             {2, 6, 1.60697101092520}};
-
-        for (double[] ijn : IJnB) {
-            out += ijn[2] * pow(pi + 0.0661, ijn[0]) * pow(eta - 0.720, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Specific Helmholtz free energy.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phi(double delta, double tau) {
-
-        double out = n1 * log(delta);
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(delta, ijn[0]) * pow(tau, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * First partial derivative with respect to delta.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phiDelta(double delta, double tau) {
-
-        double out = n1 / delta;
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * ijn[0] * pow(delta, ijn[0] - 1) * pow(tau, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Second partial derivative with respect to delta.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phiDeltaDelta(double delta, double tau) {
-
-        double out = -n1 / (delta * delta);
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * ijn[0] * (ijn[0] - 1) * pow(delta, ijn[0] - 2) * pow(tau, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Second partial derivative with respect to delta & tau.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phiDeltaTau(double delta, double tau) {
-
-        double out = 0;
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * ijn[0] * pow(delta, ijn[0] - 1) * ijn[1] * pow(tau, ijn[1] - 1);
-        }
-        return out;
-    }
-
-    /**
-     * First partial derivative with respect to tau.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phiTau(double delta, double tau) {
-
-        double out = 0;
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(delta, ijn[0]) * ijn[1] * pow(tau, ijn[1] - 1);
-        }
-        return out;
-    }
-
-    /**
-     * Second partial derivative with respect to tau.
-     *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
-     * @return
-     */
-    private static double phiTauTau(double delta, double tau) {
-
-        double out = 0;
-
-        for (double[] ijn : IJn) {
-            out += ijn[2] * pow(delta, ijn[0]) * ijn[1] * (ijn[1] - 1) * pow(tau, ijn[1] - 2);
-        }
-        return out;
-    }
-
-    /**
-     * Dimensionless pressure for subregion 3a.
-     *
-     * @param eta dimensionless specific enthalpy
-     * @param sigma dimensionless specific entropy
-     * @return dimensionless pressure
-     */
-    private static double piA(double eta, double sigma) {
-
-        double out = 0;
-        double[] x = {eta - 1.01, sigma - 0.75};
-        double[][] IJnA = {
+        IJnOa = new double[][]{
+            {-12, 10, .795544074093975e2},
+            {-12, 12, -.238261242984590e4},
+            {-12, 14, .176813100617787e5},
+            {-10, 4, -.110524727080379e-2},
+            {-10, 8, -.153213833655326e2},
+            {-10, 10, .297544599376982e3},
+            {-10, 20, -.350315206871242e8},
+            {-8, 5, .277513761062119},
+            {-8, 6, -.523964271036888},
+            {-8, 14, -.148011182995403e6},
+            {-8, 16, .160014899374266e7},
+            {-6, 28, .170802322663427e13},
+            {-5, 1, .246866996006494e-3},
+            {-4, 5, .165326084797980e1},
+            {-3, 2, -.118008384666987},
+            {-3, 4, .253798642355900e1},
+            {-2, 3, .965127704669424},
+            {-2, 8, -.282172420532826e2},
+            {-1, 1, .203224612353823},
+            {-1, 2, .110648186063513e1},
+            {0, 0, .526127948451280},
+            {0, 1, .277000018736321},
+            {0, 3, .108153340501132e1},
+            {1, 0, -.744127885357893e-1},
+            {2, 0, .164094443541384e-1},
+            {4, 2, -.680468275301065e-1},
+            {5, 2, .257988576101640e-1},
+            {6, 0, -.145749861944416e-3}};
+        IJnOb = new double[][]{
+            {-12, 0, .591599780322238e-4},
+            {-12, 1, -.185465997137856e-2},
+            {-12, 2, .104190510480013e-1},
+            {-12, 3, .598647302038590e-2},
+            {-12, 5, -.771391189901699},
+            {-12, 6, .172549765557036e1},
+            {-10, 0, -.467076079846526e-3},
+            {-10, 1, .134533823384439e-1},
+            {-10, 2, -.808094336805495e-1},
+            {-10, 4, .508139374365767},
+            {-8, 0, .128584643361683e-2},
+            {-5, 1, -.163899353915435e1},
+            {-5, 2, .586938199318063e1},
+            {-5, 3, -.292466667918613e1},
+            {-4, 0, -.614076301499537e-2},
+            {-4, 1, .576199014049172e1},
+            {-4, 2, -.121613320606788e2},
+            {-4, 3, .167637540957944e1},
+            {-3, 1, -.744135838773463e1},
+            {-2, 0, .378168091437659e-1},
+            {-2, 1, .401432203027688e1},
+            {-2, 2, .160279837479185e2},
+            {-2, 3, .317848779347728e1},
+            {-2, 4, -.358362310304853e1},
+            {-2, 12, -.115995260446827e7},
+            {0, 0, .199256573577909},
+            {0, 1, -.122270624794624},
+            {0, 2, -.191449143716586e2},
+            {1, 0, -.150448002905284e-1},
+            {1, 2, .146407900162154e2},
+            {2, 2, -.327477787188230e1}};
+        IJnPiA = new double[][]{
             {0, 0, .770889828326934e1},
             {0, 1, -.260835009128688e2},
             {0, 5, .267416218930389e3},
@@ -358,25 +240,7 @@ final class Region3 extends Region {
             {28, 36, .730872705175151e44},
             {32, 10, .159145847398870e25},
             {32, 28, .377121605943324e41}};
-
-        for (double[] ijn : IJnA) {
-            out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Dimensionless pressure for subregion 3b.
-     *
-     * @param eta dimensionless specific enthalpy
-     * @param sigma dimensionless specific entropy
-     * @return dimensionless pressure
-     */
-    private static double piB(double eta, double sigma) {
-
-        double out = 0;
-        double[] x = {eta - 0.681, sigma - 0.792};
-        double[][] IJnB = {
+        IJnPiB = new double[][]{
             {-12, 2, .125244360717979e-12},
             {-12, 10, -.126599322553713e-1},
             {-12, 12, .506878030140626e1},
@@ -412,24 +276,7 @@ final class Region3 extends Region {
             {10, 1, .890746343932567e5},
             {14, 3, -.239234565822486e8},
             {14, 7, .568795808129714e10}};
-
-        for (double[] ijn : IJnB) {
-            out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
-        }
-        return 1 / out;
-    }
-
-    /**
-     * Dimensionless temperature for subregion 3a.
-     *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
-     * @return dimensionless temperature
-     */
-    private static double thetaA(double pi, double eta) {
-
-        double out = 0;
-        double[][] IJnA = {
+        IJnThetaA = new double[][]{
             {-12, 0, -1.33645667811215e-7},
             {-12, 1, 4.55912656802978e-6},
             {-12, 2, -1.46294640700979e-5},
@@ -461,24 +308,7 @@ final class Region3 extends Region {
             {4, 3, -7.64885133368119e-3},
             {10, 4, 1.36176427574291e-2},
             {12, 5, -1.33027883575669e-2}};
-
-        for (double[] ijn : IJnA) {
-            out += ijn[2] * pow(pi + 0.240, ijn[0]) * pow(eta - 0.615, ijn[1]);
-        }
-        return out;
-    }
-
-    /**
-     * Dimensionless temperature for subregion 3b.
-     *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
-     * @return dimensionless temperature
-     */
-    private static double thetaB(double pi, double eta) {
-
-        double out = 0;
-        double[][] IJnB = {
+        IJnThetaB = new double[][]{
             {-12, 0, 3.23254573644920e-5},
             {-12, 1, -1.27575556587181e-4},
             {-10, 0, -4.75851877356068e-4},
@@ -512,8 +342,297 @@ final class Region3 extends Region {
             {5, 1, 2.86596714529479e-1},
             {6, 1, -1.31778331276228e-1},
             {8, 1, 6.76682064330275e-3}};
+        IJnTa = new double[][]{
+            {-12, 28, .150042008263875e10},
+            {-12, 32, -.159397258480424e12},
+            {-10, 4, .502181140217975e-3},
+            {-10, 10, -.672057767855466e2},
+            {-10, 12, .145058545404456e4},
+            {-10, 14, -.823889534888890e4},
+            {-8, 5, -.154852214233853},
+            {-8, 7, .112305046746695e2},
+            {-8, 8, -.297000213482822e2},
+            {-8, 28, .438565132635495e11},
+            {-6, 2, .137837838635464e-2},
+            {-6, 6, -.297478527157462e1},
+            {-6, 32, .971777947349413e13},
+            {-5, 0, -.571527767052398e-4},
+            {-5, 14, .288307949778420e5},
+            {-5, 32, -.744428289262703e14},
+            {-4, 6, .128017324848921e2},
+            {-4, 10, -.368275545889071e3},
+            {-4, 36, .664768904779177e16},
+            {-2, 1, .449359251958880e-1},
+            {-2, 4, -.422897836099655e1},
+            {-1, 1, -.240614376434179},
+            {-1, 6, -.474341365254924e1},
+            {0, 0, .724093999126110},
+            {0, 1, .923874349695897},
+            {0, 4, .399043655281015e1},
+            {1, 0, .384066651868009e-1},
+            {2, 0, -.359344365571848e-2},
+            {2, 3, -.735196448821653},
+            {3, 2, .188367048396131},
+            {8, 0, .141064266818704e-3},
+            {8, 1, -.257418501496337e-2},
+            {10, 2, .123220024851555e-2}};
+        IJnTb = new double[][]{
+            {-12, 1, .527111701601660},
+            {-12, 3, -.401317830052742e2},
+            {-12, 4, .153020073134484e3},
+            {-12, 7, -.224799398218827e4},
+            {-8, 0, -.193993484669048},
+            {-8, 1, -.140467557893768e1},
+            {-8, 3, .426799878114024e2},
+            {-6, 0, .752810643416743},
+            {-6, 2, .226657238616417e2},
+            {-6, 4, -.622873556909932e3},
+            {-5, 0, -.660823667935396},
+            {-5, 1, .841267087271658},
+            {-5, 2, -.253717501764397e2},
+            {-5, 4, .485708963532948e3},
+            {-5, 6, .880531517490555e3},
+            {-4, 12, .265015592794626e7},
+            {-3, 1, -.359287150025783},
+            {-3, 6, -.656991567673753e3},
+            {-2, 2, .241768149185367e1},
+            {0, 0, .856873461222588},
+            {2, 1, .655143675313458},
+            {3, 1, -.213535213206406},
+            {4, 0, .562974957606348e-2},
+            {5, 24, -.316955725450471e15},
+            {6, 0, -.699997000152457e-3},
+            {8, 3, .119845803210767e-1},
+            {12, 1, .193848122022095e-4},
+            {14, 2, -.215095749182309e-4}};
+    }
 
-        for (double[] ijn : IJnB) {
+    private SubRegion getSubRegionS(double entropy) {
+
+        return entropy > sc ? SubRegion.b : SubRegion.a;
+    }
+
+    private SubRegion getSubRegionPH(double pressure, double enthalpy) {
+
+        return enthalpy < enthalpy3ab(pressure) ? SubRegion.a : SubRegion.b;
+    }
+
+    double enthalpy3ab(double pressure) {
+
+        double out = 0, pi = pressure;
+        double[] n = {
+            0.201464004206875e4,
+            0.374696550136983e1,
+            -.219921901054187e-1,
+            0.875131686009950e-4};
+
+        for (int i = 0; i < n.length; i++) {
+            out += n[i] * pow(pi, i);
+        }
+        return out;
+    }
+
+    /**
+     * Dimensionless specific volume for subregion 3a.
+     *
+     * @param pi dimensionless pressure [MPa]
+     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @return dimensionless specific volume
+     */
+    private double omegaA(double pi, double eta) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnOmegaA) {
+            out += ijn[2] * pow(pi + 0.128, ijn[0]) * pow(eta - 0.727, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Dimensionless specific volume for subregion 3b.
+     *
+     * @param pi dimensionless pressure [MPa]
+     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @return dimensionless specific volume
+     */
+    private double omegaB(double pi, double eta) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnOmegaB) {
+            out += ijn[2] * pow(pi + 0.0661, ijn[0]) * pow(eta - 0.720, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Specific Helmholtz free energy.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phi(double delta, double tau) {
+
+        double out = n1 * log(delta);
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * pow(delta, ijn[0]) * pow(tau, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * First partial derivative with respect to delta.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phiDelta(double delta, double tau) {
+
+        double out = n1 / delta;
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * ijn[0] * pow(delta, ijn[0] - 1) * pow(tau, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Second partial derivative with respect to delta.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phiDeltaDelta(double delta, double tau) {
+
+        double out = -n1 / (delta * delta);
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * ijn[0] * (ijn[0] - 1) * pow(delta, ijn[0] - 2) * pow(tau, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Second partial derivative with respect to delta & tau.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phiDeltaTau(double delta, double tau) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * ijn[0] * pow(delta, ijn[0] - 1) * ijn[1] * pow(tau, ijn[1] - 1);
+        }
+        return out;
+    }
+
+    /**
+     * First partial derivative with respect to tau.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phiTau(double delta, double tau) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * pow(delta, ijn[0]) * ijn[1] * pow(tau, ijn[1] - 1);
+        }
+        return out;
+    }
+
+    /**
+     * Second partial derivative with respect to tau.
+     *
+     * @param delta dimensionless density [kg/m3]
+     * @param tau dimensionless temperature [K]
+     * @return
+     */
+    private double phiTauTau(double delta, double tau) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnPi) {
+            out += ijn[2] * pow(delta, ijn[0]) * ijn[1] * (ijn[1] - 1) * pow(tau, ijn[1] - 2);
+        }
+        return out;
+    }
+
+    /**
+     * Dimensionless pressure for subregion 3a.
+     *
+     * @param eta dimensionless specific enthalpy
+     * @param sigma dimensionless specific entropy
+     * @return dimensionless pressure
+     */
+    private double piA(double eta, double sigma) {
+
+        double out = 0;
+        double[] x = {eta - 1.01, sigma - 0.75};
+
+        for (double[] ijn : IJnPiA) {
+            out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Dimensionless pressure for subregion 3b.
+     *
+     * @param eta dimensionless specific enthalpy
+     * @param sigma dimensionless specific entropy
+     * @return dimensionless pressure
+     */
+    private double piB(double eta, double sigma) {
+
+        double out = 0;
+        double[] x = {eta - 0.681, sigma - 0.792};
+
+        for (double[] ijn : IJnPiB) {
+            out += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
+        }
+        return 1 / out;
+    }
+
+    /**
+     * Dimensionless temperature for subregion 3a.
+     *
+     * @param pi dimensionless pressure [MPa]
+     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @return dimensionless temperature
+     */
+    private double thetaA(double pi, double eta) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnThetaA) {
+            out += ijn[2] * pow(pi + 0.240, ijn[0]) * pow(eta - 0.615, ijn[1]);
+        }
+        return out;
+    }
+
+    /**
+     * Dimensionless temperature for subregion 3b.
+     *
+     * @param pi dimensionless pressure [MPa]
+     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @return dimensionless temperature
+     */
+    private double thetaB(double pi, double eta) {
+
+        double out = 0;
+
+        for (double[] ijn : IJnThetaB) {
             out += ijn[2] * pow(pi + 0.298, ijn[0]) * pow(eta - 0.720, ijn[1]);
         }
         return out;
@@ -716,79 +835,20 @@ final class Region3 extends Region {
 
         double omega = 0;
         double[] x = null;
-        double[][] IJnOmega = null;
+        double[][] IJn = null;
 
         switch (getSubRegionS(entropy)) {
             case a:
                 x = new double[]{pressure / 100 + 0.187, entropy / 4.4 - 0.755, 0.0028};
-                IJnOmega = new double[][]{
-                    {-12, 10, .795544074093975e2},
-                    {-12, 12, -.238261242984590e4},
-                    {-12, 14, .176813100617787e5},
-                    {-10, 4, -.110524727080379e-2},
-                    {-10, 8, -.153213833655326e2},
-                    {-10, 10, .297544599376982e3},
-                    {-10, 20, -.350315206871242e8},
-                    {-8, 5, .277513761062119},
-                    {-8, 6, -.523964271036888},
-                    {-8, 14, -.148011182995403e6},
-                    {-8, 16, .160014899374266e7},
-                    {-6, 28, .170802322663427e13},
-                    {-5, 1, .246866996006494e-3},
-                    {-4, 5, .165326084797980e1},
-                    {-3, 2, -.118008384666987},
-                    {-3, 4, .253798642355900e1},
-                    {-2, 3, .965127704669424},
-                    {-2, 8, -.282172420532826e2},
-                    {-1, 1, .203224612353823},
-                    {-1, 2, .110648186063513e1},
-                    {0, 0, .526127948451280},
-                    {0, 1, .277000018736321},
-                    {0, 3, .108153340501132e1},
-                    {1, 0, -.744127885357893e-1},
-                    {2, 0, .164094443541384e-1},
-                    {4, 2, -.680468275301065e-1},
-                    {5, 2, .257988576101640e-1},
-                    {6, 0, -.145749861944416e-3}};
+                IJn = IJnOa;
                 break;
 
             case b:
                 x = new double[]{pressure / 100 + 0.298, entropy / 5.3 - 0.816, 0.0088};
-                IJnOmega = new double[][]{
-                    {-12, 0, .591599780322238e-4},
-                    {-12, 1, -.185465997137856e-2},
-                    {-12, 2, .104190510480013e-1},
-                    {-12, 3, .598647302038590e-2},
-                    {-12, 5, -.771391189901699},
-                    {-12, 6, .172549765557036e1},
-                    {-10, 0, -.467076079846526e-3},
-                    {-10, 1, .134533823384439e-1},
-                    {-10, 2, -.808094336805495e-1},
-                    {-10, 4, .508139374365767},
-                    {-8, 0, .128584643361683e-2},
-                    {-5, 1, -.163899353915435e1},
-                    {-5, 2, .586938199318063e1},
-                    {-5, 3, -.292466667918613e1},
-                    {-4, 0, -.614076301499537e-2},
-                    {-4, 1, .576199014049172e1},
-                    {-4, 2, -.121613320606788e2},
-                    {-4, 3, .167637540957944e1},
-                    {-3, 1, -.744135838773463e1},
-                    {-2, 0, .378168091437659e-1},
-                    {-2, 1, .401432203027688e1},
-                    {-2, 2, .160279837479185e2},
-                    {-2, 3, .317848779347728e1},
-                    {-2, 4, -.358362310304853e1},
-                    {-2, 12, -.115995260446827e7},
-                    {0, 0, .199256573577909},
-                    {0, 1, -.122270624794624},
-                    {0, 2, -.191449143716586e2},
-                    {1, 0, -.150448002905284e-1},
-                    {1, 2, .146407900162154e2},
-                    {2, 2, -.327477787188230e1}};
+                IJn = IJnOb;
                 break;
         }
-        for (double[] ijn : IJnOmega) {
+        for (double[] ijn : IJn) {
             omega += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
         return omega * x[2];
@@ -803,9 +863,8 @@ final class Region3 extends Region {
                 p3cd = 19.00881189,
                 theta,
                 logPi = log(pi),
-                pSat623 = Region4.saturationPressureT(623.15),
-                pSat643 = Region4.saturationPressureT(643.15),
-                Tsat = Region4.saturationTemperatureP(p);
+                ps643 = REGION4.saturationPressureT(643.15),
+                Ts = REGION4.saturationTemperatureP(p);
 
         double[][] In;
 
@@ -836,7 +895,7 @@ final class Region3 extends Region {
             theta += in[1] * pow(pi, in[0]);
         }
         double T3cd = theta,
-                T3ef = dTheta_dPi * (pi - IF97.pc) + IF97.Tc;
+                T3ef = dTheta_dPi * (pi - pc) + Tc;
 
         theta = 0;
         In = new double[][]{
@@ -957,54 +1016,48 @@ final class Region3 extends Region {
          */
         SubRegion subRegion;
 
-        if (22.5 >= p && p > pSat643
-                && T3rx > T && T > T3qu) {
+        //if (22.5 >= p && p > ps643 && T3rx > T && T > T3qu) {
+        if (T3qu <= T && T <= T3rx && ps643 <= p && p <= 22.5) {
             /*
              Auxiliary Equations for the Near-Critical Region (p.126)
              */
             if (p <= pc) {
-                if (T <= Tsat) {
+                if (T <= Ts) {
                     if (21.93161551 < p) {
                         subRegion = T <= T3uv ? SubRegion.u : SubRegion.y;
                     } else {
                         subRegion = SubRegion.u;
                     }
+                } else if (21.90096265 < p) {
+                    subRegion = T <= T3wx ? SubRegion.z : SubRegion.x;
                 } else {
-                    if (21.90096265 < p) {
-                        subRegion = T <= T3wx ? SubRegion.z : SubRegion.x;
-                    } else {
-                        subRegion = SubRegion.x;
-                    }
+                    subRegion = SubRegion.x;
                 }
+
+            } else if (p <= 22.11) {
+                if (T > T3wx) {
+                    subRegion = SubRegion.x;
+
+                } else if (T > T3ef) {
+                    subRegion = SubRegion.z;
+
+                } else if (T > T3uv) {
+                    subRegion = SubRegion.y;
+
+                } else {
+                    subRegion = SubRegion.u;
+                }
+            } else if (T > T3wx) {
+                subRegion = SubRegion.x;
+
+            } else if (T > T3ef) {
+                subRegion = SubRegion.w;
+
+            } else if (T > T3uv) {
+                subRegion = SubRegion.v;
 
             } else {
-                if (p <= 22.11) {
-                    if (T > T3wx) {
-                        subRegion = SubRegion.x;
-
-                    } else if (T > T3ef) {
-                        subRegion = SubRegion.z;
-
-                    } else if (T > T3uv) {
-                        subRegion = SubRegion.y;
-
-                    } else {
-                        subRegion = SubRegion.u;
-                    }
-                } else {
-                    if (T > T3wx) {
-                        subRegion = SubRegion.x;
-
-                    } else if (T > T3ef) {
-                        subRegion = SubRegion.w;
-
-                    } else if (T > T3uv) {
-                        subRegion = SubRegion.v;
-
-                    } else {
-                        subRegion = SubRegion.u;
-                    }
-                }
+                subRegion = SubRegion.u;
             }
 
         } else if (40 < p) {
@@ -1090,7 +1143,7 @@ final class Region3 extends Region {
                 subRegion = SubRegion.k;
             }
 
-        } else if (pSat643 < p) {
+        } else if (ps643 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
 
@@ -1108,7 +1161,7 @@ final class Region3 extends Region {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
 
-            } else if (T <= Tsat) {
+            } else if (T <= Ts) {
                 subRegion = SubRegion.s;
 
             } else if (T <= T3jk) {
@@ -1122,24 +1175,23 @@ final class Region3 extends Region {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
 
-            } else if (T <= Tsat) {
+            } else if (T <= Ts) {
                 subRegion = SubRegion.s;
 
             } else {
                 subRegion = SubRegion.t;
             }
 
-        } else if (pSat623 < p) {
-            subRegion = T <= Tsat ? SubRegion.c : SubRegion.t;
+        } else if (ps13 < p) {
+            subRegion = T <= Ts ? SubRegion.c : SubRegion.t;
 
         } else {
-            return Double.NaN;
+            return NaN;
         }
 
         pi = p / subRegion.pRed;
         theta = T / subRegion.Tred;
 
-        //System.out.println("subRegion: " + subRegion);
         /*
          Backward Equation
          */
@@ -1210,81 +1262,20 @@ final class Region3 extends Region {
 
         double theta = 0;
         double[] x = null;
-        double[][] IJnTheta = null;
+        double[][] IJn = null;
 
         switch (getSubRegionS(entropy)) {
             case a:
                 x = new double[]{pressure / 100 + 0.240, entropy / 4.4 - 0.703, 760};
-                IJnTheta = new double[][]{
-                    {-12, 28, .150042008263875e10},
-                    {-12, 32, -.159397258480424e12},
-                    {-10, 4, .502181140217975e-3},
-                    {-10, 10, -.672057767855466e2},
-                    {-10, 12, .145058545404456e4},
-                    {-10, 14, -.823889534888890e4},
-                    {-8, 5, -.154852214233853},
-                    {-8, 7, .112305046746695e2},
-                    {-8, 8, -.297000213482822e2},
-                    {-8, 28, .438565132635495e11},
-                    {-6, 2, .137837838635464e-2},
-                    {-6, 6, -.297478527157462e1},
-                    {-6, 32, .971777947349413e13},
-                    {-5, 0, -.571527767052398e-4},
-                    {-5, 14, .288307949778420e5},
-                    {-5, 32, -.744428289262703e14},
-                    {-4, 6, .128017324848921e2},
-                    {-4, 10, -.368275545889071e3},
-                    {-4, 36, .664768904779177e16},
-                    {-2, 1, .449359251958880e-1},
-                    {-2, 4, -.422897836099655e1},
-                    {-1, 1, -.240614376434179},
-                    {-1, 6, -.474341365254924e1},
-                    {0, 0, .724093999126110},
-                    {0, 1, .923874349695897},
-                    {0, 4, .399043655281015e1},
-                    {1, 0, .384066651868009e-1},
-                    {2, 0, -.359344365571848e-2},
-                    {2, 3, -.735196448821653},
-                    {3, 2, .188367048396131},
-                    {8, 0, .141064266818704e-3},
-                    {8, 1, -.257418501496337e-2},
-                    {10, 2, .123220024851555e-2}};
+                IJn = IJnTa;
                 break;
 
             case b:
                 x = new double[]{pressure / 100 + 0.760, entropy / 5.3 - 0.818, 860};
-                IJnTheta = new double[][]{
-                    {-12, 1, .527111701601660},
-                    {-12, 3, -.401317830052742e2},
-                    {-12, 4, .153020073134484e3},
-                    {-12, 7, -.224799398218827e4},
-                    {-8, 0, -.193993484669048},
-                    {-8, 1, -.140467557893768e1},
-                    {-8, 3, .426799878114024e2},
-                    {-6, 0, .752810643416743},
-                    {-6, 2, .226657238616417e2},
-                    {-6, 4, -.622873556909932e3},
-                    {-5, 0, -.660823667935396},
-                    {-5, 1, .841267087271658},
-                    {-5, 2, -.253717501764397e2},
-                    {-5, 4, .485708963532948e3},
-                    {-5, 6, .880531517490555e3},
-                    {-4, 12, .265015592794626e7},
-                    {-3, 1, -.359287150025783},
-                    {-3, 6, -.656991567673753e3},
-                    {-2, 2, .241768149185367e1},
-                    {0, 0, .856873461222588},
-                    {2, 1, .655143675313458},
-                    {3, 1, -.213535213206406},
-                    {4, 0, .562974957606348e-2},
-                    {5, 24, -.316955725450471e15},
-                    {6, 0, -.699997000152457e-3},
-                    {8, 3, .119845803210767e-1},
-                    {12, 1, .193848122022095e-4},
-                    {14, 2, -.215095749182309e-4}};
+                IJn = IJnTb;
                 break;
         }
-        for (double[] ijn : IJnTheta) {
+        for (double[] ijn : IJn) {
             theta += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
         return theta * x[2];

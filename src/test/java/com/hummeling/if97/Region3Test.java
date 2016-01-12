@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -30,7 +30,7 @@ import org.junit.Test;
  */
 public class Region3Test {
 
-    static Region3 region = new Region3();
+    static Region3 region3 = new Region3();
 
     @Test
     public void testEnthalpy2bc() {
@@ -38,7 +38,7 @@ public class Region3Test {
         double[][] X = {{2.095936454e3, 25}};
 
         for (double[] x : X) {
-            assertEquals(x[0], Region3.enthalpy3ab(x[1]), 1e-6);
+            assertEquals(x[0], region3.enthalpy3ab(x[1]), 1e-6);
         }
     }
 
@@ -51,7 +51,7 @@ public class Region3Test {
             {0.441515098e-2, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.isobaricCubicExpansionCoefficientRhoT(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region3.isobaricCubicExpansionCoefficientRhoT(x[1], x[2]), 1e-7);
         }
     }
 
@@ -64,7 +64,7 @@ public class Region3Test {
             {0.806710817e-2, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.isothermalCompressibilityRhoT(x[1], x[2]), 1e-9);
+            assertEquals(x[0], region3.isothermalCompressibilityRhoT(x[1], x[2]), 1e-9);
         }
     }
 
@@ -80,7 +80,7 @@ public class Region3Test {
             {8.839043281e1, 2700, 5.0}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.pressureHS(x[1], x[2]), 1e-8);
+            assertEquals(x[0], region3.pressureHS(x[1], x[2]), 1e-8);
         }
     }
 
@@ -93,7 +93,7 @@ public class Region3Test {
             {0.783095639e2, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.pressureRhoT(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region3.pressureRhoT(x[1], x[2]), 1e-7);
         }
     }
 
@@ -106,7 +106,7 @@ public class Region3Test {
             {0.225868845e4, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificEnthalpyRhoT(x[1], x[2]), 1e-5);
+            assertEquals(x[0], region3.specificEnthalpyRhoT(x[1], x[2]), 1e-5);
         }
     }
 
@@ -119,7 +119,7 @@ public class Region3Test {
             {0.446971906e1, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificEntropyRhoT(x[1], x[2]), 1e-8);
+            assertEquals(x[0], region3.specificEntropyRhoT(x[1], x[2]), 1e-8);
         }
     }
 
@@ -132,7 +132,7 @@ public class Region3Test {
             {0.210206932e4, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificInternalEnergyRhoT(x[1], x[2]), 1e-5);
+            assertEquals(x[0], region3.specificInternalEnergyRhoT(x[1], x[2]), 1e-5);
         }
     }
 
@@ -145,7 +145,7 @@ public class Region3Test {
             {0.634165359e1, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificIsobaricHeatCapacityRhoT(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region3.specificIsobaricHeatCapacityRhoT(x[1], x[2]), 1e-7);
         }
     }
 
@@ -158,7 +158,7 @@ public class Region3Test {
             {0.271701677e1, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificIsochoricHeatCapacityRhoT(x[1], x[2]), 1e-8);
+            assertEquals(x[0], region3.specificIsochoricHeatCapacityRhoT(x[1], x[2]), 1e-8);
         }
     }
 
@@ -174,7 +174,7 @@ public class Region3Test {
             {2.404234998e-3, 100, 2700}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePH(x[1], x[2]), 1e-12);
+            assertEquals(x[0], region3.specificVolumePH(x[1], x[2]), 1e-12);
         }
     }
 
@@ -190,7 +190,7 @@ public class Region3Test {
             {2.449610757e-3, 100, 5.0}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePS(x[1], x[2]), 1e-12);
+            assertEquals(x[0], region3.specificVolumePS(x[1], x[2]), 1e-12);
         }
     }
 
@@ -252,7 +252,7 @@ public class Region3Test {
             {3.701940010e-3, 22.064, 647.15}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.specificVolumePT(x[1], x[2]), 1e-12);
+            assertEquals(x[0], region3.specificVolumePT(x[1], x[2]), 1e-12);
         }
     }
 
@@ -265,7 +265,7 @@ public class Region3Test {
             {0.760696041e3, 500, 750}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.speedOfSoundRhoT(x[1], x[2]), 1e-6);
+            assertEquals(x[0], region3.speedOfSoundRhoT(x[1], x[2]), 1e-6);
         }
     }
 
@@ -281,7 +281,7 @@ public class Region3Test {
             {8.420460876e2, 100, 2700}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.temperaturePH(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region3.temperaturePH(x[1], x[2]), 1e-7);
         }
     }
 
@@ -297,7 +297,7 @@ public class Region3Test {
             {8.474332825e2, 100, 5.0}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region.temperaturePS(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region3.temperaturePS(x[1], x[2]), 1e-7);
         }
     }
 }

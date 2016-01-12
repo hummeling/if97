@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static com.hummeling.if97.Region.*;
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
 
 /**
  * <p>
@@ -63,27 +63,27 @@ public class IF97 {
      */
     public static final double M = 18.015257;
     public static final double T0 = 273.15;
-    /**
-     * Critical temperature [K].
-     */
-    public static final double Tc = 647.096;
-    public static final double p0 = 0.000611212677;
+    public static final double p0 = REGION4.saturationPressureT(T0);
     /**
      * Critical pressure [MPa].
      */
     public static final double pc = 22.064;
     /**
+     * Critical temperature [K].
+     */
+    public static final double Tc = 647.096;
+    /**
      * Critical enthalpy [kJ/kg].
      */
-    public static final double hc = 2.087546845e3;
-    /**
-     * Critical entropy [kJ/kg-K].
-     */
-    public static final double sc = 4.41202148223476;
+    public static final double hc = 2087.546845;
     /**
      * Critical density [kg/m3].
      */
     public static final double rhoc = 322;
+    /**
+     * Critical entropy [kJ/kg-K].
+     */
+    public static final double sc = REGION3.specificEntropyRhoT(rhoc, Tc);
     /**
      * British thermal unit acc. International standard ISO 31-4 on Quantities
      * and units—Part 4: Heat, Appendix A [kJ]
@@ -1272,7 +1272,7 @@ public class IF97 {
                 T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
 
         try {
-            Region region = Region.getRegionPT(p, T);
+            Region region = getRegionPT(p, T);
 
             if (region instanceof Region3) {
                 double v = region.specificVolumePT(p, T);
@@ -1475,27 +1475,35 @@ public class IF97 {
     }
 
     /**
-     * Boundary saturation pressure for the boundary between regions 3 and 4.
+     * Saturation pressure as a function of specific enthalpy &amp; specific
+     * entropy.
      *
      * @param enthalpy specific enthalpy
-     * @return saturation pressure
-     */
-    //public double saturationPressureH(double enthalpy) {
-    //    double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
-    //            p = Region4.saturationPressureH(h);
-    //    return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
-    //}
-    /**
-     * Boundary saturation pressure for the boundary between regions 3 and 4.
-     *
      * @param entropy specific entropy
      * @return saturation pressure
+     * @throws OutOfRangeException out-of-range exception
      */
-    //public double saturationPressureS(double entropy) {//TODO saturationPressureH throw OutOfRangeException
-    //    double s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
-    //            p = Region4.saturationPressureS(s);
-    //    return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
-    //}
+    public double saturationPressureHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                p;
+
+        try {
+            REGION4.checkHS(h, s);
+
+            p = REGION4.pressureHS(h, s);
+
+            if (p < p0) {
+                throw new OutOfRangeException(Quantity.p, p, p0);
+            }
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
+    }
+
     /**
      * Saturation pressure as a function of temperature.
      *
@@ -1509,15 +1517,42 @@ public class IF97 {
                 p;
 
         try {
-            Region4.checkT(T);
+            REGION4.checkT(T);
 
-            p = Region4.saturationPressureT(T);
+            p = REGION4.saturationPressureT(T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
 
         return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
+    }
+
+    /**
+     * Saturation temperature as a function of specific enthalpy &amp; specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return saturation temperature
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double saturationTemperatureHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
+                T;
+
+        try {
+            REGION4.checkHS(h, s);
+
+            T = REGION4.temperatureHS(h, s);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
     /**
@@ -1533,9 +1568,9 @@ public class IF97 {
                 T;
 
         try {
-            Region4.checkP(p);
+            REGION4.checkP(p);
 
-            T = Region4.saturationTemperatureP(p);
+            T = REGION4.saturationTemperatureP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1616,7 +1651,10 @@ public class IF97 {
                 h;
 
         try {
-            h = Region4.specificEnthalpyPX(p, vapourFraction);
+            REGION4.checkP(p);
+            REGION4.checkX(vapourFraction);
+
+            h = REGION4.specificEnthalpyPX(p, vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1628,10 +1666,6 @@ public class IF97 {
     /**
      * Specific enthalpy as a function of pressure for saturated liquid.
      *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEnthalpyPX(pressure, 0)</code>.
-     *
      * @param pressure saturation pressure
      * @return specific enthalpy
      * @throws OutOfRangeException out-of-range exception
@@ -1639,15 +1673,23 @@ public class IF97 {
      */
     public double specificEnthalpySaturatedLiquidP(double pressure) throws OutOfRangeException {
 
-        return specificEnthalpyPX(pressure, 0);
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h;
+
+        try {
+            REGION4.checkP(p);
+
+            h = REGION4.specificEnthalpySaturatedLiquidP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
     /**
      * Specific enthalpy as a function of temperature for saturated liquid.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEnthalpyTX(temperature, 0)</code>.
      *
      * @param temperature saturation temperature
      * @return specific enthalpy
@@ -1656,15 +1698,23 @@ public class IF97 {
      */
     public double specificEnthalpySaturatedLiquidT(double temperature) throws OutOfRangeException {
 
-        return specificEnthalpyTX(temperature, 0);
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                h;
+
+        try {
+            REGION4.checkT(T);
+
+            h = REGION4.specificEnthalpySaturatedLiquidP(REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
     /**
      * Specific enthalpy as a function of pressure for saturated vapour.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEnthalpyPX(pressure, 1)</code>.
      *
      * @param pressure saturation pressure
      * @return specific enthalpy
@@ -1673,15 +1723,23 @@ public class IF97 {
      */
     public double specificEnthalpySaturatedVapourP(double pressure) throws OutOfRangeException {
 
-        return specificEnthalpyPX(pressure, 1);
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h;
+
+        try {
+            REGION4.checkP(p);
+
+            h = REGION4.specificEnthalpySaturatedVapourP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
     /**
      * Specific enthalpy as a function of temperature for saturated vapour.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEnthalpyTX(temperature, 1)</code>.
      *
      * @param temperature saturation temperature
      * @return specific enthalpy
@@ -1690,7 +1748,19 @@ public class IF97 {
      */
     public double specificEnthalpySaturatedVapourT(double temperature) throws OutOfRangeException {
 
-        return specificEnthalpyTX(temperature, 1);
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                h;
+
+        try {
+            REGION4.checkT(T);
+
+            h = REGION4.specificEnthalpySaturatedVapourP(REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
     /**
@@ -1707,7 +1777,10 @@ public class IF97 {
                 h;
 
         try {
-            h = Region4.specificEnthalpyTX(T, vapourFraction);
+            REGION4.checkT(T);
+            REGION4.checkX(vapourFraction);
+
+            h = REGION4.specificEnthalpyPX(REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1734,7 +1807,7 @@ public class IF97 {
             Region region = getRegionPH(p, h);
 
             if (region instanceof Region4) {
-                s = Region4.specificEntropyPH(p, h);
+                s = REGION4.specificEntropyPH(p, h);
 
             } else {
                 double T = region.temperaturePH(p, h);
@@ -1787,7 +1860,10 @@ public class IF97 {
                 s;
 
         try {
-            s = Region4.specificEntropyPX(p, vapourFraction);
+            REGION4.checkP(p);
+            REGION4.checkX(vapourFraction);
+
+            s = REGION4.specificEntropyPX(p, vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1799,10 +1875,6 @@ public class IF97 {
     /**
      * Specific entropy as a function of pressure for saturated liquid.
      *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEntropyPX(pressure, 0)</code>.
-     *
      * @param pressure saturation pressure
      * @return specific entropy
      * @throws OutOfRangeException out-of-range exception
@@ -1810,15 +1882,23 @@ public class IF97 {
      */
     public double specificEntropySaturatedLiquidP(double pressure) throws OutOfRangeException {
 
-        return specificEntropyPX(pressure, 0);
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s;
+
+        try {
+            REGION4.checkP(p);
+
+            s = REGION4.specificEntropySaturatedLiquidP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
     /**
      * Specific entropy as a function of temperature for saturated liquid.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEntropyTX(temperature, 0)</code>.
      *
      * @param temperature saturation temperature
      * @return specific entropy
@@ -1827,15 +1907,23 @@ public class IF97 {
      */
     public double specificEntropySaturatedLiquidT(double temperature) throws OutOfRangeException {
 
-        return specificEntropyTX(temperature, 0);
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                s;
+
+        try {
+            REGION4.checkT(T);
+
+            s = REGION4.specificEntropySaturatedLiquidP(REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
     /**
      * Specific entropy as a function of pressure for saturated vapour.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEntropyPX(pressure, 1)</code>.
      *
      * @param pressure saturation pressure
      * @return specific entropy
@@ -1844,15 +1932,23 @@ public class IF97 {
      */
     public double specificEntropySaturatedVapourP(double pressure) throws OutOfRangeException {
 
-        return specificEntropyPX(pressure, 1);
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s;
+
+        try {
+            REGION4.checkP(p);
+
+            s = REGION4.specificEntropySaturatedVapourP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
     /**
      * Specific entropy as a function of temperature for saturated vapour.
-     *
-     * <p>
-     * This is a convenience method which simply calls
-     * <code>specificEntropyTX(temperature, 1)</code>.
      *
      * @param temperature saturation temperature
      * @return specific entropy
@@ -1861,7 +1957,19 @@ public class IF97 {
      */
     public double specificEntropySaturatedVapourT(double temperature) throws OutOfRangeException {
 
-        return specificEntropyTX(temperature, 1);
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                s;
+
+        try {
+            REGION4.checkT(T);
+
+            s = REGION4.specificEntropySaturatedVapourP(REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
     /**
@@ -1878,7 +1986,10 @@ public class IF97 {
                 s;
 
         try {
-            s = Region4.specificEntropyTX(T, vapourFraction);
+            REGION4.checkT(T);
+            REGION4.checkX(vapourFraction);
+
+            s = REGION4.specificEntropyPX(REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2137,7 +2248,106 @@ public class IF97 {
                 v;
 
         try {
-            v = Region4.specificVolumePX(p, vapourFraction);
+            REGION4.checkP(p);
+            REGION4.checkX(vapourFraction);
+
+            v = REGION4.specificVolumePX(p, vapourFraction);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
+    }
+
+    /**
+     * Specific volume as a function of pressure for saturated liquid.
+     *
+     * @param pressure absolute pressure
+     * @return specific volume
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificVolumeSaturatedLiquidP(double pressure) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                v;
+
+        try {
+            REGION4.checkP(p);
+
+            v = REGION4.specificVolumeSaturatedLiquidP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
+    }
+
+    /**
+     * Specific volume as a function of temperature for saturated liquid.
+     *
+     * @param temperature temperature
+     * @return specific volume
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificVolumeSaturatedLiquidT(double temperature) throws OutOfRangeException {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                v;
+
+        try {
+            REGION4.checkT(T);
+
+            v = REGION4.specificVolumeSaturatedLiquidP(REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
+    }
+
+    /**
+     * Specific volume as a function of pressure for saturated vapour.
+     *
+     * @param pressure absolute pressure
+     * @return specific volume
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificVolumeSaturatedVapourP(double pressure) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                v;
+
+        try {
+            REGION4.checkP(p);
+
+            v = REGION4.specificVolumeSaturatedVapourP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
+    }
+
+    /**
+     * Specific volume as a function of temperature for saturated vapour.
+     *
+     * @param temperature temperature
+     * @return specific volume
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificVolumeSaturatedVapourT(double temperature) throws OutOfRangeException {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                v;
+
+        try {
+            REGION4.checkT(T);
+
+            v = REGION4.specificVolumeSaturatedVapourP(REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2160,7 +2370,10 @@ public class IF97 {
                 v;
 
         try {
-            v = Region4.specificVolumeTX(T, vapourFraction);
+            REGION4.checkT(T);
+            REGION4.checkX(vapourFraction);
+
+            v = REGION4.specificVolumePX(REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2294,11 +2507,9 @@ public class IF97 {
                 sigma;
 
         try {
-            Region4.checkP(p);
+            REGION4.checkP(p);
 
-            double T = Region4.saturationTemperatureP(p);
-
-            sigma = Region4.surfaceTensionT(T);
+            sigma = REGION4.surfaceTensionT(REGION4.saturationTemperatureP(p));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2320,7 +2531,9 @@ public class IF97 {
                 sigma;
 
         try {
-            sigma = Region4.surfaceTensionT(T);
+            REGION4.checkT(T);
+
+            sigma = REGION4.surfaceTensionT(T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2659,7 +2872,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = Region.getRegionPT(p, T);
+            Region region = getRegionPT(p, T);
 
             rho = 1 / region.specificVolumePT(p, T);
             lambda = Calculate.thermalConductivityRhoT(rho, T);
@@ -2697,10 +2910,6 @@ public class IF97 {
     /**
      * Vapour fraction as a function of pressure &amp; specific enthalpy.
      *
-     * <p>
-     * Note: for highest accuracy, use enthalpy and entropy to determine vapour
-     * fraction ({@link #vapourFractionHS(double, double)}).
-     *
      * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
      * @return vapour fraction [-]
@@ -2722,10 +2931,6 @@ public class IF97 {
 
     /**
      * Vapour fraction as a function of pressure &amp; specific entropy.
-     *
-     * <p>
-     * Note: for highest accuracy, use enthalpy and entropy to determine vapour
-     * fraction ({@link #vapourFractionHS(double, double)}).
      *
      * @param pressure absolute pressure
      * @param entropy specific entropy
@@ -2749,9 +2954,7 @@ public class IF97 {
     /**
      * Vapour fraction as a function of temperature &amp; specific entropy.
      *
-     * <p>
-     * Note: whenever possible, use enthalpy to determine vapour fraction
-     * ({@link #vapourFractionHS(double, double)}) for highest accuracy.
+     * This method only returns values in the two-phase region.
      *
      * @param temperature temperature
      * @param entropy specific entropy
@@ -2765,7 +2968,10 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            return new Region4().vapourFractionTS(T, s);
+            REGION4.checkT(T);
+            //TODO REGION4.checkS(S);
+
+            return REGION4.vapourFractionTS(T, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2916,7 +3122,7 @@ public class IF97 {
          */
         private static double partialDerivativePT(double p, double T, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
-            Region region = Region.getRegionPT(p, T);
+            Region region = getRegionPT(p, T);
 
             double v = region.specificVolumePT(p, T),
                     s = region.specificEntropyRhoT(1 / v, T),
@@ -2954,14 +3160,12 @@ public class IF97 {
          */
         private static double partialDerivativeRhoT(double rho, double T, Quantity x, Quantity y, Quantity z) {
 
-            Region3 region3 = new Region3();
-
             double v = 1 / rho,
-                    p = region3.pressureRhoT(rho, T),
-                    s = region3.specificEntropyRhoT(rho, T),
-                    cv = region3.specificIsochoricHeatCapacityRhoT(rho, T),
-                    alphap = region3.relativePressureCoefficientRhoT(rho, T),
-                    betap = region3.isothermalStressCoefficientRhoT(rho, T);
+                    p = Region.REGION3.pressureRhoT(rho, T),
+                    s = Region.REGION3.specificEntropyRhoT(rho, T),
+                    cv = Region.REGION3.specificIsochoricHeatCapacityRhoT(rho, T),
+                    alphap = Region.REGION3.relativePressureCoefficientRhoT(rho, T),
+                    betap = Region.REGION3.isothermalStressCoefficientRhoT(rho, T);
 
             double[] dx = partialDerivativesVT(v, T, x, p, s, cv, alphap, betap),
                     dy = partialDerivativesVT(v, T, y, p, s, cv, alphap, betap),

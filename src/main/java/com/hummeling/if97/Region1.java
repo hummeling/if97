@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static com.hummeling.if97.IF97.*;
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
 
 /**
  * Region 1.
@@ -31,12 +31,13 @@ import static java.lang.Math.*;
  */
 final class Region1 extends Region {
 
-    private static final String NAME;
-    static final double Tref, pRef;
-    private static final double[][] IJnPT;
+    private final double Tref, pRef;
+    private final double[][] IJnPT, IJnHS, IJnPH, IJnPS;
 
-    static {
-        NAME = "Region 1";
+    Region1() {
+
+        super("Region 1");
+
         Tref = 1386;
         pRef = 16.53;
         IJnPT = new double[][]{
@@ -74,6 +75,68 @@ final class Region1 extends Region {
             {30, -39, -0.11947622640071e-22},
             {31, -40, +0.18228094581404e-23},
             {32, -41, -0.93537087292458e-25}};
+        IJnHS = new double[][]{
+            {0, 0, -.691997014660582},
+            {0, 1, -.183612548787560e2},
+            {0, 2, -.928332409297335e1},
+            {0, 4, .659639569909906e2},
+            {0, 5, -.162060388912024e2},
+            {0, 6, .450620017338667e3},
+            {0, 8, .854680678224170e3},
+            {0, 14, .607523214001162e4},
+            {1, 0, .326487682621856e2},
+            {1, 1, -.269408844582931e2},
+            {1, 4, -.319947848334300e3},
+            {1, 6, -.928354307043320e3},
+            {2, 0, .303634537455249e2},
+            {2, 1, -.650540422444146e2},
+            {2, 10, -.430991316516130e4},
+            {3, 4, -.747512324096068e3},
+            {4, 1, .730000345529245e3},
+            {4, 4, .114284032569021e4},
+            {5, 0, -.436407041874559e3}};
+        IJnPH = new double[][]{
+            {0, 00, -.23872489924521e3},
+            {0, 01, 0.40421188637945e3},
+            {0, 02, 0.11349746881718e3},
+            {0, 06, -.58457616048039e1},
+            {0, 22, -.15285482413140e-3},
+            {0, 32, -.10866707695377e-5},
+            {1, 00, -.13391744872602e2},
+            {1, 01, 0.43211039183559e2},
+            {1, 02, -.54010067170506e2},
+            {1, 03, 0.30535892203916e2},
+            {1, 04, -.65964749423638e1},
+            {1, 10, 0.93965400878363e-2},
+            {1, 32, 0.11573647505340e-6},
+            {2, 10, -.25858641282073e-4},
+            {2, 32, -.40644363084799e-8},
+            {3, 10, 0.66456186191635e-7},
+            {3, 32, 0.80670734103027e-10},
+            {4, 32, -.93477771213947e-12},
+            {5, 32, 0.58265442020601e-14},
+            {6, 32, -.15020185953503e-16}};
+        IJnPS = new double[][]{
+            {0, 0, 0.17478268058307e3},
+            {0, 1, 0.34806930892873e2},
+            {0, 2, 0.65292584978455e1},
+            {0, 3, 0.33039981775489},
+            {0, 11, -0.19281382923196e-6},
+            {0, 31, -0.24909197244573e-22},
+            {1, 0, -0.26107636489332},
+            {1, 1, 0.22592965981586},
+            {1, 2, -0.64256463395226e-1},
+            {1, 3, 0.78876289270526e-2},
+            {1, 12, 0.35672110607366e-9},
+            {1, 31, 0.17332496994895e-23},
+            {2, 0, 0.56608900654837e-3},
+            {2, 1, -0.32635483139717e-3},
+            {2, 2, 0.44778286690632e-4},
+            {2, 9, -0.51322156908507e-9},
+            {2, 31, -0.42522657042207e-25},
+            {3, 10, 0.26400441360689e-12},
+            {3, 32, 0.78124600459723e-28},
+            {4, 32, -0.30732199903668e-30}};
     }
 
     /**
@@ -83,7 +146,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return gamma
      */
-    private static double gamma(double pi, double tau) {
+    private double gamma(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -101,7 +164,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return d/dpi gamma
      */
-    private static double gammaPi(double pi, double tau) {
+    private double gammaPi(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -119,7 +182,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return d2/dpi2 gamma
      */
-    private static double gammaPiPi(double pi, double tau) {
+    private double gammaPiPi(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -137,7 +200,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return d/dpi d/dtau gamma
      */
-    private static double gammaPiTau(double pi, double tau) {
+    private double gammaPiTau(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -155,7 +218,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return d/dtau gamma
      */
-    private static double gammaTau(double pi, double tau) {
+    private double gammaTau(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -173,7 +236,7 @@ final class Region1 extends Region {
      * @param tau dimensionless temperature [K]
      * @return d2/dtau2 gamma
      */
-    private static double gammaTauTau(double pi, double tau) {
+    private double gammaTauTau(double pi, double tau) {
 
         double out = 0;
         double[] x = {7.1 - pi, tau - 1.222};
@@ -182,12 +245,6 @@ final class Region1 extends Region {
             out += ijn[2] * pow(x[0], ijn[0]) * ijn[1] * (ijn[1] - 1) * pow(x[1], ijn[1] - 2);
         }
         return out;
-    }
-
-    @Override
-    public String getName() {
-
-        return NAME;
     }
 
     @Override
@@ -213,28 +270,8 @@ final class Region1 extends Region {
 
         double pi = 0;
         double[] x = {enthalpy / 3400 + 0.05, entropy / 7.6 + 0.05};
-        double[][] IJn = {
-            {0, 0, -.691997014660582},
-            {0, 1, -.183612548787560e2},
-            {0, 2, -.928332409297335e1},
-            {0, 4, .659639569909906e2},
-            {0, 5, -.162060388912024e2},
-            {0, 6, .450620017338667e3},
-            {0, 8, .854680678224170e3},
-            {0, 14, .607523214001162e4},
-            {1, 0, .326487682621856e2},
-            {1, 1, -.269408844582931e2},
-            {1, 4, -.319947848334300e3},
-            {1, 6, -.928354307043320e3},
-            {2, 0, .303634537455249e2},
-            {2, 1, -.650540422444146e2},
-            {2, 10, -.430991316516130e4},
-            {3, 4, -.747512324096068e3},
-            {4, 1, .730000345529245e3},
-            {4, 4, .114284032569021e4},
-            {5, 0, -.436407041874559e3}};
 
-        for (double[] ijn : IJn) {
+        for (double[] ijn : IJnHS) {
             pi += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
         return pi * 100;
@@ -328,29 +365,8 @@ final class Region1 extends Region {
     double temperaturePH(double pressure, double enthalpy) {
 
         double out = 0, x = enthalpy / 2500 + 1;
-        double[][] IJn = {
-            {0, 00, -.23872489924521e3},
-            {0, 01, 0.40421188637945e3},
-            {0, 02, 0.11349746881718e3},
-            {0, 06, -.58457616048039e1},
-            {0, 22, -.15285482413140e-3},
-            {0, 32, -.10866707695377e-5},
-            {1, 00, -.13391744872602e2},
-            {1, 01, 0.43211039183559e2},
-            {1, 02, -.54010067170506e2},
-            {1, 03, 0.30535892203916e2},
-            {1, 04, -.65964749423638e1},
-            {1, 10, 0.93965400878363e-2},
-            {1, 32, 0.11573647505340e-6},
-            {2, 10, -.25858641282073e-4},
-            {2, 32, -.40644363084799e-8},
-            {3, 10, 0.66456186191635e-7},
-            {3, 32, 0.80670734103027e-10},
-            {4, 32, -.93477771213947e-12},
-            {5, 32, 0.58265442020601e-14},
-            {6, 32, -.15020185953503e-16}};
 
-        for (double[] ijn : IJn) {
+        for (double[] ijn : IJnPH) {
             out += ijn[2] * pow(pressure, ijn[0]) * pow(x, ijn[1]);
         }
         return out;
@@ -360,29 +376,8 @@ final class Region1 extends Region {
     double temperaturePS(double pressure, double entropy) {
 
         double out = 0;
-        double[][] IJn = {
-            {0, 0, 0.17478268058307e3},
-            {0, 1, 0.34806930892873e2},
-            {0, 2, 0.65292584978455e1},
-            {0, 3, 0.33039981775489},
-            {0, 11, -0.19281382923196e-6},
-            {0, 31, -0.24909197244573e-22},
-            {1, 0, -0.26107636489332},
-            {1, 1, 0.22592965981586},
-            {1, 2, -0.64256463395226e-1},
-            {1, 3, 0.78876289270526e-2},
-            {1, 12, 0.35672110607366e-9},
-            {1, 31, 0.17332496994895e-23},
-            {2, 0, 0.56608900654837e-3},
-            {2, 1, -0.32635483139717e-3},
-            {2, 2, 0.44778286690632e-4},
-            {2, 9, -0.51322156908507e-9},
-            {2, 31, -0.42522657042207e-25},
-            {3, 10, 0.26400441360689e-12},
-            {3, 32, 0.78124600459723e-28},
-            {4, 32, -0.30732199903668e-30}};
 
-        for (double[] ijn : IJn) {
+        for (double[] ijn : IJnPS) {
             out += ijn[2] * pow(pressure, ijn[0]) * pow(entropy + 2, ijn[1]);
         }
         return out;

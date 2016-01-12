@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
-import static com.hummeling.if97.Region4.*;
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
 
 /**
  * Abstract region class.
@@ -31,24 +30,45 @@ import static java.lang.Math.*;
  */
 abstract class Region {
 
-// <editor-fold defaultstate="collapsed" desc="fields">
-    private static final String NAME = "Region";
-    //final String NAME = null;
+    private final String NAME;
+    static final double ps13, p5, p132, hs13, s2, s2bc, ss13, hs23, ss23, T13, T25, T5;
     private static final double[] nB23;
-// </editor-fold>
+    static final Region REGION1, REGION2;
+    static final Region3 REGION3;
+    static final Region4 REGION4;
+    private static final Region REGION5;
 
     static {
+        REGION1 = new Region1();
+        REGION2 = new Region2();
+        REGION3 = new Region3();
+        REGION4 = new Region4();
+        REGION5 = new Region5();
 
-        //double pSat = Region4.saturationPressureT(IF97.T0);
-        //h1 = new double[]{
-        //    new Region1().specificEnthalpyPT(pSat, IF97.T0),
-        //    new Region1().specificEnthalpyPT(100, IF97.T0)};
+        p5 = 50; // upper pressure boundary of region 5 [MPa]
+        p132 = 100; // upper pressure boundary of regions 1, 3, and 2 [MPa]
+        T13 = 623.15; // temperature boundary between region 1 and 3 (350℃) [K]
+        T25 = 1073.15; // temperature boundary between region 2 and 5 (800℃) [K]
+        T5 = 2273.15; // upper temperature boundary of region 5 (2000℃) [K]
+        s2 = REGION2.specificEntropyPT(IF97.p0, IF97.T0);
+        s2bc = 5.85;
+        ps13 = REGION4.saturationPressureT(T13);
+        hs13 = REGION1.specificEnthalpyPT(ps13, T13);
+        ss13 = REGION1.specificEntropyPT(ps13, T13);
+        hs23 = REGION2.specificEnthalpyPT(ps13, T13);
+        ss23 = REGION2.specificEntropyPT(ps13, T13);
+
         nB23 = new double[]{
             0.34805185628969e3,
             -.11671859879975e1,
             0.10192970039326e-2,
             0.57254459862746e3,
             0.13918839778870e2};
+    }
+
+    Region(String name) {
+
+        NAME = name;
     }
 
     String getName() {
@@ -66,53 +86,50 @@ abstract class Region {
      */
     static Region getRegionHS(double enthalpy, double entropy) throws OutOfRangeException {
 
-        Region region1 = new Region1(), region2 = new Region2();
-        Region3 region3 = new Region3();
         double[] hB23limits = {2.563592004e3, 2.812942061e3},
                 sB23limits = {5.048096828, 5.260578707};
 
         /*
          Outer boundary Checks
          */
-        double s1 = region1.specificEntropyPT(100, IF97.T0),
-                s2 = region2.specificEntropyPT(100, 1073.15),
-                pSat = Region4.saturationPressureT(IF97.T0);
+        double s1 = REGION1.specificEntropyPT(p132, IF97.T0),
+                s2 = REGION2.specificEntropyPT(p132, T25);
 
         double[] h1 = {
-            new Region1().specificEnthalpyPT(pSat, IF97.T0),
-            new Region1().specificEnthalpyPT(100, IF97.T0)};
+            REGION1.specificEnthalpyPT(IF97.p0, IF97.T0),
+            REGION1.specificEnthalpyPT(p132, IF97.T0)};
 
         if (enthalpy < h1[0]) {
             throw new OutOfRangeException(IF97.Quantity.h, enthalpy, h1[0]);
 
         } else if (entropy < 4.7516100567e-4) {
-            double p1 = region1.pressureHS(enthalpy, entropy);
+            double p1 = REGION1.pressureHS(enthalpy, entropy);
 
-            if (region1.temperaturePH(p1, enthalpy) + 0.024 < IF97.T0) {
-                throw new OutOfRangeException(IF97.Quantity.s, entropy, region1.specificEntropyPT(p1, IF97.T0));
+            if (REGION1.temperaturePH(p1, enthalpy) + 0.024 < IF97.T0) {
+                throw new OutOfRangeException(IF97.Quantity.s, entropy, REGION1.specificEntropyPT(p1, IF97.T0));
             }
 
         }
         if (s1 <= entropy && entropy <= s2) {
-            if (entropy <= region1.specificEntropyPT(100, 623.15)) {
-                double h1Lim = region1.specificEnthalpyPT(100, region1.temperaturePS(100, entropy));
+            if (entropy <= REGION1.specificEntropyPT(p132, T13)) {
+                double h1Lim = REGION1.specificEnthalpyPT(p132, REGION1.temperaturePS(p132, entropy));
 
                 if (enthalpy > h1Lim) {
                     throw new OutOfRangeException(IF97.Quantity.h, enthalpy, h1Lim);
                 }
 
                 //} else if (entropy <= IF97.sc) {
-                //    double rho = 1 / region3.specificVolumePS(100, entropy),
-                //            T = region3.temperaturePS(100, entropy),
+                //    double rho = 1 / region3.specificVolumePS(p132, entropy),
+                //            T = region3.temperaturePS(p132, entropy),
                 //            hLim = region3.specificEnthalpyRhoT(rho, T);
                 //
                 //    if (enthalpy > hLim) {
                 //        throw new OutOfRangeException(IF97.Quantity.h, enthalpy, hLim);
                 //    }
-            } else if (entropy <= region2.specificEntropyPT(100, 863.15)) {
-                double rho = 1 / region3.specificVolumePS(100, entropy),
-                        T = region3.temperaturePS(100, entropy),
-                        hLim = region3.specificEnthalpyRhoT(rho, T);
+            } else if (entropy <= REGION2.specificEntropyPT(p132, 863.15)) {
+                double rho = 1 / REGION3.specificVolumePS(p132, entropy),
+                        T = REGION3.temperaturePS(p132, entropy),
+                        hLim = REGION3.specificEnthalpyRhoT(rho, T);
 
                 if (enthalpy > hLim) {
                     throw new OutOfRangeException(IF97.Quantity.h, enthalpy, hLim);
@@ -129,43 +146,43 @@ abstract class Region {
         if (entropy <= 3.778281340) {
             // region 1, 3, or 4
             if (enthalpy <= specificEnthalpy1(entropy)) {
-                return new Region4();
+                return REGION4;
 
             } else if (enthalpy > specificEnthalpyB13(entropy)) {
-                return region3;
+                return REGION3;
 
             } else {
-                return new Region1();
+                return REGION1;
             }
 
         } else if (entropy <= IF97.sc) {
             // region 3 or 4
-            return enthalpy > specificEnthalpy3a(entropy) ? region3 : new Region4();
+            return enthalpy > specificEnthalpy3a(entropy) ? REGION3 : REGION4;
 
-        } else if (entropy < 5.85) {
+        } else if (entropy < s2bc) {
             if (enthalpy <= specificEnthalpy2c3b(entropy)) {
-                return new Region4();
+                return REGION4;
 
-            } else {
-                // region 2 or region 3
+            } else // region 2 or region 3
+            {
                 if (enthalpy <= hB23limits[0] || entropy <= sB23limits[0]) {
-                    return region3;
+                    return REGION3;
 
                 } else if (enthalpy >= hB23limits[1] || entropy >= sB23limits[1]) {
-                    return region2;
+                    return REGION2;
 
                 } else if (hB23limits[0] < enthalpy && enthalpy < hB23limits[1] && sB23limits[0] < entropy && entropy < sB23limits[1]) {
-                    return region2.pressureHS(enthalpy, entropy) > pressureB23(temperatureB23HS(enthalpy, entropy)) ? region3 : region2;
+                    return REGION2.pressureHS(enthalpy, entropy) > pressureB23(temperatureB23HS(enthalpy, entropy)) ? REGION3 : REGION2;
                 }
             }
 
         } else if (entropy <= 9.155759395) {
             if (enthalpy <= specificEnthalpy2ab(entropy)) {
-                return new Region4();
+                return REGION4;
             }
         }
 
-        return region2;
+        return REGION2;
     }
 
     static Region getRegionPH(double pressure, double enthalpy) throws OutOfRangeException {
@@ -173,55 +190,52 @@ abstract class Region {
         /*
          Checks
          */
-        double pSat0 = saturationPressureT(IF97.T0);
+        if (pressure < IF97.p0) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, IF97.p0);
 
-        if (pressure < pSat0) {
-            throw new OutOfRangeException(IF97.Quantity.p, pressure, pSat0);
-
-        } else if (pressure > 100) {
-            throw new OutOfRangeException(IF97.Quantity.p, pressure, 100);
+        } else if (pressure > p132) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, p132);
         }
 
-        Region region1 = new Region1(), region2 = new Region2();
-        double T623 = 623.15, T1073 = 1073.15,
-                h2 = region2.specificEnthalpyPT(pressure, T1073);
+        double h25 = REGION2.specificEnthalpyPT(pressure, T25);
 
 
         /*
          Select Region
          */
-        if (enthalpy > h2) {
-            if (pressure > 50) {
-                throw new OutOfRangeException(new IF97.Quantity[]{IF97.Quantity.p, IF97.Quantity.h}, new double[]{pressure, enthalpy}, new double[]{50, h2});
+        if (enthalpy > h25) {
+            if (pressure > p5) {
+                throw new OutOfRangeException(new IF97.Quantity[]{IF97.Quantity.p, IF97.Quantity.h}, new double[]{pressure, enthalpy}, new double[]{p5, h25});
             }
-            return new Region5();
+            return REGION5;
         }
-        double pSat623 = saturationPressureT(T623);
 
-        if (pressure < pSat623) {
+        if (pressure <= ps13) {
             // region 1, 4, or 2
-            if (enthalpy < region1.specificEnthalpyPT(pressure, saturationTemperatureP(pressure))) {
-                return region1;
+            double Ts = REGION4.saturationTemperatureP(pressure);
 
-            } else if (enthalpy > region2.specificEnthalpyPT(pressure, saturationTemperatureP(pressure))) {
-                return region2;
+            if (enthalpy < REGION1.specificEnthalpyPT(pressure, Ts)) {
+                return REGION1;
+
+            } else if (enthalpy > REGION2.specificEnthalpyPT(pressure, Ts)) {
+                return REGION2;
 
             } else {
-                return new Region4();
+                return REGION4;
             }
 
-        } else if (region1.specificEnthalpyPT(pSat623, T623) <= enthalpy && enthalpy <= region2.specificEnthalpyPT(pSat623, T623)) {
+        } else if (hs13 <= enthalpy && enthalpy <= hs23) {
             // region 3 or 4
-            return pressure > saturationPressureH(enthalpy) ? new Region3() : new Region4();
+            return pressure > REGION4.saturationPressureB34H(enthalpy) * (1 - 4.3e-6) ? REGION3 : REGION4;
 
-        } else if (enthalpy <= region1.specificEnthalpyPT(pressure, T623)) {
-            return region1;
+        } else if (enthalpy <= REGION1.specificEnthalpyPT(pressure, T13)) {
+            return REGION1;
 
-        } else if (enthalpy > region2.specificEnthalpyPT(pressure, temperatureB23P(pressure))) {
-            return region2;
+        } else if (enthalpy >= REGION2.specificEnthalpyPT(pressure, temperatureB23P(pressure))) {
+            return REGION2;
 
         } else {
-            return new Region3();
+            return REGION3;
         }
     }
 
@@ -268,34 +282,34 @@ abstract class Region {
         if (pressure <= 0) {
             throw new OutOfRangeException(IF97.Quantity.p, pressure, 0);
 
-        } else if (pressure > 100) {
-            throw new OutOfRangeException(IF97.Quantity.p, pressure, 100);
+        } else if (pressure > p132) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, p132);
 
         } else if (temperature < IF97.T0) {
             throw new OutOfRangeException(IF97.Quantity.T, temperature, IF97.T0);
 
-        } else if (temperature > 1073.15 && pressure > 50) {
-            throw new OutOfRangeException(new IF97.Quantity[]{IF97.Quantity.p, IF97.Quantity.T}, new double[]{pressure, temperature}, new double[]{50, 1073.15});
+        } else if (temperature > T25 && pressure > p5) {
+            throw new OutOfRangeException(new IF97.Quantity[]{IF97.Quantity.p, IF97.Quantity.T}, new double[]{pressure, temperature}, new double[]{p5, T25});
 
-        } else if (temperature > 2073.15) {
-            throw new OutOfRangeException(IF97.Quantity.T, temperature, 2073.15);
+        } else if (temperature > T5) {
+            throw new OutOfRangeException(IF97.Quantity.T, temperature, T5);
         }
 
         /*
          Select Region
          */
-        if (temperature > 1073.15) {
-            return new Region5();
+        if (temperature > T25) {
+            return REGION5;
 
-        } else if (temperature > 623.15) {
+        } else if (temperature > T13) {
             if (pressure > pressureB23(temperature)) {
-                return new Region3();
+                return REGION3;
             }
-        } else if (pressure > saturationPressureT(temperature)) {
-            return new Region1();
+        } else if (pressure > REGION4.saturationPressureT(temperature)) {
+            return REGION1;
         }
         //return pressure > 10 ? new Region2() : new Region2Meta();
-        return new Region2();
+        return REGION2;
     }
 
     /**
@@ -311,18 +325,14 @@ abstract class Region {
         /*
          Checks
          */
-        Region region1 = new Region1(), region2 = new Region2();
-        double T623 = 623.15,
-                pSat273 = saturationPressureT(IF97.T0),
-                pSat623 = saturationPressureT(T623),
-                s1 = region1.specificEntropyPT(pressure, IF97.T0),
-                s2 = region2.specificEntropyPT(pressure, 1073.15);
+        double s1 = REGION1.specificEntropyPT(pressure, IF97.T0),
+                s2 = REGION2.specificEntropyPT(pressure, T25);
 
-        if (pressure < pSat273) {
-            throw new OutOfRangeException(IF97.Quantity.p, pressure, pSat273);
+        if (pressure < IF97.p0) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, IF97.p0);
 
-        } else if (pressure > 100) {
-            throw new OutOfRangeException(IF97.Quantity.p, pressure, 100);
+        } else if (pressure > p132) {
+            throw new OutOfRangeException(IF97.Quantity.p, pressure, p132);
 
         } else if (entropy < s1) {
             throw new OutOfRangeException(IF97.Quantity.s, entropy, s1);
@@ -334,28 +344,30 @@ abstract class Region {
         /*
          Select Region
          */
-        if (pressure < pSat623) {
-            if (entropy < region1.specificEntropyPT(pressure, saturationTemperatureP(pressure))) {
-                return region1;
+        if (pressure < ps13) {
+            double Tsat = REGION4.saturationTemperatureP(pressure);
 
-            } else if (entropy > region2.specificEntropyPT(pressure, saturationTemperatureP(pressure))) {
-                return region2;
+            if (entropy < REGION1.specificEntropyPT(pressure, Tsat)) {
+                return REGION1;
+
+            } else if (entropy > REGION2.specificEntropyPT(pressure, Tsat)) {
+                return REGION2;
 
             } else {
-                return new Region4();
+                return REGION4;
             }
 
-        } else if (region1.specificEntropyPT(pSat623, T623) <= entropy && entropy <= region2.specificEntropyPT(pSat623, T623) && pressure < saturationPressure3(entropy)) {
-            return new Region4();
+        } else if (REGION1.specificEntropyPT(ps13, T13) <= entropy && entropy <= REGION2.specificEntropyPT(ps13, T13) && pressure < saturationPressure3(entropy)) {
+            return REGION4;
 
-        } else if (entropy <= region1.specificEntropyPT(pressure, T623)) {
-            return region1;
+        } else if (entropy <= REGION1.specificEntropyPT(pressure, T13)) {
+            return REGION1;
 
-        } else if (entropy < region2.specificEntropyPT(pressure, temperatureB23P(pressure))) {
-            return new Region3();
+        } else if (entropy < REGION2.specificEntropyPT(pressure, temperatureB23P(pressure))) {
+            return REGION3;
 
         } else {
-            return region2;
+            return REGION2;
         }
     }
 
@@ -459,14 +471,6 @@ abstract class Region {
         return pi * 22;
     }
 
-    /*
-     * Pressure as a function of density & temperature.
-     *
-     * @param rho density [kg/m&sup3;]
-     * @param T temperature [K]
-     * @return pressure [MPa]
-     */
-    //abstract double pressureRhoT(double rho, double T);
     static double specificEnthalpy1(double s) {
 
         double eta = 0, sigma = s / 3.8;
@@ -576,6 +580,12 @@ abstract class Region {
         return pow(eta, 4) * 2800;
     }
 
+    /**
+     * Specific enthalpy saturated liquid between region 3 and 4.
+     *
+     * @param s specific entropy [kJ/kg-K]
+     * @return specific enthalpy [kJ/kg]
+     */
     static double specificEnthalpy3a(double s) {
 
         double eta = 0, sigma = s / 3.8;
@@ -628,7 +638,7 @@ abstract class Region {
     double specificEnthalpyPS(double p, double s) throws OutOfRangeException {
 
         if (this instanceof Region4) {
-            return Region4.specificEnthalpyPX(p, vapourFractionPS(p, s));
+            return REGION4.specificEnthalpyPX(p, vapourFractionPS(p, s));
 
         } else {
             return specificEnthalpyPT(p, temperaturePS(p, s));
@@ -802,7 +812,7 @@ abstract class Region {
         if (this instanceof Region4) {
             double x = vapourFractionHS(h, s);
 
-            return Region4.specificVolumePX(p, x);
+            return REGION4.specificVolumePX(p, x);
         }
 
         double T = temperaturePS(p, s);
@@ -823,7 +833,7 @@ abstract class Region {
         if (this instanceof Region4) {
             double x = vapourFractionPH(p, h);
 
-            return Region4.specificVolumePX(p, x);
+            return REGION4.specificVolumePX(p, x);
         }
 
         return specificVolumePT(p, temperaturePH(p, h));
@@ -842,7 +852,7 @@ abstract class Region {
         if (this instanceof Region4) {
             double x = vapourFractionPS(p, s);
 
-            return Region4.specificVolumePX(p, x);
+            return REGION4.specificVolumePX(p, x);
         }
 
         double T = temperaturePS(p, s);
@@ -896,7 +906,8 @@ abstract class Region {
     }
 
     /**
-     * Auxiliary equation for the boundary between regions 2 and 3.
+     * Auxiliary equation for the boundary between regions 2 and 3. [IF97
+     * Supplementary Release S04, June 2014]
      *
      * @param h specific enthalpy [kJ/kg]
      * @param s specific entropy [kJ/kg-K]

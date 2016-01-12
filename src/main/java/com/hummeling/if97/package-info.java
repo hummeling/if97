@@ -5,7 +5,7 @@
  * international standards for transport and other properties.</p>
  *
  * <p>
- * Copyright 2009-2015 Hummeling Engineering BV
+ * Copyright 2009-2016 Hummeling Engineering BV
  * (<a href="http://www.hummeling.com">www.hummeling.com</a>).</p>
  *
  * <p>

@@ -1,5 +1,5 @@
 /*
- * Region2.java
+ * Region2Meta.java
  *
  * This file is part of IF97.
  *
@@ -16,12 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2015 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2016 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static com.hummeling.if97.IF97.*;
-import static java.lang.Math.*;
+import static java.lang.StrictMath.*;
 
 /**
  * Region 2 metastable-vapour.
@@ -32,11 +32,12 @@ import static java.lang.Math.*;
 @Deprecated
 class Region2Meta extends Region2 {
 
-    private static final String NAME;
-    private static final double[][] Jno, IJnr;
+    private final double[][] Jno, IJnr;
 
-    static {
-        NAME = "Region 2 metastable-vapour";
+    Region2Meta() {
+
+        super("Region 2 metastable-vapour");
+
         Jno = new double[][]{
             {0, -00.96937268393049e1},
             {1, 000.10087275970006e2},
@@ -70,7 +71,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaO(double pi, double tau) {
+    private double gammaO(double pi, double tau) {
 
         double out = log(pi);
 
@@ -86,7 +87,7 @@ class Region2Meta extends Region2 {
      * @param pi dimensionless pressure [MPa]
      * @return
      */
-    private static double gammaOPi(double pi) {
+    private double gammaOPi(double pi) {
 
         return 1 / pi;
     }
@@ -97,7 +98,7 @@ class Region2Meta extends Region2 {
      * @param pi dimensionless pressure [MPa]
      * @return
      */
-    private static double gammaOPiPi(double pi) {
+    private double gammaOPiPi(double pi) {
 
         return -1 / (pi * pi);
     }
@@ -107,7 +108,7 @@ class Region2Meta extends Region2 {
      *
      * @return
      */
-    private static double gammaOPiTau() {
+    private double gammaOPiTau() {
 
         return 0;
     }
@@ -118,7 +119,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaOTau(double tau) {
+    private double gammaOTau(double tau) {
 
         double out = 0;
 
@@ -134,7 +135,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaOTauTau(double tau) {
+    private double gammaOTauTau(double tau) {
 
         double out = 0;
 
@@ -151,7 +152,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaR(double pi, double tau) {
+    private double gammaR(double pi, double tau) {
 
         double out = 0;
 
@@ -168,7 +169,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaRPi(double pi, double tau) {
+    private double gammaRPi(double pi, double tau) {
 
         double out = 0;
 
@@ -185,7 +186,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaRPiPi(double pi, double tau) {
+    private double gammaRPiPi(double pi, double tau) {
 
         double out = 0;
 
@@ -202,7 +203,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaRPiTau(double pi, double tau) {
+    private double gammaRPiTau(double pi, double tau) {
 
         double out = 0;
 
@@ -219,7 +220,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaRTau(double pi, double tau) {
+    private double gammaRTau(double pi, double tau) {
 
         double out = 0;
 
@@ -236,7 +237,7 @@ class Region2Meta extends Region2 {
      * @param tau dimensionless temperature [K]
      * @return
      */
-    private static double gammaRTauTau(double pi, double tau) {
+    private double gammaRTauTau(double pi, double tau) {
 
         double out = 0;
 
@@ -244,12 +245,6 @@ class Region2Meta extends Region2 {
             out += ijnr[2] * pow(pi, ijnr[0]) * ijnr[1] * (ijnr[1] - 1) * pow(tau - 0.5, ijnr[1] - 2);
         }
         return out;
-    }
-
-    @Override
-    public String getName() {
-
-        return NAME;
     }
 
     @Override
