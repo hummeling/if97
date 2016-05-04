@@ -22,6 +22,8 @@ package com.hummeling.if97;
 
 import static com.hummeling.if97.Region.*;
 import static java.lang.StrictMath.*;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -3646,6 +3648,7 @@ public class IF97 {
                 THERMAL_CONDUCTIVITY,
                 THERMAL_DIFFUSIVITY,
                 WAVELENGTH;
+        final Map<Quantity, String> UNITS;
 
         /**
          * Scale and bias values for conversion to default unit system.
@@ -3696,6 +3699,85 @@ public class IF97 {
             THERMAL_CONDUCTIVITY = thermalConductivity;
             THERMAL_DIFFUSIVITY = kinematicViscosity.clone(); // same unit
             WAVELENGTH = wavelength;
+
+            UNITS = new EnumMap<Quantity, String>(Quantity.class);
+            double tol = 1e-9;
+
+            if (abs(pressure[0] - 1) < tol) {
+                /*
+                 Default
+                 */
+                UNITS.put(Quantity.p, "MPa(a)");
+                UNITS.put(Quantity.T, "K");
+                UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.u, "kJ/kg");
+                UNITS.put(Quantity.h, "kJ/kg");
+                UNITS.put(Quantity.s, "kJ/(kg·K)");
+                UNITS.put(Quantity.lambda, "W/(m·K)");
+                UNITS.put(Quantity.g, "kJ/kg");
+                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.x, "");
+
+            } else if (abs(pressure[0] - 0.1) < tol) {
+                /*
+                 Engineering
+                 */
+                UNITS.put(Quantity.p, "bar(a)");
+                UNITS.put(Quantity.T, "°C");
+                UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.u, "kJ/kg");
+                UNITS.put(Quantity.h, "kJ/kg");
+                UNITS.put(Quantity.s, "kJ/(kg·K)");
+                UNITS.put(Quantity.lambda, "kW/(m·K)");
+                UNITS.put(Quantity.g, "kJ/kg");
+                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.x, "");
+
+            } else if (abs(pressure[0] - 1e-6) < tol) {
+                /*
+                 SI
+                 */
+                UNITS.put(Quantity.p, "Pa(a)");
+                UNITS.put(Quantity.T, "K");
+                UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.u, "J/kg");
+                UNITS.put(Quantity.h, "J/kg");
+                UNITS.put(Quantity.s, "J/(kg·K)");
+                UNITS.put(Quantity.lambda, "W/(m·K)");
+                UNITS.put(Quantity.g, "J/kg");
+                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.x, "");
+
+            } else if (abs(pressure[0] - psi) < tol) {
+                /*
+                 Imperial
+                 */
+                UNITS.put(Quantity.p, "psi(a)");
+                UNITS.put(Quantity.T, "°F");
+                UNITS.put(Quantity.v, "ft³/lb");
+                UNITS.put(Quantity.rho, "lb/ft³");
+                UNITS.put(Quantity.u, "BTU/lb");
+                UNITS.put(Quantity.h, "BTU/lb");
+                UNITS.put(Quantity.s, "BTU/(lb·R)");
+                UNITS.put(Quantity.lambda, "BTU/(hr·ft·R)");
+                UNITS.put(Quantity.g, "BTU/lb");
+                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.x, "");
+
+            } else {
+                throw new IllegalStateException("Unsupported unit system");
+            }
+        }
+
+        String getUnit(Quantity quantity) {
+
+            if (!UNITS.containsKey(quantity)) {
+                throw new IllegalArgumentException("Unknown unit for quantity: " + quantity);
+            }
+            return UNITS.get(quantity);
         }
     }
 }

@@ -34,6 +34,7 @@ public class OutOfRangeException extends IllegalArgumentException {
 
     private final IF97.Quantity[] QUANTITIES;
     private final double[] VALUES, LIMITS;
+    private final IF97.UnitSystem UNIT_SYSTEM;
 
     OutOfRangeException(IF97.Quantity quantity, double value, double limit) {
 
@@ -41,6 +42,11 @@ public class OutOfRangeException extends IllegalArgumentException {
     }
 
     OutOfRangeException(IF97.Quantity[] quantities, double[] values, double[] limits) {
+
+        this(quantities, values, limits, IF97.UnitSystem.DEFAULT);
+    }
+
+    OutOfRangeException(IF97.Quantity[] quantities, double[] values, double[] limits, IF97.UnitSystem unitSystem) {
 
         if (quantities == null || values == null || limits == null) {
             throw new IllegalArgumentException("Arguments shouldn't be null.");
@@ -55,6 +61,7 @@ public class OutOfRangeException extends IllegalArgumentException {
         QUANTITIES = quantities.clone();
         VALUES = values.clone();
         LIMITS = limits.clone();
+        UNIT_SYSTEM = unitSystem;
     }
 
     OutOfRangeException convertFromDefault(IF97.UnitSystem unitSystem) {
@@ -67,7 +74,7 @@ public class OutOfRangeException extends IllegalArgumentException {
             limits[i] = IF97.convertFromDefault(unitSystem, QUANTITIES[i], LIMITS[i]);
         }
 
-        return new OutOfRangeException(QUANTITIES, values, limits);
+        return new OutOfRangeException(QUANTITIES, values, limits, unitSystem);
     }
 
     /**
@@ -86,19 +93,20 @@ public class OutOfRangeException extends IllegalArgumentException {
         String out = "";
 
         for (int i = 0; i < QUANTITIES.length; i++) {
-            String quantity = QUANTITIES[i].toString();
+            String quantity = QUANTITIES[i].toString(),
+                    unit = UNIT_SYSTEM.getUnit(QUANTITIES[i]);
 
             switch (i) {
                 case 0:
                     quantity = quantity.substring(0, 1).toUpperCase() + quantity.substring(1);
 
-                    out += String.format("%s value %g should be %s than %g",
-                            quantity, VALUES[i], VALUES[i] > LIMITS[i] ? "lower" : "higher", LIMITS[i]);
+                    out += String.format("%s value %g %s should be %s than %g %s",
+                            quantity, VALUES[i], unit, VALUES[i] > LIMITS[i] ? "lower" : "higher", LIMITS[i], unit);
                     break;
 
                 default:
-                    out += String.format(", when %s value %g is %s than %g",
-                            quantity, VALUES[i], VALUES[i] > LIMITS[i] ? "higher" : "lower", LIMITS[i]);
+                    out += String.format(", when %s value %g %s is %s than %g %s",
+                            quantity, VALUES[i], unit, VALUES[i] > LIMITS[i] ? "higher" : "lower", LIMITS[i], unit);
             }
         }
         out += ".";
