@@ -1281,7 +1281,7 @@ public class IF97 {
 
                 return Calculate.partialDerivativeRhoT(1 / v, T, x, y, z);
             }
-            return Calculate.partialDerivativePT(p, T, x, y, z);
+            return Calculate.partialDerivativePT(region, p, T, x, y, z);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1290,7 +1290,7 @@ public class IF97 {
 
     /**
      * Partial derivative of z with respect to x for constant y, as a function
-     * of density and temperature.
+     * of density and temperature, valid in region 3 only!
      *
      * <p>
      * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(&rho;, T) </p>
@@ -3114,6 +3114,7 @@ public class IF97 {
          *
          * This method is for regions described by specific Gibbs free energy.
          *
+         * @param region region
          * @param p pressure [MPa]
          * @param T temperature [K]
          * @param x any quantity
@@ -3122,12 +3123,10 @@ public class IF97 {
          * @return partial derivative
          * @throws OutOfRangeException out-of-range exception
          */
-        private static double partialDerivativePT(double p, double T, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
-
-            Region region = getRegionPT(p, T);
+        private static double partialDerivativePT(Region region, double p, double T, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
             double v = region.specificVolumePT(p, T),
-                    s = region.specificEntropyRhoT(1 / v, T),
+                    s = region.specificEntropyPT(p, T),
                     cp = region.specificIsobaricHeatCapacityPT(p, T),
                     alphaV = region.isobaricCubicExpansionCoefficientPT(p, T),
                     kappaT = region.isothermalCompressibilityPT(p, T);
@@ -3243,6 +3242,11 @@ public class IF97 {
                     d_dv = -p;
                     d_dT = -s;
                     break;
+
+                case rho:
+                    d_dv = -1 / (v * v);
+                    d_dT = 0;
+                    break;
             }
 
             return new double[]{d_dv, d_dT};
@@ -3306,6 +3310,11 @@ public class IF97 {
                 case f:
                     d_dT = -p * v * alphaV - s;
                     d_dp = p * v * kappaT;
+                    break;
+
+                case rho:
+                    d_dT = -alphaV / v;
+                    d_dp = kappaT / v;
                     break;
             }
 
