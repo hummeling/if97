@@ -224,7 +224,9 @@ final class Region4 extends Region {
     @Override
     double pressureHS(double enthalpy, double entropy) {
 
-        return saturationPressureT(temperatureHS(enthalpy, entropy));
+        double T = temperatureHS(enthalpy, entropy);
+
+        return saturationPressureT(T);
     }
 
     /**
@@ -320,6 +322,14 @@ final class Region4 extends Region {
     private double sign(double a, double b) {
 
         return b >= 0 ^ a >= 0 ? -a : a; // simlified using XOR
+    }
+
+    @Override
+    double specificEnthalpyPS(double pressure, double entropy) {
+
+        double x = vapourFractionPS(pressure, entropy);
+
+        return specificEnthalpyPX(pressure, x);
     }
 
     @Override
@@ -448,7 +458,9 @@ final class Region4 extends Region {
      */
     double specificEntropyPH(double pressure, double enthalpy) {
 
-        return specificEntropyPX(pressure, vapourFractionPH(pressure, enthalpy));
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return specificEntropyPX(pressure, x);
     }
 
     @Override
@@ -529,6 +541,31 @@ final class Region4 extends Region {
     double specificIsochoricHeatCapacityPT(double pressure, double temperature) {
 
         return Double.NaN;
+    }
+
+    @Override
+    double specificVolumeHS(double enthalpy, double entropy) {
+
+        double p = pressureHS(enthalpy, entropy),
+                x = vapourFractionHS(enthalpy, entropy);
+
+        return specificVolumePX(p, x);
+    }
+
+    @Override
+    double specificVolumePH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return specificVolumePX(pressure, x);
+    }
+
+    @Override
+    double specificVolumePS(double pressure, double entropy) {
+
+        double x = vapourFractionPS(pressure, entropy);
+
+        return specificVolumePX(pressure, x);
     }
 
     @Override

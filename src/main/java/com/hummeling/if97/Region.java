@@ -163,17 +163,14 @@ abstract class Region {
             if (enthalpy <= specificEnthalpy2c3b(entropy)) {
                 return REGION4;
 
-            } else // region 2 or region 3
-            {
-                if (enthalpy <= hB23limits[0] || entropy <= sB23limits[0]) {
-                    return REGION3;
+            } else if (enthalpy <= hB23limits[0] || entropy <= sB23limits[0]) {
+                return REGION3;
 
-                } else if (enthalpy >= hB23limits[1] || entropy >= sB23limits[1]) {
-                    return REGION2;
+            } else if (enthalpy >= hB23limits[1] || entropy >= sB23limits[1]) {
+                return REGION2;
 
-                } else if (hB23limits[0] < enthalpy && enthalpy < hB23limits[1] && sB23limits[0] < entropy && entropy < sB23limits[1]) {
-                    return REGION2.pressureHS(enthalpy, entropy) > pressureB23(temperatureB23HS(enthalpy, entropy)) ? REGION3 : REGION2;
-                }
+            } else if (hB23limits[0] < enthalpy && enthalpy < hB23limits[1] && sB23limits[0] < entropy && entropy < sB23limits[1]) {
+                return REGION2.pressureHS(enthalpy, entropy) > pressureB23(temperatureB23HS(enthalpy, entropy)) ? REGION3 : REGION2;
             }
 
         } else if (entropy <= 9.155759395) {
@@ -308,7 +305,7 @@ abstract class Region {
         } else if (pressure > REGION4.saturationPressureT(temperature)) {
             return REGION1;
         }
-        //return pressure > 10 ? new Region2() : new Region2Meta();
+
         return REGION2;
     }
 
@@ -637,12 +634,9 @@ abstract class Region {
 
     double specificEnthalpyPS(double p, double s) throws OutOfRangeException {
 
-        if (this instanceof Region4) {
-            return REGION4.specificEnthalpyPX(p, vapourFractionPS(p, s));
+        double T = temperaturePS(p, s);
 
-        } else {
-            return specificEnthalpyPT(p, temperaturePS(p, s));
-        }
+        return specificEnthalpyPT(p, T);
     }
 
     /**
@@ -807,15 +801,8 @@ abstract class Region {
      */
     double specificVolumeHS(double h, double s) throws OutOfRangeException {
 
-        double p = pressureHS(h, s);
-
-        if (this instanceof Region4) {
-            double x = vapourFractionHS(h, s);
-
-            return REGION4.specificVolumePX(p, x);
-        }
-
-        double T = temperaturePS(p, s);
+        double p = pressureHS(h, s),
+                T = temperaturePS(p, s);
 
         return specificVolumePT(p, T);
     }
@@ -830,13 +817,9 @@ abstract class Region {
      */
     double specificVolumePH(double p, double h) throws OutOfRangeException {
 
-        if (this instanceof Region4) {
-            double x = vapourFractionPH(p, h);
+        double T = temperaturePH(p, h);
 
-            return REGION4.specificVolumePX(p, x);
-        }
-
-        return specificVolumePT(p, temperaturePH(p, h));
+        return specificVolumePT(p, T);
     }
 
     /**
@@ -848,12 +831,6 @@ abstract class Region {
      * @throws OutOfRangeException out-of-range exception
      */
     double specificVolumePS(double p, double s) throws OutOfRangeException {
-
-        if (this instanceof Region4) {
-            double x = vapourFractionPS(p, s);
-
-            return REGION4.specificVolumePX(p, x);
-        }
 
         double T = temperaturePS(p, s);
 
