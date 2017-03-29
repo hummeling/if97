@@ -114,8 +114,7 @@ public class IF97Test {
     /**
      * Bug filed by Philippe Mack.
      *
-     * We have a critical issue with your library (latest version) when we
-     * compute steam enthalpy for a steam turbine.
+     * We have a critical issue with your library (latest version) when we compute steam enthalpy for a steam turbine.
      *
      * Verified correct.
      */
@@ -132,6 +131,22 @@ public class IF97Test {
         p = 0.07; // [bara]
         T = 39; // [Celsius]
         System.out.format("  p=%6.2f bar(a), T=%6.2f\u00b0C: h=%8.3f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
+    }
+
+    /**
+     * Bug filed by Stefano Piccinelli.
+     *
+     * Wrong out-of-range exception thrown. Resolved by removing checkB34H().
+     */
+    @Test
+    public void bug20170329() {
+        System.out.println("bug20170329: ");
+
+        if97.setUnitSystem(IF97.UnitSystem.ENGINEERING);
+
+        double p = 165.3, // [bar(a)
+                hG = if97.specificEnthalpySaturatedVapourP(p);
+        System.out.format("  p=%6.2f bar(a), hG=%6.2f kJ/kg%n", p, hG);
     }
 
     @Test
@@ -279,8 +294,7 @@ public class IF97Test {
     /**
      * Tests specific entropy as a function of pressure and temperature.
      *
-     * Disabled region 2 and region 2 meta tests aren't actually in these
-     * regions.
+     * Disabled region 2 and region 2 meta tests aren't actually in these regions.
      */
     @Test
     public void testSpecificEntropyPT() {

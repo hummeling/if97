@@ -122,16 +122,6 @@ final class Region4 extends Region {
             {28, 36, .317247449371057e11}};
     }
 
-    void checkB34H(double enthalpy) throws OutOfRangeException {
-
-        if (enthalpy < hs13) {
-            throw new OutOfRangeException(Quantity.h, enthalpy, hs13);
-
-        } else if (enthalpy > hs23) {
-            throw new OutOfRangeException(Quantity.h, enthalpy, hs23);
-        }
-    }
-
     void checkB34S(double entropy) throws OutOfRangeException {
 
         if (entropy < ss13) {
@@ -234,11 +224,8 @@ final class Region4 extends Region {
      *
      * @param enthalpy specific enthalpy [kJ/kg]
      * @return saturation pressure [MPa]
-     * @throws OutOfRangeException out-of-range exception
      */
-    double saturationPressureB34H(double enthalpy) throws OutOfRangeException {
-
-        checkB34H(enthalpy);
+    double saturationPressureB34H(double enthalpy) {
 
         double eta = enthalpy / 2600, out = 0;
 
@@ -249,8 +236,7 @@ final class Region4 extends Region {
     }
 
     /**
-     * Boundary saturation pressure for the boundary between regions 3 and 4,
-     * only!
+     * Boundary saturation pressure for the boundary between regions 3 and 4, only!
      *
      * @param entropy specific entropy [kJ/(kg K)]
      * @return saturation pressure [MPa]
@@ -272,8 +258,7 @@ final class Region4 extends Region {
     /**
      * Saturation pressure.
      *
-     * Out-of-range exceptions not thrown because this method is also used for
-     * finding regions.
+     * Out-of-range exceptions not thrown because this method is also used for finding regions.
      *
      * @param saturationTemperature saturation temperature [K]
      * @return saturation pressure [MPa]
@@ -293,8 +278,7 @@ final class Region4 extends Region {
     /**
      * Saturation temperature.
      *
-     * Out-of-range exceptions not thrown because this method is also used for
-     * finding regions.
+     * Out-of-range exceptions not thrown because this method is also used for finding regions.
      *
      * @param saturationPressure saturation pressure [MPa]
      * @return saturation temperature [K]
@@ -356,8 +340,8 @@ final class Region4 extends Region {
     /**
      * Specific enthalpy saturated liquid.
      *
-     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using
-     * Ridders' root finding algorithm [Numerical Recipes, 3rd ed, 2007].
+     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using Ridders' root finding algorithm
+     * [Numerical Recipes, 3rd ed, 2007].
      *
      * @param pressure absolute pressure [MPa]
      * @return specific enthalpy [kJ/kg]
@@ -404,8 +388,8 @@ final class Region4 extends Region {
     /**
      * Specific enthalpy saturated vapour.
      *
-     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using
-     * Ridders' root finding algorithm [Numerical Recipes, 3rd ed, 2007].
+     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using Ridders' root finding algorithm
+     * [Numerical Recipes, 3rd ed, 2007].
      *
      * @param pressure absolute pressure [MPa]
      * @return specific enthalpy [kJ/kg]
@@ -585,9 +569,8 @@ final class Region4 extends Region {
     /**
      * Specific volume saturated liquid.
      *
-     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using
-     * Van Wijngaarden/Dekker/Brent root finding algorithm [Numerical Recipes,
-     * 3rd ed, 2007].
+     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using Van Wijngaarden/Dekker/Brent root finding
+     * algorithm [Numerical Recipes, 3rd ed, 2007].
      *
      * @param pressure absolute pressure [MPa]
      * @return specific volume [m&sup3;/kg]
@@ -671,9 +654,8 @@ final class Region4 extends Region {
     /**
      * Specific volume saturated vapour.
      *
-     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using
-     * Van Wijngaarden/Dekker/Brent root finding algorithm [Numerical Recipes,
-     * 3rd ed, 2007].
+     * For pressure &gt; 16.5292 MPa the answer is obtained by iteration using Van Wijngaarden/Dekker/Brent root finding
+     * algorithm [Numerical Recipes, 3rd ed, 2007].
      *
      * @param pressure absolute pressure [MPa]
      * @return specific volume [m&sup3;/kg]
