@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -27,8 +27,8 @@ import static java.lang.StrictMath.*;
 /**
  * Region 3.
  *
- * @author Ralph Hummeling (<a
- * href="http://www.hummeling.com">www.hummeling.com</a>)
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 final class Region3 extends Region {
 
@@ -636,6 +636,24 @@ final class Region3 extends Region {
             out += ijn[2] * pow(pi + 0.298, ijn[0]) * pow(eta - 0.720, ijn[1]);
         }
         return out;
+    }
+
+    @Override
+    double isentropicExponentPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return isentropicExponentRhoT(rho, temperature);
+    }
+
+    double isentropicExponentRhoT(double density, double temperature) {
+
+        double delta = density / rhoc,
+                tau = Tc / temperature,
+                phiDelta = phiDelta(delta, tau),
+                x = delta * phiDelta - delta * tau * phiDeltaTau(delta, tau);
+
+        return 1 - x * x / (tau * tau * phiTauTau(delta, tau) * (2 * delta * phiDelta + delta * delta * phiDeltaDelta(delta, tau)));
     }
 
     @Override

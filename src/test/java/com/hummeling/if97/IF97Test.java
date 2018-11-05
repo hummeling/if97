@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -25,8 +25,8 @@ import org.junit.Test;
 
 /**
  *
- * @author Ralph Hummeling &lt;<a
- * href="mailto:engineering@hummeling.com?subject=IF97%20Java%20library">engineering@hummeling.com</a>&gt;
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 public class IF97Test {
 
@@ -87,7 +87,7 @@ public class IF97Test {
                 T = 480; // [Celsius]
         System.out.format("p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, if97.specificEnthalpyPT(p, T));
         System.out.format("Region2:     p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2().specificEnthalpyPT(p / 10, T + IF97.T0));
-        System.out.format("Region2Meta: p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2Meta().specificEnthalpyPT(p / 10, T + IF97.T0));
+        //OBS System.out.format("Region2Meta: p=%.3f bar(a), T=%.0f\u00b0C: h=%.3f kJ/kg%n", p, T, new Region2Meta().specificEnthalpyPT(p / 10, T + IF97.T0));
     }
 
     /**
@@ -114,7 +114,8 @@ public class IF97Test {
     /**
      * Bug filed by Philippe Mack.
      *
-     * We have a critical issue with your library (latest version) when we compute steam enthalpy for a steam turbine.
+     * We have a critical issue with your library (latest version) when we
+     * compute steam enthalpy for a steam turbine.
      *
      * Verified correct.
      */
@@ -147,6 +148,19 @@ public class IF97Test {
         double p = 165.3, // [bar(a)
                 hG = if97.specificEnthalpySaturatedVapourP(p);
         System.out.format("  p=%6.2f bar(a), hG=%6.2f kJ/kg%n", p, hG);
+    }
+
+    @Test
+    public void testCompressionFactorPT() {
+
+        double[][] X = {
+            {0.00073, 0.1, 298.15},
+            {0.03636, 5, 298.15},
+            {0.24600, 40, 673.15}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.compressionFactorPT(x[1], x[2]), 1e-5);
+        }
     }
 
     @Test
@@ -294,7 +308,8 @@ public class IF97Test {
     /**
      * Tests specific entropy as a function of pressure and temperature.
      *
-     * Disabled region 2 and region 2 meta tests aren't actually in these regions.
+     * Disabled region 2 and region 2 meta tests aren't actually in these
+     * regions.
      */
     @Test
     public void testSpecificEntropyPT() {
@@ -589,6 +604,16 @@ public class IF97Test {
 
         for (double[] x : X) {
             assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), 1e-12);
+        }
+    }
+
+    @Test
+    public void testQuantity_getPartialDerivatives() {
+
+        System.out.println("IF97.Quantity.getPartialDerivatives()");
+
+        for (IF97.Quantity quantity : IF97.Quantity.getPartialDerivatives()) {
+            System.out.println("  " + quantity);
         }
     }
 

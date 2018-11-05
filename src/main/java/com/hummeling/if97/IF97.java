@@ -14,16 +14,14 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
-import static com.hummeling.if97.Region.*;
 import static java.lang.StrictMath.*;
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -45,13 +43,13 @@ import java.util.Map;
  * the Industrial Formulation IAPWS-IF97</i>, 2<sup>nd</sup> Edition,
  * Springer-Verlag, Berlin Heidelberg, ISBN 978-3-540-21419-9</li> </ul>
  *
- * @author Ralph Hummeling (<a
- * href="http://www.hummeling.com">www.hummeling.com</a>)
+ * Website: <a href="https://www.if97.software/">www.if97.software</a>.
+ *
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 public class IF97 {
 
-// <editor-fold defaultstate="collapsed" desc="fields">
-    private UnitSystem UNIT_SYSTEM;
     /**
      * Specific gas constant of ordinary water [kJ/kg-K].
      */
@@ -65,7 +63,7 @@ public class IF97 {
      */
     public static final double M = 18.015257;
     public static final double T0 = 273.15;
-    public static final double p0 = REGION4.saturationPressureT(T0);
+    public static final double p0 = Region.REGION4.saturationPressureT(T0);
     /**
      * Critical pressure [MPa].
      */
@@ -85,7 +83,7 @@ public class IF97 {
     /**
      * Critical entropy [kJ/kg-K].
      */
-    public static final double sc = REGION3.specificEntropyRhoT(rhoc, Tc);
+    public static final double sc = Region.REGION3.specificEntropyRhoT(rhoc, Tc);
     /**
      * British thermal unit acc. International standard ISO 31-4 on Quantities
      * and units—Part 4: Heat, Appendix A [kJ]
@@ -100,7 +98,7 @@ public class IF97 {
      */
     public static final double lb = 0.45359237;
     private static final double ft, ft2, ft3, hr, in, in2, lbf, psi, Ra;
-// </editor-fold>
+    private static final Collection<Quantity> PARTIAL_DERIVATIVE_QUANTITIES;
 
     static {
         ft = 0.3048; // foot [m]
@@ -112,13 +110,15 @@ public class IF97 {
         lbf = lb * g;
         psi = 1e-6 * lbf / in2; // pounds per square inch [MPa]
         Ra = 5.0 / 9.0; // Rankine [K]
+        PARTIAL_DERIVATIVE_QUANTITIES = Quantity.getPartialDerivatives();
     }
+
+    private UnitSystem UNIT_SYSTEM;
 
     /**
      * Instantiate an IF97 object with the default unit system.
      */
     public IF97() {
-
         this(UnitSystem.DEFAULT);
     }
 
@@ -128,7 +128,6 @@ public class IF97 {
      * @param unitSystem unit system
      */
     public IF97(UnitSystem unitSystem) {
-
         setUnitSystem(unitSystem);
     }
 
@@ -146,7 +145,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -172,7 +171,7 @@ public class IF97 {
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
 
         try {
-            double T = getRegionPH(p, h).temperaturePH(p, h);
+            double T = Region.getRegionPH(p, h).temperaturePH(p, h);
 
             return Calculate.PrandtlPT(p, T);
 
@@ -195,7 +194,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            double T = getRegionPS(p, s).temperaturePS(p, s);
+            double T = Region.getRegionPS(p, s).temperaturePS(p, s);
 
             return Calculate.PrandtlPT(p, T);
 
@@ -241,7 +240,7 @@ public class IF97 {
                 kappaT;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -251,7 +250,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.COMPRESSIBILITY, kappaT);
     }
 
@@ -271,7 +269,7 @@ public class IF97 {
                 kappaT;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -280,7 +278,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.COMPRESSIBILITY, kappaT);
     }
 
@@ -300,7 +297,7 @@ public class IF97 {
                 kappaT;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -309,7 +306,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.COMPRESSIBILITY, kappaT);
     }
 
@@ -328,19 +324,39 @@ public class IF97 {
                 kappaT;
 
         try {
-            kappaT = getRegionPT(p, T).isothermalCompressibilityPT(p, T);
+            kappaT = Region.getRegionPT(p, T).isothermalCompressibilityPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.COMPRESSIBILITY, kappaT);
+    }
+
+    /**
+     * Compression factor (real-gas factor) as a function of pressure &amp;
+     * temperature.
+     *
+     * @param pressure absolute pressure
+     * @param temperature temperature
+     * @return compression factor
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double compressionFactorPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
+
+        try {
+            return 1e3 * p * Region.getRegionPT(p, T).specificVolumePT(p, T) / (R * T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
     }
 
     static double convertFromDefault(UnitSystem unitSystem, IF97.Quantity quantity, double value) {
 
         switch (quantity) {
-
             case T:
                 return convertFromDefault(unitSystem.TEMPERATURE, value);
 
@@ -353,6 +369,9 @@ public class IF97 {
                 return convertFromDefault(unitSystem.SPECIFIC_ENTHALPY, value);
 
             case lambda:
+                return convertFromDefault(unitSystem.THERMAL_CONDUCTIVITY, value);
+
+            case lambdaL:
                 return convertFromDefault(unitSystem.WAVELENGTH, value);
 
             case p:
@@ -376,12 +395,10 @@ public class IF97 {
     }
 
     static double convertFromDefault(double[] quantity, double value) {
-
         return (value - quantity[1]) / quantity[0];
     }
 
     static double convertToDefault(double[] quantity, double value) {
-
         return value * quantity[0] + quantity[1];
     }
 
@@ -390,7 +407,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumeHS(enthalpy, entropy)</code>.
+     * <code>1.0 / specificVolumeHS(enthalpy, entropy)</code>.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -399,7 +416,6 @@ public class IF97 {
      * @see #specificVolumeHS(double, double)
      */
     public double densityHS(double enthalpy, double entropy) throws OutOfRangeException {
-
         return 1 / specificVolumeHS(enthalpy, entropy);
     }
 
@@ -408,7 +424,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumePH(pressure, enthalpy)</code>.
+     * <code>1.0 / specificVolumePH(pressure, enthalpy)</code>.
      *
      * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
@@ -417,7 +433,6 @@ public class IF97 {
      * @see #specificVolumePH(double, double)
      */
     public double densityPH(double pressure, double enthalpy) throws OutOfRangeException {
-
         return 1 / specificVolumePH(pressure, enthalpy);
     }
 
@@ -426,7 +441,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumePS(pressure, entropy)</code>.
+     * <code>1.0 / specificVolumePS(pressure, entropy)</code>.
      *
      * @param pressure absolute pressure
      * @param entropy specific entropy
@@ -435,7 +450,6 @@ public class IF97 {
      * @see #specificVolumePS(double, double)
      */
     public double densityPS(double pressure, double entropy) throws OutOfRangeException {
-
         return 1 / specificVolumePS(pressure, entropy);
     }
 
@@ -444,7 +458,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumePT(pressure, temperature)</code>.
+     * <code>1.0 / specificVolumePT(pressure, temperature)</code>.
      *
      * @param pressure absolute pressure
      * @param temperature temperature
@@ -453,7 +467,6 @@ public class IF97 {
      * @see #specificVolumePT(double, double)
      */
     public double densityPT(double pressure, double temperature) throws OutOfRangeException {
-
         return 1 / specificVolumePT(pressure, temperature);
     }
 
@@ -462,7 +475,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumePX(pressure, vapour fraction)</code>.
+     * <code>1.0 / specificVolumePX(pressure, vapour fraction)</code>.
      *
      * @param pressure absolute pressure
      * @param vapourFraction vapour fraction
@@ -471,7 +484,6 @@ public class IF97 {
      * @see #specificVolumePX(double, double)
      */
     public double densityPX(double pressure, double vapourFraction) throws OutOfRangeException {
-
         return 1 / specificVolumePX(pressure, vapourFraction);
     }
 
@@ -480,7 +492,7 @@ public class IF97 {
      *
      * <p>
      * This is a convenience method which simply calls
-     * <code>1/specificVolumeTX(temperature, vapour fraction)</code>.
+     * <code>1.0 / specificVolumeTX(temperature, vapour fraction)</code>.
      *
      * @param temperature temperature
      * @param vapourFraction vapour fraction
@@ -489,7 +501,6 @@ public class IF97 {
      * @see #specificVolumeTX(double, double)
      */
     public double densityTX(double temperature, double vapourFraction) throws OutOfRangeException {
-
         return 1 / specificVolumeTX(temperature, vapourFraction);
     }
 
@@ -509,7 +520,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double v = region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -536,7 +547,7 @@ public class IF97 {
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double v = region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
@@ -563,7 +574,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double v = region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
@@ -590,7 +601,7 @@ public class IF97 {
                 T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
 
         try {
-            double v = getRegionPT(p, T).specificVolumePT(p, T);
+            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
             return Calculate.dielectricConstantRhoT(1 / v, T);
 
@@ -638,7 +649,7 @@ public class IF97 {
                 eta;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double v = region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -648,7 +659,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
     }
 
@@ -668,7 +678,7 @@ public class IF97 {
                 eta;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double v = region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
@@ -678,7 +688,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
     }
 
@@ -698,7 +707,7 @@ public class IF97 {
                 eta;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double v = region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
@@ -708,7 +717,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
     }
 
@@ -728,14 +736,13 @@ public class IF97 {
                 eta;
 
         try {
-            double v = getRegionPT(p, T).specificVolumePT(p, T);
+            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
             eta = Calculate.dynamicViscosityRhoT(1 / v, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
     }
 
@@ -759,8 +766,130 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, eta);
+    }
+
+    public String getRegionPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = IF97.convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = IF97.convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
+
+        try {
+            return Region.getRegionPT(p, T).getName();
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Gets the unit system.
+     *
+     * @return unit system
+     */
+    public final UnitSystem getUnitSystem() {
+        return UNIT_SYSTEM;
+    }
+
+    /**
+     * Isentropic exponent as a function of specific enthalpy &amp; specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return isentropic exponent
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isentropicExponentPT(double, double)
+     */
+    public double isentropicExponentHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
+
+        try {
+            Region region = Region.getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            return region.isentropicExponentPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Isentropic exponent as a function of pressure &amp; specific enthalpy.
+     *
+     * @param pressure absolute pressure
+     * @param enthalpy specific enthalpy
+     * @return isentropic exponent
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isentropicExponentPT(double, double)
+     */
+    public double isentropicExponentPH(double pressure, double enthalpy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
+
+        try {
+            Region region = Region.getRegionPH(p, h);
+
+            double T = region.temperaturePH(p, h);
+
+            return region.isentropicExponentPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Isentropic exponent as a function of pressure &amp; specific entropy.
+     *
+     * @param pressure absolute pressure
+     * @param entropy specific entropy
+     * @return isentropic exponent
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isentropicExponentPT(double, double)
+     */
+    public double isentropicExponentPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
+
+        try {
+            Region region = Region.getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
+
+            return region.isentropicExponentPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Isentropic exponent as a function of pressure &amp; temperature.
+     *
+     * @param pressure absolute pressure
+     * @param temperature temperature
+     * @return isentropic exponent
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double isentropicExponentPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
+
+        try {
+            return Region.getRegionPT(p, T).isentropicExponentPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
     }
 
     /**
@@ -780,7 +909,7 @@ public class IF97 {
                 alphaV;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -790,7 +919,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
     }
 
@@ -811,7 +939,7 @@ public class IF97 {
                 alphaV;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -820,7 +948,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
     }
 
@@ -841,7 +968,7 @@ public class IF97 {
                 alphaV;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -850,7 +977,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
     }
 
@@ -870,12 +996,11 @@ public class IF97 {
                 alphaV;
 
         try {
-            alphaV = getRegionPT(p, T).isobaricCubicExpansionCoefficientPT(p, T);
+            alphaV = Region.getRegionPT(p, T).isobaricCubicExpansionCoefficientPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
     }
 
@@ -896,7 +1021,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -906,7 +1031,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
     }
 
@@ -927,7 +1051,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -936,7 +1060,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
     }
 
@@ -957,7 +1080,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -966,7 +1089,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
     }
 
@@ -986,12 +1108,11 @@ public class IF97 {
                 cp;
 
         try {
-            cp = getRegionPT(p, T).specificIsobaricHeatCapacityPT(p, T);
+            cp = Region.getRegionPT(p, T).specificIsobaricHeatCapacityPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cp);
     }
 
@@ -1012,7 +1133,7 @@ public class IF97 {
                 cv;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -1022,7 +1143,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
     }
 
@@ -1043,7 +1163,7 @@ public class IF97 {
                 cv;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -1052,7 +1172,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
     }
 
@@ -1073,7 +1192,7 @@ public class IF97 {
                 cv;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -1082,7 +1201,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
     }
 
@@ -1102,12 +1220,11 @@ public class IF97 {
                 cv;
 
         try {
-            cv = getRegionPT(p, T).specificIsochoricHeatCapacityPT(p, T);
+            cv = Region.getRegionPT(p, T).specificIsochoricHeatCapacityPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_HEAT_CAPACITY, cv);
     }
 
@@ -1128,7 +1245,7 @@ public class IF97 {
                 nu;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double v = region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -1138,7 +1255,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, nu);
     }
 
@@ -1158,7 +1274,7 @@ public class IF97 {
                 nu;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double v = region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
@@ -1168,7 +1284,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.KINEMATIC_VISCOSITY, nu);
     }
 
@@ -1188,7 +1303,7 @@ public class IF97 {
                 nu;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double v = region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
@@ -1198,7 +1313,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.DYNAMIC_VISCOSITY, nu);
     }
 
@@ -1218,14 +1332,13 @@ public class IF97 {
                 nu;
 
         try {
-            double v = getRegionPT(p, T).specificVolumePT(p, T);
+            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
             nu = Calculate.dynamicViscosityRhoT(1 / v, T) * v;
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.KINEMATIC_VISCOSITY, nu);
     }
 
@@ -1249,7 +1362,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.KINEMATIC_VISCOSITY, nu);
     }
 
@@ -1262,19 +1374,32 @@ public class IF97 {
      *
      * @param pressure absolute pressure
      * @param temperature temperature
-     * @param x any {@link Quantity}
-     * @param y any {@link Quantity}
-     * @param z any {@link Quantity}
+     * @param x any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param y any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param z any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
      * @return partial derivative in default units
      * @throws OutOfRangeException out-of-range exception
+     * @see Quantity#getPartialDerivatives()
      */
     public double partialDerivativePT(double pressure, double temperature, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
+        if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(x)) {
+            throw new IllegalArgumentException("Partial derivative with respect to " + x + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+
+        } else if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(y)) {
+            throw new IllegalArgumentException("Partial derivative for constant " + y + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+
+        } else if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(z)) {
+            throw new IllegalArgumentException("Partial derivative of " + z + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+        }
         double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
                 T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
 
         try {
-            Region region = getRegionPT(p, T);
+            Region region = Region.getRegionPT(p, T);
 
             if (region instanceof Region3) {
                 double v = region.specificVolumePT(p, T);
@@ -1297,11 +1422,15 @@ public class IF97 {
      *
      * @param density density
      * @param temperature temperature
-     * @param x any {@link Quantity}
-     * @param y any {@link Quantity}
-     * @param z any {@link Quantity}
+     * @param x any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param y any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param z any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
      * @return partial derivative in default units
      * @throws OutOfRangeException out-of-range exception
+     * @see Quantity#getPartialDerivatives()
      */
     public double partialDerivativeRhoT(double density, double temperature, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
@@ -1331,12 +1460,11 @@ public class IF97 {
                 p;
 
         try {
-            p = getRegionHS(h, s).pressureHS(h, s);
+            p = Region.getRegionHS(h, s).pressureHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
     }
 
@@ -1357,7 +1485,7 @@ public class IF97 {
                 lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double v = region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -1386,7 +1514,7 @@ public class IF97 {
                 lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double v = region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
@@ -1415,7 +1543,7 @@ public class IF97 {
                 lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double v = region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
@@ -1444,7 +1572,7 @@ public class IF97 {
                 lambda = convertToDefault(UNIT_SYSTEM.WAVELENGTH, wavelength);
 
         try {
-            double v = getRegionPT(p, T).specificVolumePT(p, T);
+            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
             return Calculate.refractiveIndexRhoTLambda(1 / v, T, lambda);
 
@@ -1492,9 +1620,9 @@ public class IF97 {
                 p;
 
         try {
-            REGION4.checkHS(h, s);
+            Region.REGION4.checkHS(h, s);
 
-            p = REGION4.pressureHS(h, s);
+            p = Region.REGION4.pressureHS(h, s);
 
             if (p < p0) {
                 throw new OutOfRangeException(Quantity.p, p, p0);
@@ -1502,7 +1630,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
     }
 
@@ -1519,14 +1646,13 @@ public class IF97 {
                 p;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            p = REGION4.saturationPressureT(T);
+            p = Region.REGION4.saturationPressureT(T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.PRESSURE, p);
     }
 
@@ -1546,14 +1672,13 @@ public class IF97 {
                 T;
 
         try {
-            REGION4.checkHS(h, s);
+            Region.REGION4.checkHS(h, s);
 
-            T = REGION4.temperatureHS(h, s);
+            T = Region.REGION4.temperatureHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
@@ -1570,24 +1695,22 @@ public class IF97 {
                 T;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            T = REGION4.saturationTemperatureP(p);
+            T = Region.REGION4.saturationTemperatureP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
     /**
-     * Set (change) the unit system.
+     * Sets (changes) the unit system.
      *
      * @param unitSystem unit system
      */
     public final void setUnitSystem(UnitSystem unitSystem) {
-
         UNIT_SYSTEM = unitSystem;
     }
 
@@ -1606,12 +1729,11 @@ public class IF97 {
                 h;
 
         try {
-            h = getRegionPS(p, s).specificEnthalpyPS(p, s);
+            h = Region.getRegionPS(p, s).specificEnthalpyPS(p, s);
 
         } catch (OutOfRangeException exception) {
             throw exception.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1630,12 +1752,11 @@ public class IF97 {
                 h;
 
         try {
-            h = getRegionPT(p, T).specificEnthalpyPT(p, T);
+            h = Region.getRegionPT(p, T).specificEnthalpyPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1653,15 +1774,14 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkP(p);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkP(p);
+            Region.REGION4.checkX(vapourFraction);
 
-            h = REGION4.specificEnthalpyPX(p, vapourFraction);
+            h = Region.REGION4.specificEnthalpyPX(p, vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1679,14 +1799,13 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            h = REGION4.specificEnthalpySaturatedLiquidP(p);
+            h = Region.REGION4.specificEnthalpySaturatedLiquidP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1704,14 +1823,13 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            h = REGION4.specificEnthalpySaturatedLiquidP(REGION4.saturationPressureT(T));
+            h = Region.REGION4.specificEnthalpySaturatedLiquidP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1729,14 +1847,13 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            h = REGION4.specificEnthalpySaturatedVapourP(p);
+            h = Region.REGION4.specificEnthalpySaturatedVapourP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1754,14 +1871,13 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            h = REGION4.specificEnthalpySaturatedVapourP(REGION4.saturationPressureT(T));
+            h = Region.REGION4.specificEnthalpySaturatedVapourP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1779,15 +1895,14 @@ public class IF97 {
                 h;
 
         try {
-            REGION4.checkT(T);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkT(T);
+            Region.REGION4.checkX(vapourFraction);
 
-            h = REGION4.specificEnthalpyPX(REGION4.saturationPressureT(T), vapourFraction);
+            h = Region.REGION4.specificEnthalpyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, h);
     }
 
@@ -1806,10 +1921,10 @@ public class IF97 {
                 s;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             if (region instanceof Region4) {
-                s = REGION4.specificEntropyPH(p, h);
+                s = Region.REGION4.specificEntropyPH(p, h);
 
             } else {
                 double T = region.temperaturePH(p, h);
@@ -1820,7 +1935,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1839,7 +1953,7 @@ public class IF97 {
                 s;
 
         try {
-            s = getRegionPT(p, T).specificEntropyPT(p, T);
+            s = Region.getRegionPT(p, T).specificEntropyPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1862,15 +1976,14 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkP(p);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkP(p);
+            Region.REGION4.checkX(vapourFraction);
 
-            s = REGION4.specificEntropyPX(p, vapourFraction);
+            s = Region.REGION4.specificEntropyPX(p, vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1888,14 +2001,13 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            s = REGION4.specificEntropySaturatedLiquidP(p);
+            s = Region.REGION4.specificEntropySaturatedLiquidP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1913,14 +2025,13 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            s = REGION4.specificEntropySaturatedLiquidP(REGION4.saturationPressureT(T));
+            s = Region.REGION4.specificEntropySaturatedLiquidP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1938,14 +2049,13 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            s = REGION4.specificEntropySaturatedVapourP(p);
+            s = Region.REGION4.specificEntropySaturatedVapourP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1963,14 +2073,13 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            s = REGION4.specificEntropySaturatedVapourP(REGION4.saturationPressureT(T));
+            s = Region.REGION4.specificEntropySaturatedVapourP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -1988,15 +2097,14 @@ public class IF97 {
                 s;
 
         try {
-            REGION4.checkT(T);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkT(T);
+            Region.REGION4.checkX(vapourFraction);
 
-            s = REGION4.specificEntropyPX(REGION4.saturationPressureT(T), vapourFraction);
+            s = Region.REGION4.specificEntropyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
     }
 
@@ -2015,12 +2123,11 @@ public class IF97 {
                 g;
 
         try {
-            g = getRegionPT(p, T).specificGibbsFreeEnergyPT(p, T);
+            g = Region.getRegionPT(p, T).specificGibbsFreeEnergyPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, g);
     }
 
@@ -2041,7 +2148,7 @@ public class IF97 {
                 u;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -2051,7 +2158,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, u);
     }
 
@@ -2072,7 +2178,7 @@ public class IF97 {
                 u;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -2081,7 +2187,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, u);
     }
 
@@ -2102,7 +2207,7 @@ public class IF97 {
                 u;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -2111,7 +2216,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, u);
     }
 
@@ -2130,13 +2234,161 @@ public class IF97 {
                 u;
 
         try {
-            u = getRegionPT(p, T).specificInternalEnergyPT(p, T);
+            u = Region.getRegionPT(p, T).specificInternalEnergyPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, u);
+    }
+
+    /**
+     * Specific internal energy as a function of pressure &amp; vapour fraction.
+     *
+     * @param pressure absolute pressure
+     * @param vapourFraction vapour fraction [-]
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificInternalEnergyPX(double pressure, double vapourFraction) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                v;
+
+        try {
+            Region.REGION4.checkP(p);
+            Region.REGION4.checkX(vapourFraction);
+
+            v = Region.REGION4.specificInternalEnergyPX(p, vapourFraction);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
+    }
+
+    /**
+     * Specific internal energy as a function of pressure for saturated liquid.
+     *
+     * @param pressure saturation pressure
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyPX(double, double)
+     */
+    public double specificInternalEnergySaturatedLiquidP(double pressure) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s;
+
+        try {
+            Region.REGION4.checkP(p);
+
+            s = Region.REGION4.specificInternalEnergySaturatedLiquidP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+    }
+
+    /**
+     * Specific internal energy as a function of temperature for saturated
+     * liquid.
+     *
+     * @param temperature saturation temperature
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyTX(double, double)
+     */
+    public double specificInternalEnergySaturatedLiquidT(double temperature) throws OutOfRangeException {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                s;
+
+        try {
+            Region.REGION4.checkT(T);
+
+            s = Region.REGION4.specificInternalEnergySaturatedLiquidP(Region.REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+    }
+
+    /**
+     * Specific internal energy as a function of pressure for saturated vapour.
+     *
+     * @param pressure saturation pressure
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyPX(double, double)
+     */
+    public double specificInternalEnergySaturatedVapourP(double pressure) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s;
+
+        try {
+            Region.REGION4.checkP(p);
+
+            s = Region.REGION4.specificInternalEnergySaturatedVapourP(p);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+    }
+
+    /**
+     * Specific internal energy as a function of temperature for saturated
+     * vapour.
+     *
+     * @param temperature saturation temperature
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     * @see #specificInternalEnergyTX(double, double)
+     */
+    public double specificInternalEnergySaturatedVapourT(double temperature) throws OutOfRangeException {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                s;
+
+        try {
+            Region.REGION4.checkT(T);
+
+            s = Region.REGION4.specificInternalEnergySaturatedVapourP(Region.REGION4.saturationPressureT(T));
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, s);
+    }
+
+    /**
+     * Specific internal energy as a function of temperature &amp; vapour
+     * fraction.
+     *
+     * @param temperature temperature
+     * @param vapourFraction vapour fraction [-]
+     * @return specific internal energy
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double specificInternalEnergyTX(double temperature, double vapourFraction) throws OutOfRangeException {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
+                v;
+
+        try {
+            Region.REGION4.checkT(T);
+            Region.REGION4.checkX(vapourFraction);
+
+            v = Region.REGION4.specificInternalEnergyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
     /**
@@ -2155,12 +2407,11 @@ public class IF97 {
                 v;
 
         try {
-            v = getRegionHS(h, s).specificVolumeHS(h, s);
+            v = Region.getRegionHS(h, s).specificVolumeHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2179,12 +2430,11 @@ public class IF97 {
                 v;
 
         try {
-            v = getRegionPH(p, h).specificVolumePH(p, h);
+            v = Region.getRegionPH(p, h).specificVolumePH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2203,12 +2453,11 @@ public class IF97 {
                 v;
 
         try {
-            v = getRegionPS(p, s).specificVolumePS(p, s);
+            v = Region.getRegionPS(p, s).specificVolumePS(p, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2227,12 +2476,11 @@ public class IF97 {
                 v;
 
         try {
-            v = getRegionPT(p, T).specificVolumePT(p, T);
+            v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2250,15 +2498,14 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkP(p);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkP(p);
+            Region.REGION4.checkX(vapourFraction);
 
-            v = REGION4.specificVolumePX(p, vapourFraction);
+            v = Region.REGION4.specificVolumePX(p, vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2275,14 +2522,13 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            v = REGION4.specificVolumeSaturatedLiquidP(p);
+            v = Region.REGION4.specificVolumeSaturatedLiquidP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2299,14 +2545,13 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            v = REGION4.specificVolumeSaturatedLiquidP(REGION4.saturationPressureT(T));
+            v = Region.REGION4.specificVolumeSaturatedLiquidP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2323,14 +2568,13 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            v = REGION4.specificVolumeSaturatedVapourP(p);
+            v = Region.REGION4.specificVolumeSaturatedVapourP(p);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2347,14 +2591,13 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            v = REGION4.specificVolumeSaturatedVapourP(REGION4.saturationPressureT(T));
+            v = Region.REGION4.specificVolumeSaturatedVapourP(Region.REGION4.saturationPressureT(T));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2372,15 +2615,14 @@ public class IF97 {
                 v;
 
         try {
-            REGION4.checkT(T);
-            REGION4.checkX(vapourFraction);
+            Region.REGION4.checkT(T);
+            Region.REGION4.checkX(vapourFraction);
 
-            v = REGION4.specificVolumePX(REGION4.saturationPressureT(T), vapourFraction);
+            v = Region.REGION4.specificVolumePX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, v);
     }
 
@@ -2400,7 +2642,7 @@ public class IF97 {
                 w;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -2410,7 +2652,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPEED_OF_SOUND, w);
     }
 
@@ -2430,7 +2671,7 @@ public class IF97 {
                 w;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
 
@@ -2439,7 +2680,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPEED_OF_SOUND, w);
     }
 
@@ -2459,7 +2699,7 @@ public class IF97 {
                 w;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
 
@@ -2468,7 +2708,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPEED_OF_SOUND, w);
     }
 
@@ -2487,12 +2726,11 @@ public class IF97 {
                 w;
 
         try {
-            w = getRegionPT(p, T).speedOfSoundPT(p, T);
+            w = Region.getRegionPT(p, T).speedOfSoundPT(p, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SPEED_OF_SOUND, w);
     }
 
@@ -2509,14 +2747,13 @@ public class IF97 {
                 sigma;
 
         try {
-            REGION4.checkP(p);
+            Region.REGION4.checkP(p);
 
-            sigma = REGION4.surfaceTensionT(REGION4.saturationTemperatureP(p));
+            sigma = Region.REGION4.surfaceTensionT(Region.REGION4.saturationTemperatureP(p));
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SURFACE_TENSION, sigma);
     }
 
@@ -2533,14 +2770,13 @@ public class IF97 {
                 sigma;
 
         try {
-            REGION4.checkT(T);
+            Region.REGION4.checkT(T);
 
-            sigma = REGION4.surfaceTensionT(T);
+            sigma = Region.REGION4.surfaceTensionT(T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.SURFACE_TENSION, sigma);
     }
 
@@ -2559,12 +2795,11 @@ public class IF97 {
                 T;
 
         try {
-            T = getRegionHS(h, s).temperatureHS(h, s);
+            T = Region.getRegionHS(h, s).temperatureHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
@@ -2583,12 +2818,11 @@ public class IF97 {
                 T;
 
         try {
-            T = getRegionPH(p, h).temperaturePH(p, h);
+            T = Region.getRegionPH(p, h).temperaturePH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
@@ -2607,12 +2841,11 @@ public class IF97 {
                 T;
 
         try {
-            T = getRegionPS(p, s).temperaturePS(p, s);
+            T = Region.getRegionPS(p, s).temperaturePS(p, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.TEMPERATURE, T);
     }
 
@@ -2633,7 +2866,7 @@ public class IF97 {
                 lambda;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double v = region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -2643,7 +2876,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
     }
 
@@ -2663,7 +2895,7 @@ public class IF97 {
                 lambda;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double v = region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
@@ -2673,7 +2905,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
     }
 
@@ -2693,7 +2924,7 @@ public class IF97 {
                 lambda;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double v = region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
@@ -2703,7 +2934,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
     }
 
@@ -2725,14 +2955,13 @@ public class IF97 {
                 lambda;
 
         try {
-            double v = getRegionPT(p, T).specificVolumePT(p, T);
+            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
 
             lambda = Calculate.thermalConductivityRhoT(1 / v, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
     }
 
@@ -2756,7 +2985,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, lambda);
     }
 
@@ -2778,7 +3006,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionHS(h, s);
+            Region region = Region.getRegionHS(h, s);
 
             double p = region.pressureHS(h, s),
                     T = region.temperatureHS(h, s);
@@ -2789,7 +3017,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
     }
 
@@ -2810,7 +3037,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionPH(p, h);
+            Region region = Region.getRegionPH(p, h);
 
             double T = region.temperaturePH(p, h);
             rho = 1 / region.specificVolumePH(p, h);
@@ -2820,7 +3047,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
     }
 
@@ -2841,7 +3067,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionPS(p, s);
+            Region region = Region.getRegionPS(p, s);
 
             double T = region.temperaturePS(p, s);
             rho = 1 / region.specificVolumePS(p, s);
@@ -2851,7 +3077,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
     }
 
@@ -2874,7 +3099,7 @@ public class IF97 {
                 cp;
 
         try {
-            Region region = getRegionPT(p, T);
+            Region region = Region.getRegionPT(p, T);
 
             rho = 1 / region.specificVolumePT(p, T);
             lambda = Calculate.thermalConductivityRhoT(rho, T);
@@ -2883,7 +3108,6 @@ public class IF97 {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
         return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
     }
 
@@ -2902,7 +3126,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            return getRegionHS(h, s).vapourFractionHS(h, s);
+            return Region.getRegionHS(h, s).vapourFractionHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2924,7 +3148,7 @@ public class IF97 {
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
 
         try {
-            return getRegionPH(p, h).vapourFractionPH(p, h);
+            return Region.getRegionPH(p, h).vapourFractionPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2946,7 +3170,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            return getRegionPS(p, s).vapourFractionPS(p, s);
+            return Region.getRegionPS(p, s).vapourFractionPS(p, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2970,15 +3194,14 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            REGION4.checkT(T);
-            //TODO REGION4.checkS(S);
+            Region.REGION4.checkT(T);
+            //TODO Region.REGION4.checkS(s);
 
-            return REGION4.vapourFractionTS(T, s);
+            return Region.REGION4.vapourFractionTS(T, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-
     }
 
     /**
@@ -2996,7 +3219,7 @@ public class IF97 {
          */
         static double PrandtlPT(double p, double T) throws OutOfRangeException {
 
-            Region region = getRegionPT(p, T);
+            Region region = Region.getRegionPT(p, T);
 
             double rho = 1 / region.specificVolumePT(p, T),
                     eta = dynamicViscosityRhoT(rho, T),
@@ -3247,8 +3470,10 @@ public class IF97 {
                     d_dv = -1 / (v * v);
                     d_dT = 0;
                     break;
-            }
 
+                default:
+                    throw new IllegalArgumentException("Unsupported quantity for partial derivative: " + quantity);
+            }
             return new double[]{d_dv, d_dT};
         }
 
@@ -3316,6 +3541,9 @@ public class IF97 {
                     d_dT = -alphaV / v;
                     d_dp = kappaT / v;
                     break;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported quantity for partial derivative: " + quantity);
             }
 
             return new double[]{d_dT, d_dp};
@@ -3326,11 +3554,11 @@ public class IF97 {
          *
          * @param rho density [kg/m&sup3;]
          * @param T temperature [K]
-         * @param lambda wavelength [&mu;m]
+         * @param lambdaL wavelength [&mu;m]
          * @return refractive index [-]
          * @throws OutOfRangeException out-of-range exception
          */
-        static double refractiveIndexRhoTLambda(double rho, double T, double lambda) throws OutOfRangeException {
+        static double refractiveIndexRhoTLambda(double rho, double T, double lambdaL) throws OutOfRangeException {
 
             if (T < 261.15) {
                 throw new OutOfRangeException(Quantity.T, T, 261.15);
@@ -3344,18 +3572,18 @@ public class IF97 {
             } else if (rho > 1060) {
                 throw new OutOfRangeException(Quantity.rho, rho, 1060);
 
-            } else if (lambda < 0.2) {
-                throw new OutOfRangeException(Quantity.lambda, lambda, 0.2);
+            } else if (lambdaL < 0.2) {
+                throw new OutOfRangeException(Quantity.lambdaL, lambdaL, 0.2);
 
-            } else if (lambda > 1.1) {
-                throw new OutOfRangeException(Quantity.lambda, lambda, 1.1);
+            } else if (lambdaL > 1.1) {
+                throw new OutOfRangeException(Quantity.lambdaL, lambdaL, 1.1);
             }
 
             double[] a = {0.244257733, 0.974634476e-2, -.373234996e-2, 0.268678472e-3, 0.158920570e-2, 0.245934259e-2, 0.900704920, -.166626219e-1};
 
             double delta = rho / 1e3,
                     theta = T / IF97.T0,
-                    Lambda = lambda / 0.589,
+                    Lambda = lambdaL / 0.589,
                     Lambda2 = Lambda * Lambda,
                     LambdaIR = 5.432937,
                     LambdaUV = -0.229202,
@@ -3392,95 +3620,150 @@ public class IF97 {
     }
 
     /**
-     * Quantities for partial derivatives.
+     * Quantities as defined by reference given above.
      */
     public enum Quantity {
 
         /**
-         * Pressure.
+         * Absolute pressure.
          */
-        p,
+        p("absolute pressure", "p"),
         /**
          * Temperature.
          */
-        T,
+        T("temperature", "T"),
         /**
          * Specific volume.
          */
-        v,
-        /**
-         * Density.
-         */
-        rho,
+        v("specific volume", "v"),
         /**
          * Specific internal energy.
          */
-        u,
+        u("specific internal energy", "u"),
         /**
          * Specific enthalpy.
          */
-        h,
+        h("specific enthalpy", "h"),
         /**
          * Specific entropy.
          */
-        s,
-        /**
-         * Wavelength.
-         */
-        lambda,
+        s("specific entropy", "s"),
         /**
          * Specific Gibbs free energy.
          */
-        g,
+        g("specific Gibbs free energy", "g"),
         /**
          * Specific Helmholtz free energy.
          */
-        f,
+        f("specific Helmholtz free energy", "f"),
+        /**
+         * Density.
+         */
+        rho("density", "\u03c1"),
+        /**
+         * Thermal diffusivity.
+         */
+        a("thermal diffusivity", "a"),
+        /**
+         * Specific isobaric heat capacity.
+         */
+        cp("specific isobaric heat capacity", "<html>c<sub>p</sub></html>"),
+        /**
+         * Specific isochoric heat capacity.
+         */
+        cv("specific isochoric heat capacity", "<html>c<sub>v</sub></html>"),
+        /**
+         * Refractive index.
+         */
+        n("refractive index", "n"),
+        /**
+         * Speed of sound.
+         */
+        w("speed of sound", "w"),
         /**
          * Vapour fraction.
          */
-        x;
+        x("vapour fraction", "x"),
+        /**
+         * Compression factor.
+         */
+        z("compression factor", "z"),
+        /**
+         * Isobaric cubic expansion coefficient.
+         */
+        alphav("isobaric cubic expansion coefficient", "<html>&alpha;<sub>v</sub></html>"),
+        /**
+         * Dielectric constant.
+         */
+        epsilon("dielectric constant", "\u03b5"),
+        /**
+         * Dynamic viscosity.
+         */
+        eta("dynamic viscosity", "\u03bc"),
+        /**
+         * Isentropic exponent.
+         */
+        kappa("isentropic exponent", "\u03ba"),
+        /**
+         * Isothermal compressibility.
+         */
+        kappaT("isothermal compressibility", "<html>&kappa;<sub>T</sub></html>"),
+        /**
+         * Thermal conductivity.
+         */
+        lambda("thermal conductivity", "\u03bb"),
+        /**
+         * Wavelength of light.
+         */
+        lambdaL("wavelength", "<html>&lambda;<sub>L</sub></html>"),
+        /**
+         * Kinematic viscosity.
+         */
+        nu("kinematic viscosity", "\u03bd"),
+        /**
+         * Surface tension.
+         */
+        sigma("surface tension", "\u03c3"),
+        /**
+         * Prandtl number.
+         */
+        Pr("Prandtl number", "Pr");
+
+        private final String NAME, SYMBOL;
+
+        Quantity(String name, String symbol) {
+
+            NAME = name;
+            SYMBOL = symbol;
+        }
+
+        /**
+         * Gets the quantities supported by partial derivatives relations.
+         *
+         * @return set of quantities
+         * @see #partialDerivativePT(double, double,
+         * com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity,
+         * com.hummeling.if97.IF97.Quantity)
+         * @see #partialDerivativeRhoT(double, double,
+         * com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity,
+         * com.hummeling.if97.IF97.Quantity)
+         */
+        public static Set<Quantity> getPartialDerivatives() {
+            return EnumSet.range(p, rho);
+        }
+
+        /**
+         * Gets the symbol for this quantity, according cited reference above.
+         *
+         * @return Unicode symbol
+         */
+        public String getSymbol() {
+            return SYMBOL;
+        }
 
         @Override
         public String toString() {
-
-            switch (this) {
-                case p:
-                    return "pressure";
-
-                case T:
-                    return "temperature";
-
-                case u:
-                    return "specific internal energy";
-
-                case v:
-                    return "specific volume";
-
-                case h:
-                    return "specific enthalpy";
-
-                case s:
-                    return "specific entropy";
-
-                case lambda:
-                    return "wavelength";
-
-                case rho:
-                    return "density";
-
-                case g:
-                    return "specific Gibbs free energy";
-
-                case f:
-                    return "specific Helmholtz free energy";
-
-                case x:
-                    return "vapour fraction";
-
-                default:
-                    return name().toLowerCase().replaceAll("_", " ");
-            }
+            return NAME;
         }
     }
 
@@ -3489,6 +3772,10 @@ public class IF97 {
      * <caption>Unit systems.</caption>
      * <tr>
      * <th></th><th></th><th>Default</th><th>Engineering</th><th>SI</th><th>Imperial</th>
+     * </tr>
+     * <tr>
+     * <td><i>p</i></td><td>absolute
+     * pressure</td><td>MPa</td><td>bar</td><td>Pa</td><td>psi</td>
      * </tr>
      * <tr>
      * <td><i>&rho;</i></td><td>density</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>lb/ft&sup3;</td>
@@ -3516,10 +3803,6 @@ public class IF97 {
      * <tr>
      * <td><i>Pr</i></td><td>Prandtl
      * number</td><td>-</td><td>-</td><td>-</td><td>-</td>
-     * </tr>
-     * <tr>
-     * <td><i>p</i></td><td>absolute
-     * pressure</td><td>MPa</td><td>bar</td><td>Pa</td><td>psi</td>
      * </tr>
      * <tr>
      * <td><i>n</i></td><td>refractive
@@ -3573,8 +3856,8 @@ public class IF97 {
      * fraction</td><td>-</td><td>-</td><td>-</td><td>-</td>
      * </tr>
      * <tr>
-     * <td><i>&lambda;</i></td><td>wave
-     * length</td><td>&mu;m</td><td>&mu;m</td><td>m</td><td>in</td>
+     * <td><i>&lambda;<sub>L</sub></i></td><td>wavelength of
+     * light</td><td>&mu;m</td><td>&mu;m</td><td>m</td><td>in</td>
      * </tr>
      * </table>
      */
@@ -3716,77 +3999,142 @@ public class IF97 {
                 /*
                  Default
                  */
-                UNITS.put(Quantity.p, "MPa(a)");
+                UNITS.put(Quantity.p, "MPa");
                 UNITS.put(Quantity.T, "K");
                 UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.cp, "kJ/(kg·K)");
+                UNITS.put(Quantity.cv, "kJ/(kg·K)");
                 UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.eta, "Pa·s");
+                UNITS.put(Quantity.nu, "m²/s");
+                UNITS.put(Quantity.a, "m²/s");
                 UNITS.put(Quantity.u, "kJ/kg");
                 UNITS.put(Quantity.h, "kJ/kg");
                 UNITS.put(Quantity.s, "kJ/(kg·K)");
                 UNITS.put(Quantity.lambda, "W/(m·K)");
+                UNITS.put(Quantity.lambdaL, "μm");
                 UNITS.put(Quantity.g, "kJ/kg");
-                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.f, "kJ/kg");
                 UNITS.put(Quantity.x, "");
+                UNITS.put(Quantity.alphav, "1/K");
+                UNITS.put(Quantity.kappa, "m²/s");
+                UNITS.put(Quantity.kappaT, "1/MPa");
+                UNITS.put(Quantity.w, "m/s");
+                UNITS.put(Quantity.sigma, "N/m");
 
             } else if (abs(pressure[0] - 0.1) < tol) {
                 /*
                  Engineering
                  */
-                UNITS.put(Quantity.p, "bar(a)");
+                UNITS.put(Quantity.p, "bar");
                 UNITS.put(Quantity.T, "°C");
                 UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.cp, "kJ/(kg·K)");
+                UNITS.put(Quantity.cv, "kJ/(kg·K)");
                 UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.eta, "Pa·s");
+                UNITS.put(Quantity.nu, "m²/s");
+                UNITS.put(Quantity.a, "m²/s");
                 UNITS.put(Quantity.u, "kJ/kg");
                 UNITS.put(Quantity.h, "kJ/kg");
                 UNITS.put(Quantity.s, "kJ/(kg·K)");
                 UNITS.put(Quantity.lambda, "kW/(m·K)");
+                UNITS.put(Quantity.lambdaL, "μm");
                 UNITS.put(Quantity.g, "kJ/kg");
-                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.f, "kJ/kg");
                 UNITS.put(Quantity.x, "");
+                UNITS.put(Quantity.alphav, "1/K");
+                UNITS.put(Quantity.kappa, "m²/s");
+                UNITS.put(Quantity.kappaT, "1/MPa");
+                UNITS.put(Quantity.w, "m/s");
+                UNITS.put(Quantity.sigma, "N/m");
 
             } else if (abs(pressure[0] - 1e-6) < tol) {
                 /*
                  SI
                  */
-                UNITS.put(Quantity.p, "Pa(a)");
+                UNITS.put(Quantity.p, "Pa");
                 UNITS.put(Quantity.T, "K");
                 UNITS.put(Quantity.v, "m³/kg");
+                UNITS.put(Quantity.cp, "J/(kg·K)");
+                UNITS.put(Quantity.cv, "J/(kg·K)");
                 UNITS.put(Quantity.rho, "kg/m³");
+                UNITS.put(Quantity.eta, "Pa·s");
+                UNITS.put(Quantity.nu, "m²/s");
+                UNITS.put(Quantity.a, "m²/s");
                 UNITS.put(Quantity.u, "J/kg");
                 UNITS.put(Quantity.h, "J/kg");
                 UNITS.put(Quantity.s, "J/(kg·K)");
                 UNITS.put(Quantity.lambda, "W/(m·K)");
+                UNITS.put(Quantity.lambdaL, "m");
                 UNITS.put(Quantity.g, "J/kg");
-                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.f, "J/kg");
                 UNITS.put(Quantity.x, "");
+                UNITS.put(Quantity.alphav, "1/K");
+                UNITS.put(Quantity.kappa, "m²/s");
+                UNITS.put(Quantity.kappaT, "1/Pa");
+                UNITS.put(Quantity.w, "m/s");
+                UNITS.put(Quantity.sigma, "N/m");
 
             } else if (abs(pressure[0] - psi) < tol) {
                 /*
                  Imperial
                  */
-                UNITS.put(Quantity.p, "psi(a)");
+                UNITS.put(Quantity.p, "psi");
                 UNITS.put(Quantity.T, "°F");
                 UNITS.put(Quantity.v, "ft³/lb");
+                UNITS.put(Quantity.cp, "BTU/(lb·R)");
+                UNITS.put(Quantity.cv, "BTU/(lb·R)");
                 UNITS.put(Quantity.rho, "lb/ft³");
+                UNITS.put(Quantity.eta, "cP");
+                UNITS.put(Quantity.nu, "cSt");
+                UNITS.put(Quantity.a, "cSt");
                 UNITS.put(Quantity.u, "BTU/lb");
                 UNITS.put(Quantity.h, "BTU/lb");
                 UNITS.put(Quantity.s, "BTU/(lb·R)");
                 UNITS.put(Quantity.lambda, "BTU/(hr·ft·R)");
+                UNITS.put(Quantity.lambdaL, "in");
                 UNITS.put(Quantity.g, "BTU/lb");
-                //UNITS.put(Quantity.f, "");
+                UNITS.put(Quantity.f, "BTU/lb");
                 UNITS.put(Quantity.x, "");
+                UNITS.put(Quantity.alphav, "1/R");
+                UNITS.put(Quantity.kappa, "cSt");
+                UNITS.put(Quantity.kappaT, "in²/lb");
+                UNITS.put(Quantity.w, "ft/s");
+                UNITS.put(Quantity.sigma, "lbf/ft");
 
             } else {
                 throw new IllegalStateException("Unsupported unit system");
             }
         }
 
-        String getUnit(Quantity quantity) {
+        public String getLabel(Quantity quantity) {
 
             if (!UNITS.containsKey(quantity)) {
-                throw new IllegalArgumentException("Unknown unit for quantity: " + quantity);
+                throw new IllegalArgumentException("Unknown label for quantity: " + quantity);
             }
-            return UNITS.get(quantity);
+            return String.format("%s [%s]", quantity, getUnit(quantity));
+        }
+
+        public String getUnit(Quantity quantity) {
+
+//            if (!UNITS.containsKey(quantity)) {
+//                throw new IllegalArgumentException("Unknown unit for quantity: " + quantity);
+//            }
+//            return UNITS.get(quantity);
+            return UNITS.containsKey(quantity) ? UNITS.get(quantity) : "-";
+        }
+
+        @Override
+        public String toString() {
+
+            switch (this) {
+                case SI:
+                    return name();
+
+                default:
+                    return name().toLowerCase();
+            }
         }
     }
 }

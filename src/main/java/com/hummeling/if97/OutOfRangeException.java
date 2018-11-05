@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -27,8 +27,8 @@ package com.hummeling.if97;
  * &nbsp; 0 &lt; p &lt;= 100 MPa</li> <li>1073.15 K &lt; T &lt;= 2273.15 K
  * &nbsp; 0 &lt; p &lt;= 50 MPa</li> </ul>
  *
- * @author Ralph Hummeling (<a
- * href="http://www.hummeling.com">www.hummeling.com</a>)
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 public class OutOfRangeException extends IllegalArgumentException {
 
@@ -37,12 +37,10 @@ public class OutOfRangeException extends IllegalArgumentException {
     private final IF97.UnitSystem UNIT_SYSTEM;
 
     OutOfRangeException(IF97.Quantity quantity, double value, double limit) {
-
         this(new IF97.Quantity[]{quantity}, new double[]{value}, new double[]{limit});
     }
 
     OutOfRangeException(IF97.Quantity[] quantities, double[] values, double[] limits) {
-
         this(quantities, values, limits, IF97.UnitSystem.DEFAULT);
     }
 
@@ -57,7 +55,6 @@ public class OutOfRangeException extends IllegalArgumentException {
         } else if (quantities.length != values.length || values.length != limits.length) {
             throw new IllegalArgumentException("Argument arrays should have equal lengths.");
         }
-
         QUANTITIES = quantities.clone();
         VALUES = values.clone();
         LIMITS = limits.clone();
@@ -73,7 +70,6 @@ public class OutOfRangeException extends IllegalArgumentException {
             values[i] = IF97.convertFromDefault(unitSystem, QUANTITIES[i], VALUES[i]);
             limits[i] = IF97.convertFromDefault(unitSystem, QUANTITIES[i], LIMITS[i]);
         }
-
         return new OutOfRangeException(QUANTITIES, values, limits, unitSystem);
     }
 
@@ -83,7 +79,6 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return limit value
      */
     public double getLimit() {
-
         return LIMITS[0];
     }
 
@@ -120,7 +115,6 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return quantity
      */
     public String getQuantity() {
-
         return QUANTITIES[0].toString();
     }
 
@@ -130,7 +124,6 @@ public class OutOfRangeException extends IllegalArgumentException {
      * @return value
      */
     public double getValue() {
-
         return VALUES[0];
     }
 }

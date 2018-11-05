@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -26,8 +26,8 @@ import static java.lang.StrictMath.*;
 /**
  * Region 2 metastable-vapour.
  *
- * @author Ralph Hummeling (<a
- * href="http://www.hummeling.com">www.hummeling.com</a>)
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 @Deprecated
 class Region2Meta extends Region2 {

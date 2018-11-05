@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -25,14 +25,15 @@ import org.junit.Test;
 
 /**
  * For methods related to liquid or vapour state above 16.5292 MPa (surrounded
- * by region 3), iterations are implemented. Tabulated values from Wagner are
- * used as test values, as well as values from Zittau's Fluid Property
- * Calculator. At pressures near critical pressure (22.064 MPa) Zittau's values
- * are not consistent with values from Wagner's Table 1 and 2, in which cases
- * Wagner's values are assumed correct.
+ * by region 3), iterations are implemented.
  *
- * @author Ralph Hummeling &lt;<a
- * href="mailto:engineering@hummeling.com?subject=IF97%20Java%20library">engineering@hummeling.com</a>&gt;
+ * Tabulated values from Wagner are used as test values, as well as values from
+ * Zittau's Fluid Property Calculator. At pressures near critical pressure
+ * (22.064 MPa) Zittau's values are not consistent with values from Wagner's
+ * Table 1 and 2, in which cases Wagner's values are assumed correct.
+ *
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 public class Region4Test {
 

@@ -5,8 +5,12 @@
  * international standards for transport and other properties.</p>
  *
  * <p>
- * Copyright 2009-2016 Hummeling Engineering BV
- * (<a href="http://www.hummeling.com">www.hummeling.com</a>).</p>
+ * See <a href="https://www.if97.software/">www.if97.software</a> for more
+ * information.</p>
+ *
+ * <p>
+ * Copyright 2009-2018 Hummeling Engineering BV
+ * (<a href="https://www.hummeling.com/">www.hummeling.com</a>).</p>
  *
  * <p>
  * IF97 is free software: you can redistribute it and/or modify it under the
@@ -21,6 +25,6 @@
  * <p>
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see
- * <a href="http://www.gnu.org/licenses/">www.gnu.org/licenses</a>.</p>
+ * <a href="https://www.gnu.org/licenses/">www.gnu.org/licenses</a>.</p>
  */
 package com.hummeling.if97;

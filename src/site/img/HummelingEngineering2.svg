@@ -1,0 +1,70 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="102" viewBox="0 0 300 102" stroke-linecap="round" stroke-linejoin="round" >
+  <title>Hummeling Engineering logo</title>
+  <defs>
+    <filter id="erode">
+      <feMorphology operator="erode" in="SourceGraphic" radius="1"/>
+    </filter>
+    <filter id="neon" y="-50%" height="200%">
+      <feColorMatrix type="matrix"
+        values=
+          "0 0 0 .3 0
+           0 0 0 1 0
+           0 0 0 1 0
+           0 0 0 1 0"/>
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <mask id="mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+        <rect width="100%" height="100%" fill="white" />
+        <rect x="6" y="6" width="288" height="50" rx="4" ry="4" fill="black" />
+    </mask>
+    <path id="E" d="M300 400 A25 25 0 0 1 300 450 L250 450 A225 225 0 0 1 250 0 L425 0 A25 25 0 0 1 425 50 L250 50 A175 175 0 0 0 250 400 L300 400 M350 200 A25 25 0 0 1 350 250 L250 250 A25 25 0 0 1 250 200 Z" transform="scale(0.06, -0.06)" />
+    <path id="G" d="M300 400 A25 25 0 0 1 300 450 L250 450 A225 225 0 0 1 250 0 L300 0 A150 150 0 0 1 300 300 L250 300 A25 25 0 0 1 250 250 L300 250 A100 100 0 0 0 300 50 L250 50 A175 175 0 0 0 250 400 Z" transform="scale(0.06, -0.06)" />
+    <path id="I" d="M50 25 A25 25 0 0 1 100 25 L100 425 A25 25 0 0 1 50 425 Z" transform="scale(0.06, -0.06)" />
+    <path id="N" d="M50 25 A25 25 0 0 1 100 25 L100 330 450 0 450 425 A25 25 0 0 1 400 425 L400 120 50 450 Z" transform="scale(0.06, -0.06)" />
+    <path id="R" d="M50 25 A25 25 0 0 1 100 25 L100 375 A25 25 0 0 0 125 400 L250 400 A100 100 0 0 0 250 200 L200 200 A25 25 0 0 1 200 150 L250 150 A125 125 0 0 1 250 450 L125 450 A75 75 0 0 1 50 375 L50 25 M367 8 A25 25 45 0 1 402 43 L345 100 A25 25 45 0 1 310 65 Z" transform="scale(0.06, -0.06)" />
+    <path id="gt" d="M50 200 L350 100 L50 0" transform="scale(0.055, -0.055)" />
+    <path id="e" d="M200 100 L300 100 A100 100 0 0 1 300 300 L200 300 A150 150 0 0 1 200 0 L250 0" transform="scale(0.055, -0.055)" />
+    <path id="g" d="M300 0 L200 0 A100 100 0 0 0 200 300 L250 300 A200 200 0 0 0 250 -100 L200 -100" transform="scale(0.055, -0.055)" />
+    <path id="h" d="M50 0 L50 600 M150 300 L250 300 A200 200 0 0 0 450 100 L450 0" transform="scale(0.055, -0.055)" />
+    <path id="i" d="M50 0 L50 300 M50 400 L50 401" transform="scale(0.055, -0.055)" />
+    <path id="l" d="M50 600 L50 150 A150 150 0 0 1 200 0" transform="scale(0.055, -0.055)" />
+    <path id="m" d="M50 0 L50 175 A75 75 0 0 0 300 175 L300 100 300 175 A75 75 0 0 0 550 175 L550 0" transform="scale(0.055, -0.055)" />
+    <path id="n" d="M50 0 L50 100 A150 150 0 0 0 450 100 L450 0" transform="scale(0.055, -0.055)" />
+    <path id="u" d="M50 300 L50 200 A150 150 0 0 1 450 200 L450 300" transform="scale(0.055, -0.055)" />
+  </defs>
+  <rect x="1" y="1" width="298" height="100" rx="8" ry="8" fill="#024" mask="url(#mask)" />
+  <g stroke="#357" stroke-width="70" fill="none" filter="url(#erode)">
+    <use xlink:href="#gt" x="9" y="46" />
+    <use xlink:href="#gt" x="31" y="46" />
+    <use xlink:href="#h" x="68" y="46" />
+    <use xlink:href="#u" x="96" y="46" />
+    <use xlink:href="#m" x="124" y="46" />
+    <use xlink:href="#m" x="158" y="46" />
+    <use xlink:href="#e" x="192" y="46" />
+    <use xlink:href="#l" x="217" y="46" />
+    <use xlink:href="#i" x="231" y="46" />
+    <use xlink:href="#n" x="237" y="46" />
+    <use xlink:href="#g" x="265" y="46" />
+  </g>
+  <g stroke="#fff" stroke-width="20" fill="#eff" filter="url(#neon)">
+    <use xlink:href="#E" x="8" y="92" />
+    <use xlink:href="#N" x="38" y="92" />
+    <use xlink:href="#G" x="68" y="92" />
+    <use xlink:href="#I" x="98" y="92" />
+    <use xlink:href="#N" x="108" y="92" />
+    <use xlink:href="#E" x="138" y="92" />
+    <use xlink:href="#E" x="168" y="92" />
+    <use xlink:href="#R" x="198" y="92" />
+    <use xlink:href="#I" x="225" y="92" />
+    <use xlink:href="#N" x="235" y="92" />
+    <use xlink:href="#G" x="265" y="92" />
+  </g>
+</svg>
+

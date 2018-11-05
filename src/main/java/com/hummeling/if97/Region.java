@@ -14,9 +14,9 @@
  * details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with IF97. If not, see <http://www.gnu.org/licenses/>.
+ * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2017 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -25,8 +25,8 @@ import static java.lang.StrictMath.*;
 /**
  * Abstract region class.
  *
- * @author Ralph Hummeling (<a
- * href="http://www.hummeling.com">www.hummeling.com</a>)
+ * @author Ralph Hummeling
+ * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 abstract class Region {
 
@@ -258,7 +258,6 @@ abstract class Region {
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(unitSystem);
         }
-
     }
 
     /**
@@ -367,6 +366,15 @@ abstract class Region {
             return REGION2;
         }
     }
+
+    /**
+     * Isentropic exponent,
+     *
+     * @param p pressure [MPa]
+     * @param T temperature [K]
+     * @return isentropic exponent [-]
+     */
+    abstract double isentropicExponentPT(double p, double T);
 
     /**
      * Isobaric cubic expansion coefficient.
