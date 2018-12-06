@@ -354,7 +354,7 @@ public class IF97 {
         }
     }
 
-    static double convertFromDefault(UnitSystem unitSystem, IF97.Quantity quantity, double value) {
+    public static double convertFromDefault(UnitSystem unitSystem, IF97.Quantity quantity, double value) {
 
         switch (quantity) {
             case T:
@@ -394,11 +394,11 @@ public class IF97 {
         }
     }
 
-    static double convertFromDefault(double[] quantity, double value) {
+    public static double convertFromDefault(double[] quantity, double value) {
         return (value - quantity[1]) / quantity[0];
     }
 
-    static double convertToDefault(double[] quantity, double value) {
+    public static double convertToDefault(double[] quantity, double value) {
         return value * quantity[0] + quantity[1];
     }
 
