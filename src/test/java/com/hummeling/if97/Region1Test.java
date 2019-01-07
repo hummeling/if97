@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -32,6 +32,19 @@ import org.junit.Test;
 public class Region1Test {
 
     static Region1 region = new Region1();
+
+    @Test
+    public void testIsentropicExponentPT() {
+
+        double[][] X = {
+            {0.417301218e1 / 0.412120160e1, 3, 300},
+            {0.401008987e1 / 0.391736606e1, 80, 300},
+            {0.465580682e1 / 0.322139223e1, 3, 500}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], region.isentropicExponentPT(x[1], x[2]), 1e-8);
+        }
+    }
 
     @Test
     public void testIsobaricCubicExpansionCoefficientPT() {

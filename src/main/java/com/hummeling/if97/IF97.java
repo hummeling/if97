@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -394,13 +394,53 @@ public class IF97 {
         }
     }
 
-    public static double convertFromDefault(double[] quantity, double value) {
+    static double convertFromDefault(double[] quantity, double value) {
         return (value - quantity[1]) / quantity[0];
     }
 
-    public static double convertToDefault(double[] quantity, double value) {
+    static double convertToDefault(double[] quantity, double value) {
         return value * quantity[0] + quantity[1];
     }
+
+//    public double convertToDefault(IF97.Quantity quantity, double value) {
+//
+//        switch (quantity) {
+//            case T:
+//                return convertToDefault(UNIT_SYSTEM.TEMPERATURE, value);
+//
+//            case f:
+//            case g:
+//            case u:
+//                return convertToDefault(UNIT_SYSTEM.SPECIFIC_ENERGY, value);
+//
+//            case h:
+//                return convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, value);
+//
+//            case lambda:
+//                return convertToDefault(UNIT_SYSTEM.THERMAL_CONDUCTIVITY, value);
+//
+//            case lambdaL:
+//                return convertToDefault(UNIT_SYSTEM.WAVELENGTH, value);
+//
+//            case p:
+//                return convertToDefault(UNIT_SYSTEM.PRESSURE, value);
+//
+//            case rho:
+//                return convertToDefault(UNIT_SYSTEM.DENSITY, value);
+//
+//            case s:
+//                return convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, value);
+//
+//            case v:
+//                return convertToDefault(UNIT_SYSTEM.SPECIFIC_VOLUME, value);
+//
+//            case x:
+//                return value;
+//
+//            default:
+//                throw new IllegalArgumentException("No conversion available for: " + quantity);
+//        }
+//    }
 
     /**
      * Density as a function of specific enthalpy &amp; specific entropy.
@@ -792,8 +832,8 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent as a function of specific enthalpy &amp; specific
-     * entropy.
+     * Isentropic exponent, or heat capacity ratio, as a function of specific
+     * enthalpy &amp; specific entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -820,7 +860,8 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent as a function of pressure &amp; specific enthalpy.
+     * Isentropic exponent, or heat capacity ratio, as a function of pressure
+     * &amp; specific enthalpy.
      *
      * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
@@ -846,7 +887,8 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent as a function of pressure &amp; specific entropy.
+     * Isentropic exponent, or heat capacity ratio, as a function of pressure
+     * &amp; specific entropy.
      *
      * @param pressure absolute pressure
      * @param entropy specific entropy
@@ -872,7 +914,8 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent as a function of pressure &amp; temperature.
+     * Isentropic exponent, or heat capacity ratio, as a function of pressure
+     * &amp; temperature.
      *
      * @param pressure absolute pressure
      * @param temperature temperature
@@ -3685,10 +3728,6 @@ public class IF97 {
          */
         x("vapour fraction", "x"),
         /**
-         * Compression factor.
-         */
-        z("compression factor", "z"),
-        /**
          * Isobaric cubic expansion coefficient.
          */
         alphav("isobaric cubic expansion coefficient", "<html>&alpha;<sub>v</sub></html>"),
@@ -3701,9 +3740,9 @@ public class IF97 {
          */
         eta("dynamic viscosity", "\u03bc"),
         /**
-         * Isentropic exponent.
+         * Thermal diffusivity.
          */
-        kappa("isentropic exponent", "\u03ba"),
+        kappa("thermal diffusivity", "\u03ba"),
         /**
          * Isothermal compressibility.
          */
@@ -3727,7 +3766,15 @@ public class IF97 {
         /**
          * Prandtl number.
          */
-        Pr("Prandtl number", "Pr");
+        Pr("Prandtl number", "Pr"),
+        /**
+         * Compression factor or real-gas factor.
+         */
+        Z("compression factor", "Z"),
+        /**
+         * Isentropic exponent, or heat capacity ratio.
+         */
+        gamma("isentropic exponent", "\u0393");
 
         private final String NAME, SYMBOL;
 
@@ -3768,98 +3815,9 @@ public class IF97 {
     }
 
     /**
-     * <table border="1">
-     * <caption>Unit systems.</caption>
-     * <tr>
-     * <th></th><th></th><th>Default</th><th>Engineering</th><th>SI</th><th>Imperial</th>
-     * </tr>
-     * <tr>
-     * <td><i>p</i></td><td>absolute
-     * pressure</td><td>MPa</td><td>bar</td><td>Pa</td><td>psi</td>
-     * </tr>
-     * <tr>
-     * <td><i>&rho;</i></td><td>density</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>kg/m&sup3;</td><td>lb/ft&sup3;</td>
-     * </tr>
-     * <tr>
-     * <td><i>&epsilon;</i></td><td>dielectric
-     * constant</td><td>-</td><td>-</td><td>-</td><td>-</td>
-     * </tr>
-     * <tr>
-     * <td><i>&eta;</i></td><td>dynamic
-     * viscosity</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td>Pa&middot;s</td><td>cP</td>
-     * </tr>
-     * <tr>
-     * <td><i>&alpha;<sub>v</sub></i></td><td>isobaric cubic expansion
-     * coefficient</td><td>1/K</td><td>1/K</td><td>1/K</td><td>1/R</td>
-     * </tr>
-     * <tr>
-     * <td><i>&kappa;<sub>T</sub></i></td><td>isothermal
-     * compressibility</td><td>1/MPa</td><td>1/MPa</td><td>1/Pa</td><td>in&sup2;/lb</td>
-     * </tr>
-     * <tr>
-     * <td><i>&nu;</i></td><td>kinematic
-     * viscosity</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>cSt</td>
-     * </tr>
-     * <tr>
-     * <td><i>Pr</i></td><td>Prandtl
-     * number</td><td>-</td><td>-</td><td>-</td><td>-</td>
-     * </tr>
-     * <tr>
-     * <td><i>n</i></td><td>refractive
-     * index</td><td>-</td><td>-</td><td>-</td><td>-</td>
-     * </tr>
-     * <tr>
-     * <td><i>h</i></td><td>specific
-     * enthalpy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td>
-     * </tr>
-     * <tr>
-     * <td><i>s</i></td><td>specific
-     * entropy</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
-     * </tr>
-     * <tr>
-     * <td><i>u</i></td><td>specific internal
-     * energy</td><td>kJ/kg</td><td>kJ/kg</td><td>J/kg</td><td>BTU/lb</td>
-     * </tr>
-     * <tr>
-     * <td><i>c<sub>p</sub></i></td><td>specific isobaric heat
-     * capacity</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
-     * </tr>
-     * <tr>
-     * <td><i>c<sub>v</sub></i></td><td>specific isochoric heat
-     * capacity</td><td>kJ/(kg&middot;K)</td><td>kJ/(kg&middot;K)</td><td>J/(kg&middot;K)</td><td>BTU/(lb&middot;R)</td>
-     * </tr>
-     * <tr>
-     * <td><i>v</i></td><td>specific
-     * volume</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>m&sup3;/kg</td><td>ft&sup3;/lb</td>
-     * </tr>
-     * <tr>
-     * <td><i>w</i></td><td>speed of
-     * sound</td><td>m/s</td><td>m/s</td><td>m/s</td><td>ft/s</td>
-     * </tr>
-     * <tr>
-     * <td><i>&sigma;</i></td><td>surface
-     * tension</td><td>N/m</td><td>N/m</td><td>N/m</td><td>lbf/ft</td>
-     * </tr>
-     * <tr>
-     * <td><i>T</i></td><td>temperature</td><td>K</td><td>&deg;C</td><td>K</td><td>&deg;F</td>
-     * </tr>
-     * <tr>
-     * <td><i>&lambda;</i></td><td>thermal
-     * conductivity</td><td>W/(m&middot;K)</td><td>kW/(m&middot;K)</td><td>W/(m&middot;K)</td><td>BTU/(hr&middot;ft&middot;R)</td>
-     * </tr>
-     * <tr>
-     * <td><i>a</i></td><td>thermal
-     * diffusivity</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>m&sup2;/s</td><td>cSt</td>
-     * </tr>
-     * <tr>
-     * <td><i>x</i></td><td>vapour
-     * fraction</td><td>-</td><td>-</td><td>-</td><td>-</td>
-     * </tr>
-     * <tr>
-     * <td><i>&lambda;<sub>L</sub></i></td><td>wavelength of
-     * light</td><td>&mu;m</td><td>&mu;m</td><td>m</td><td>in</td>
-     * </tr>
-     * </table>
+     * See
+     * <a href="https://www.if97.software/#unitSystems">www.if97.software</a>
+     * for available unit systems.
      */
     public enum UnitSystem {
 

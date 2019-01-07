@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke-linecap="round" stroke-linejoin="round" width="102" height="102" viewBox="0 0 102 102" version="1.1">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke-linecap="round" stroke-linejoin="round" width="32" height="32" viewBox="0 0 96 96" version="1.1">
     <title>IF97 logo</title>
     <defs>
         <filter id="erode">
-            <feMorphology radius="1.0" operator="erode" />
+            <feMorphology operator="erode" radius="1.0" />
         </filter>
         <filter id="neon" x="-50%" y="-50%" width="200%" height="200%">
             <feColorMatrix type="matrix" values="0 0 0 .3 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0" />
@@ -14,10 +14,6 @@
                 <feMergeNode in="SourceGraphic"/>
             </feMerge>
         </filter>
-        <mask id="mask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-            <rect width="100%" height="100%" fill="white" />
-            <rect x="6" y="6" width="90" height="50" rx="4" ry="4" fill="black" />
-        </mask>
         <path id="_7" d="M50 400 a25 25 0 0 0 0 50 h200 a75 75 0 0 0 75 -75 V25 a25 25 0 0 0 -50 0 V375 a25 25 0 0 1 -25 25 Z" transform="scale(0.06, -0.06)" />
         <path id="_9" d="M200 200 a25 25 0 0 0 0 -50 h-50 a150 150 0 0 0 0 300 h50 A225 225 0 0 0 200 0 h-50 A25 25 0 0 0 150 50 h50 A175 175 0 0 1 200 400 h-50 A100 100 0 0 1 150 200 Z" transform="scale(0.06, -0.06)" />
         <path id="F" d="M50 25 A25 25 0 0 1 100 25 V375 A25 25 0 0 0 125 400 H250 A25 25 0 0 1 250 450 H125 A75 75 0 0 1 50 375 V25 M300 200 A25 25 0 0 1 300 250 H200 A25 25 0 0 1 200 200 Z" transform="scale(0.06, -0.06)" />
@@ -26,17 +22,18 @@
         <path id="j" d="M150 300 V50 A150 150 0 0 0 0 -100 M150 400 v1" transform="scale(0.06, -0.06)" />
         <path id="v" d="M50 300 L200 0 350 300" transform="scale(0.06, -0.06)" />
     </defs>
-    <rect x="1" y="1" width="100" height="100" rx="8" ry="8" fill="#024" mask="url(#mask)" />
+    <path d="M0 8 a8 8 0 0 1 8 -8 h80 a8 8 0 0 1 8 8 v80 a8 8 0 0 1 -8 8 h-80 a8 8 0 0 1 -8 -8z
+M5 9 a4 4 0 0 1 4 -4 h78 a4 4 0 0 1 4 4 v40 a4 4 0 0 1 -4 4 h-78 a4 4 0 0 1 -4 -4z" fill="#024" fill-rule="evenodd" />
     <g stroke="#357" stroke-width="70" fill="none" filter="url(#erode)">
-        <use xlink:href="#j" x="9" y="46" />
-        <use xlink:href="#a" x="22" y="46" />
-        <use xlink:href="#v" x="46" y="46" />
-        <use xlink:href="#a" x="66" y="46" />
+        <use xlink:href="#j" x="8" y="44" />
+        <use xlink:href="#a" x="20" y="44" />
+        <use xlink:href="#v" x="44" y="44" />
+        <use xlink:href="#a" x="64" y="44" />
     </g>
     <g stroke="#fff" stroke-width="20" fill="#eff" filter="url(#neon)">
-        <use xlink:href="#I" x="8" y="92" />
-        <use xlink:href="#F" x="18" y="92" />
-        <use xlink:href="#_9" x="46" y="92" />
-        <use xlink:href="#_7" x="72" y="92" />
+        <use xlink:href="#I" x="5" y="89" />
+        <use xlink:href="#F" x="15" y="89" />
+        <use xlink:href="#_9" x="43" y="89" />
+        <use xlink:href="#_7" x="69" y="89" />
     </g>
 </svg>
