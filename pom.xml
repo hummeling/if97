@@ -21,7 +21,7 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:http://git.code.sf.net/p/if97/git</connection>
+        <connection>scm:git:https://git.code.sf.net/p/if97/git</connection>
         <url>https://sourceforge.net/projects/if97</url>
     </scm>
     <organization>

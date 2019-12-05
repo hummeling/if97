@@ -62,7 +62,7 @@ public class IF97 {
      * Molar mass of ordinary water [kg/kmol].
      */
     public static final double M = 18.015257;
-    public static final double T0 = 273.15;
+    public static final double T0 = 273.15; //TODO Check with book (it states 273.16 somewhere)
     public static final double p0 = Region.REGION4.saturationPressureT(T0);
     /**
      * Critical pressure [MPa].
@@ -171,9 +171,7 @@ public class IF97 {
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
 
         try {
-            double T = Region.getRegionPH(p, h).temperaturePH(p, h);
-
-            return Calculate.PrandtlPT(p, T);
+            return Calculate.PrandtlPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -271,10 +269,14 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
+            if (region instanceof Region4) {
+                kappaT = Region.REGION4.isothermalCompressibilityPH(p, h);
 
-            kappaT = region.isothermalCompressibilityPT(p, T);
+            } else {
+                double T = region.temperaturePH(p, h);
 
+                kappaT = region.isothermalCompressibilityPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -441,7 +443,6 @@ public class IF97 {
 //                throw new IllegalArgumentException("No conversion available for: " + quantity);
 //        }
 //    }
-
     /**
      * Density as a function of specific enthalpy &amp; specific entropy.
      *
@@ -984,10 +985,14 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
+            if (region instanceof Region4) {
+                alphaV = Region.REGION4.isobaricCubicExpansionCoefficientPH(p, h);
 
-            alphaV = region.isobaricCubicExpansionCoefficientPT(p, T);
+            } else {
+                double T = region.temperaturePH(p, h);
 
+                alphaV = region.isobaricCubicExpansionCoefficientPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -1048,6 +1053,61 @@ public class IF97 {
     }
 
     /**
+     * Isobaric cubic expansion coefficient as a function of pressure &amp;
+     * vapour fraction.
+     *
+     * @param pressure absolute pressure
+     * @param vapourFraction vapour fraction
+     * @return isobaric cubic expansion coefficient
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricCubicExpansionCoefficientPH(double, double)
+     */
+    public double isobaricCubicExpansionCoefficientPX(double pressure, double vapourFraction) {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure);
+
+        try {
+            Region.REGION4.checkP(p);
+            Region.REGION4.checkX(vapourFraction);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        double h = Region.REGION4.specificEnthalpyPX(p, vapourFraction),
+                alphaV = Region.REGION4.isobaricCubicExpansionCoefficientPH(p, h);
+
+        return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
+    }
+
+    /**
+     * Isobaric cubic expansion coefficient as a function of temperature &amp;
+     * vapour fraction.
+     *
+     * @param temperature temperature
+     * @param vapourFraction vapour fraction
+     * @return isobaric cubic expansion coefficient
+     * @throws OutOfRangeException out-of-range exception
+     * @see #isobaricCubicExpansionCoefficientPH(double, double)
+     */
+    public double isobaricCubicExpansionCoefficientTX(double temperature, double vapourFraction) {
+
+        double T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
+
+        try {
+            Region.REGION4.checkT(T);
+            Region.REGION4.checkX(vapourFraction);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+        double p = Region.REGION4.saturationPressureT(T),
+                h = Region.REGION4.specificEnthalpyPX(p, vapourFraction),
+                alphaV = Region.REGION4.isobaricCubicExpansionCoefficientPH(p, h);
+
+        return convertFromDefault(UNIT_SYSTEM.ISOBARIC_CUBIC_EXPANSION_COEFFICIENT, alphaV);
+    }
+
+    /**
      * Specific isobaric heat capacity as a function of specific enthalpy &amp;
      * specific entropy.
      *
@@ -1096,10 +1156,14 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
+            if (region instanceof Region4) {
+                cp = Region.REGION4.specificIsobaricHeatCapacityPH(p, h);
 
-            cp = region.specificIsobaricHeatCapacityPT(p, T);
+            } else {
+                double T = region.temperaturePH(p, h);
 
+                cp = region.specificIsobaricHeatCapacityPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -1208,10 +1272,14 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
+            if (region instanceof Region4) {
+                cv = Region.REGION4.specificIsochoricHeatCapacityPH(p, h);
 
-            cv = region.specificIsochoricHeatCapacityPT(p, T);
+            } else {
+                double T = region.temperaturePH(p, h);
 
+                cv = region.specificIsochoricHeatCapacityPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -1409,11 +1477,70 @@ public class IF97 {
     }
 
     /**
-     * Partial derivative of z with respect to x for constant y, as a function
-     * of pressure and temperature.
+     * Partial derivative of z with respect to x for constant y in SI units, as
+     * a function of pressure and specific enthalpy.
      *
      * <p>
-     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, T) </p>
+     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, T)
+     * </p>
+     *
+     * @param pressure absolute pressure
+     * @param enthalpy specific enthalpy
+     * @param x any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param y any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @param z any {@link Quantity} part of the set returned by
+     * {@link Quantity#getPartialDerivatives()}
+     * @return partial derivative [SI units]
+     * @throws OutOfRangeException out-of-range exception
+     * @see Quantity#getPartialDerivatives()
+     */
+    public double partialDerivativePH(double pressure, double enthalpy, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
+
+        if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(x)) {
+            throw new IllegalArgumentException("Partial derivative with respect to " + x + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+
+        } else if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(y)) {
+            throw new IllegalArgumentException("Partial derivative for constant " + y + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+
+        } else if (!PARTIAL_DERIVATIVE_QUANTITIES.contains(z)) {
+            throw new IllegalArgumentException("Partial derivative of " + z + " is not supported, see IF97.Quantity.getPartialDerivatives() for supported quantities.");
+        }
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
+
+        try {
+            Region region = Region.getRegionPH(p, h);
+            double T = region.temperaturePH(p, h);
+
+            if (region instanceof Region3) {
+                double v = region.specificVolumePH(p, h);
+                return Calculate.partialDerivativeRhoT(1 / v, T, x, y, z);
+
+            } else if (region instanceof Region4) {
+                return Region.REGION4.partialDerivativePH(p, h, x, y, z); // incomplete implementation
+
+            } else {
+                return Calculate.partialDerivativePT(region, p, T, x, y, z);
+            }
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Gets the partial derivative of z with respect to x for constant y in SI
+     * units, as a function of pressure and temperature.
+     *
+     * <p>
+     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, T)
+     * </p>
+     *
+     * Note that this method is not suitable for the saturated region as
+     * pressure and temperature are coupled. Preferably, use
+     * {@link #partialDerivativePH(double, double, com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity)}
+     * instead.
      *
      * @param pressure absolute pressure
      * @param temperature temperature
@@ -1423,9 +1550,12 @@ public class IF97 {
      * {@link Quantity#getPartialDerivatives()}
      * @param z any {@link Quantity} part of the set returned by
      * {@link Quantity#getPartialDerivatives()}
-     * @return partial derivative in default units
+     * @return partial derivative [SI units]
      * @throws OutOfRangeException out-of-range exception
      * @see Quantity#getPartialDerivatives()
+     * @see #partialDerivativePH(double, double,
+     * com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity,
+     * com.hummeling.if97.IF97.Quantity)
      */
     public double partialDerivativePT(double pressure, double temperature, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
@@ -1457,11 +1587,15 @@ public class IF97 {
     }
 
     /**
-     * Partial derivative of z with respect to x for constant y, as a function
-     * of density and temperature, valid in region 3 only!
+     * Gets the partial derivative of z with respect to x for constant y in SI
+     * units, as a function of density and temperature, valid in region 3 only!
      *
      * <p>
-     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(&rho;, T) </p>
+     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(&rho;, T)
+     * </p>
+     * Preferably, use
+     * {@link #partialDerivativePH(double, double, com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity)}
+     * instead.
      *
      * @param density density
      * @param temperature temperature
@@ -1471,9 +1605,12 @@ public class IF97 {
      * {@link Quantity#getPartialDerivatives()}
      * @param z any {@link Quantity} part of the set returned by
      * {@link Quantity#getPartialDerivatives()}
-     * @return partial derivative in default units
+     * @return partial derivative [SI units]
      * @throws OutOfRangeException out-of-range exception
      * @see Quantity#getPartialDerivatives()
+     * @see #partialDerivativePH(double, double,
+     * com.hummeling.if97.IF97.Quantity, com.hummeling.if97.IF97.Quantity,
+     * com.hummeling.if97.IF97.Quantity)
      */
     public double partialDerivativeRhoT(double density, double temperature, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
@@ -1974,7 +2111,6 @@ public class IF97 {
 
                 s = region.specificEntropyPT(p, T);
             }
-
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -2223,10 +2359,14 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
+            if (region instanceof Region4) {
+                u = Region.REGION4.specificInternalEnergyPH(p, h);
 
-            u = region.specificInternalEnergyPT(p, T);
+            } else {
+                double T = region.temperaturePH(p, h);
 
+                u = region.specificInternalEnergyPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -2716,10 +2856,12 @@ public class IF97 {
         try {
             Region region = Region.getRegionPH(p, h);
 
-            double T = region.temperaturePH(p, h);
-
-            w = region.speedOfSoundPT(p, T);
-
+            if (region instanceof Region4) {
+                w = Region.REGION4.speedOfSoundPH(p, h);
+            } else {
+                double T = region.temperaturePH(p, h);
+                w = region.speedOfSoundPT(p, T);
+            }
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
@@ -2910,11 +3052,9 @@ public class IF97 {
 
         try {
             Region region = Region.getRegionHS(h, s);
-
-            double v = region.specificVolumeHS(h, s),
+            double rho = 1 / region.specificVolumeHS(h, s),
                     T = region.temperatureHS(h, s);
-
-            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2939,11 +3079,9 @@ public class IF97 {
 
         try {
             Region region = Region.getRegionPH(p, h);
-
-            double v = region.specificVolumePH(p, h),
+            double rho = 1 / region.specificVolumePH(p, h),
                     T = region.temperaturePH(p, h);
-
-            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2968,11 +3106,9 @@ public class IF97 {
 
         try {
             Region region = Region.getRegionPS(p, s);
-
-            double v = region.specificVolumePS(p, s),
+            double rho = 1 / region.specificVolumePS(p, s),
                     T = region.temperaturePS(p, s);
-
-            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -2998,9 +3134,8 @@ public class IF97 {
                 lambda;
 
         try {
-            double v = Region.getRegionPT(p, T).specificVolumePT(p, T);
-
-            lambda = Calculate.thermalConductivityRhoT(1 / v, T);
+            double rho = 1 / Region.getRegionPT(p, T).specificVolumePT(p, T);
+            lambda = Calculate.thermalConductivityRhoT(rho, T);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -3044,23 +3179,16 @@ public class IF97 {
 
         double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
-                lambda,
-                rho,
-                cp;
+                kappa;
 
         try {
-            Region region = Region.getRegionHS(h, s);
-
-            double p = region.pressureHS(h, s),
-                    T = region.temperatureHS(h, s);
-            rho = 1 / region.specificVolumeHS(h, s);
-            lambda = Calculate.thermalConductivityRhoT(rho, T);
-            cp = region.specificIsobaricHeatCapacityPT(p, T);
+            double p = Region.getRegionHS(h, s).pressureHS(h, s);
+            kappa = Calculate.thermalDiffusivityPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, kappa);
     }
 
     /**
@@ -3075,22 +3203,15 @@ public class IF97 {
 
         double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
-                lambda,
-                rho,
-                cp;
+                kappa;
 
         try {
-            Region region = Region.getRegionPH(p, h);
-
-            double T = region.temperaturePH(p, h);
-            rho = 1 / region.specificVolumePH(p, h);
-            lambda = Calculate.thermalConductivityRhoT(rho, T);
-            cp = region.specificIsobaricHeatCapacityPT(p, T);
+            kappa = Calculate.thermalDiffusivityPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, kappa);
     }
 
     /**
@@ -3105,22 +3226,16 @@ public class IF97 {
 
         double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy),
-                lambda,
-                rho,
-                cp;
+                kappa;
 
         try {
-            Region region = Region.getRegionPS(p, s);
-
-            double T = region.temperaturePS(p, s);
-            rho = 1 / region.specificVolumePS(p, s);
-            lambda = Calculate.thermalConductivityRhoT(rho, T);
-            cp = region.specificIsobaricHeatCapacityPT(p, T);
+            double h = Region.getRegionPS(p, s).specificEnthalpyPS(p, s);
+            kappa = Calculate.thermalDiffusivityPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, kappa);
     }
 
     /**
@@ -3137,21 +3252,16 @@ public class IF97 {
 
         double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
                 T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature),
-                lambda,
-                rho,
-                cp;
+                kappa;
 
         try {
-            Region region = Region.getRegionPT(p, T);
-
-            rho = 1 / region.specificVolumePT(p, T);
-            lambda = Calculate.thermalConductivityRhoT(rho, T);
-            cp = region.specificIsobaricHeatCapacityPT(p, T);
+            double h = Region.getRegionPT(p, T).specificEnthalpyPT(p, T);
+            kappa = Calculate.thermalDiffusivityPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
         }
-        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, lambda / (rho * cp));
+        return convertFromDefault(UNIT_SYSTEM.THERMAL_DIFFUSIVITY, kappa);
     }
 
     /**
@@ -3250,7 +3360,34 @@ public class IF97 {
     /**
      * Calculate in default units.
      */
-    private static class Calculate {
+    static class Calculate {
+
+        /**
+         * Prandtl number.
+         *
+         * @param p pressure [MPa]
+         * @param h specific enthalpy [kJ/kg]
+         * @return Prandtl number [-]
+         * @throws OutOfRangeException out-of-range exception
+         */
+        static double PrandtlPH(double p, double h) throws OutOfRangeException {
+
+            Region region = Region.getRegionPH(p, h);
+
+            double cp,
+                    rho = 1 / region.specificVolumePH(p, h),
+                    T = region.temperaturePH(p, h),
+                    eta = dynamicViscosityRhoT(rho, T),
+                    lambda = thermalConductivityRhoT(rho, T) / 1e3;
+
+            if (region instanceof Region4) {
+                cp = Region.REGION4.specificIsobaricHeatCapacityPH(p, h);
+
+            } else {
+                cp = region.specificIsobaricHeatCapacityPT(p, T);
+            }
+            return eta * cp / lambda;
+        }
 
         /**
          * Prandtl number.
@@ -3375,31 +3512,32 @@ public class IF97 {
         }
 
         /**
-         * Partial derivative of z with respect to x for constant y, as a
-         * function of pressure and temperature.
+         * Gets the partial derivative of z with respect to x for constant y in
+         * SI units, as a function of pressure and temperature in DEFAULT units.
          *
          * This method is for regions described by specific Gibbs free energy.
          *
          * @param region region
-         * @param p pressure [MPa]
+         * @param pMPa pressure [MPa]
          * @param T temperature [K]
          * @param x any quantity
          * @param y any quantity
          * @param z any quantity
-         * @return partial derivative
+         * @return partial derivative [SI units]
          * @throws OutOfRangeException out-of-range exception
          */
-        private static double partialDerivativePT(Region region, double p, double T, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
+        static double partialDerivativePT(Region region, double pMPa, double T, Quantity x, Quantity y, Quantity z) throws OutOfRangeException {
 
-            double v = region.specificVolumePT(p, T),
-                    s = region.specificEntropyPT(p, T),
-                    cp = region.specificIsobaricHeatCapacityPT(p, T),
-                    alphaV = region.isobaricCubicExpansionCoefficientPT(p, T),
-                    kappaT = region.isothermalCompressibilityPT(p, T);
+            double p = pMPa * 1e6, // [Pa]
+                    v = region.specificVolumePT(pMPa, T), // [m³/kg]
+                    s = region.specificEntropyPT(pMPa, T) * 1e3, // [J/(kg·K)]
+                    cp = region.specificIsobaricHeatCapacityPT(pMPa, T) * 1e3, // [J/(kg·K)]
+                    alphaV = region.isobaricCubicExpansionCoefficientPT(pMPa, T), // [1/K]
+                    kappaT = region.isothermalCompressibilityPT(pMPa, T) / 1e6; // [1/Pa]
 
-            double[] dx = partialDerivativesPT(p, T, x, v, s, cp, alphaV, kappaT),
-                    dy = partialDerivativesPT(p, T, y, v, s, cp, alphaV, kappaT),
-                    dz = partialDerivativesPT(p, T, z, v, s, cp, alphaV, kappaT);
+            double[] dx = partialDerivativesPT(p, T, x, v, s, cp, alphaV, kappaT), // [SI units]
+                    dy = partialDerivativesPT(p, T, y, v, s, cp, alphaV, kappaT), // [SI units]
+                    dz = partialDerivativesPT(p, T, z, v, s, cp, alphaV, kappaT); // [SI units]
 
             double dx_dT = dx[0],
                     dy_dT = dy[0],
@@ -3412,27 +3550,27 @@ public class IF97 {
         }
 
         /**
-         * Partial derivative of z with respect to x for constant y, as a
-         * function of specific volume and temperature.
+         * Gets the partial derivative of z with respect to x for constant y in
+         * SI units, as a function of specific volume and temperature.
          *
          * This method is for region 3 described by specific Helmholtz free
          * energy.
          *
-         * @param rho density [kg/m&sup3;]
+         * @param rho density [kg/m³]
          * @param T temperature [K]
          * @param x any quantity
          * @param y any quantity
          * @param z any quantity
-         * @return partial derivative
+         * @return partial derivative [SI units]
          */
-        private static double partialDerivativeRhoT(double rho, double T, Quantity x, Quantity y, Quantity z) {
+        static double partialDerivativeRhoT(double rho, double T, Quantity x, Quantity y, Quantity z) {
 
-            double v = 1 / rho,
-                    p = Region.REGION3.pressureRhoT(rho, T),
-                    s = Region.REGION3.specificEntropyRhoT(rho, T),
-                    cv = Region.REGION3.specificIsochoricHeatCapacityRhoT(rho, T),
-                    alphap = Region.REGION3.relativePressureCoefficientRhoT(rho, T),
-                    betap = Region.REGION3.isothermalStressCoefficientRhoT(rho, T);
+            double v = 1 / rho, // [m³/kg]
+                    p = Region.REGION3.pressureRhoT(rho, T) * 1e6, // [Pa]
+                    s = Region.REGION3.specificEntropyRhoT(rho, T) * 1e3, // [J/(kg·K)]]
+                    cv = Region.REGION3.specificIsochoricHeatCapacityRhoT(rho, T) * 1e3, // [J/(kg·K)]
+                    alphap = Region.REGION3.relativePressureCoefficientRhoT(rho, T), // [1/K]
+                    betap = Region.REGION3.isothermalStressCoefficientRhoT(rho, T); // [kg/m³]
 
             double[] dx = partialDerivativesVT(v, T, x, p, s, cv, alphap, betap),
                     dy = partialDerivativesVT(v, T, y, p, s, cv, alphap, betap),
@@ -3449,69 +3587,68 @@ public class IF97 {
         }
 
         /**
-         * Partial derivatives of the given quantity with respect to specific
-         * volume and temperature for region 3 described by specific Helmholtz
-         * free energy.
+         * Gets the partial derivatives of the given quantity with respect to
+         * specific volume and temperature in SI units, for region 3 described
+         * by specific Helmholtz free energy.
          *
-         * @param v specific volume [m&sup3;/kg]
+         * @param v specific volume [m³/kg]
          * @param T temperature [K]
          * @param quantity quantity
-         * @param p pressure [MPa]
-         * @param s specific entropy [kJ/kg-K]
-         * @param cv
-         * @param alphap
-         * @param betap
-         * @return partial derivatives d/d&nu; and d/dT
+         * @param p pressure [Pa]
+         * @param s specific entropy [J/(kg·K)]
+         * @param cv specific isochoric heat capacity [J/(kg·K)]
+         * @param alphap relative pressure coefficient [1/K]
+         * @param betap isothermal stress coefficient [kg/m³]
+         * @return partial derivatives d/d&nu; and d/dT [SI units]
          */
         private static double[] partialDerivativesVT(double v, double T, Quantity quantity, double p, double s, double cv, double alphap, double betap) {
 
-            double d_dv = Double.NaN,
-                    d_dT = Double.NaN;
+            double d_dv, d_dT;
 
             switch (quantity) {
                 case p:
-                    d_dv = -p * betap;
-                    d_dT = p * alphap;
+                    d_dv = -p * betap; // [Pa·kg/m³]
+                    d_dT = p * alphap; // [Pa/K]
                     break;
 
                 case T:
-                    d_dv = 0;
-                    d_dT = 1;
+                    d_dv = 0; // [-]
+                    d_dT = 1; // [-]
                     break;
 
                 case v:
-                    d_dv = 1;
-                    d_dT = 0;
+                    d_dv = 1; // [-]
+                    d_dT = 0; // [-]
                     break;
 
                 case u:
-                    d_dv = p * (T * alphap - 1);
-                    d_dT = cv;
+                    d_dv = p * (T * alphap - 1); // [Pa]
+                    d_dT = cv; // [J/(kg·K)]
                     break;
 
                 case h:
-                    d_dv = p * (T * alphap - v * betap);
-                    d_dT = cv + p * v * alphap;
+                    d_dv = p * (T * alphap - v * betap); // [Pa]
+                    d_dT = cv + p * v * alphap; // [J/(kg·K)]
                     break;
 
                 case s:
-                    d_dv = p * alphap;
-                    d_dT = cv / T;
+                    d_dv = p * alphap; // [Pa/K]
+                    d_dT = cv / T; // [J/(kg·K²)]
                     break;
 
                 case g:
-                    d_dv = -p * v * betap;
-                    d_dT = p * v * alphap - s;
+                    d_dv = -p * v * betap; // [Pa]
+                    d_dT = p * v * alphap - s; // [J/(kg·K)]
                     break;
 
                 case f:
-                    d_dv = -p;
-                    d_dT = -s;
+                    d_dv = -p; // [Pa]
+                    d_dT = -s; // [J/(kg·K)]
                     break;
 
                 case rho:
-                    d_dv = -1 / (v * v);
-                    d_dT = 0;
+                    d_dv = -1 / (v * v); // [kg²/m^6]
+                    d_dT = 0; // [-]
                     break;
 
                 default:
@@ -3522,67 +3659,67 @@ public class IF97 {
 
         /**
          * Partial derivatives of the given quantity with respect to pressure
-         * and temperature for regions described by specific Gibbs free energy.
+         * and temperature for regions described by specific Gibbs free energy
+         * in SI units.
          *
-         * @param p pressure [MPa]
+         * @param p pressure [Pa]
          * @param T temperature [K]
          * @param quantity quantity
-         * @param v specific volume [m&sup3;/kg]
-         * @param s specific entropy [kJ/kg-K]
-         * @param cp specific isobaric heat capacity
-         * @param alphaV isobaric cubic expansion coefficient
-         * @param kappaT isothermal compressibility
-         * @return partial derivatives d/dT and d/dp
+         * @param v specific volume [m³/kg]
+         * @param s specific entropy [J/(kg·K)]
+         * @param cp specific isobaric heat capacity [J/(kg·K)]
+         * @param alphaV isobaric cubic expansion coefficient [1/K]
+         * @param kappaT isothermal compressibility [1/Pa]
+         * @return partial derivatives d/dT and d/dp [SI units]
          */
         private static double[] partialDerivativesPT(double p, double T, Quantity quantity, double v, double s, double cp, double alphaV, double kappaT) {
 
-            double d_dT = Double.NaN,
-                    d_dp = Double.NaN;
+            double d_dT, d_dp;
 
             switch (quantity) {
                 case p:
-                    d_dT = 0;
-                    d_dp = 1;
+                    d_dT = 0; // [-]
+                    d_dp = 1; // [-]
                     break;
 
                 case T:
-                    d_dT = 1;
-                    d_dp = 0;
+                    d_dT = 1; // [-]
+                    d_dp = 0; // [-]
                     break;
 
                 case v:
-                    d_dT = v * alphaV;
-                    d_dp = -v * kappaT;
+                    d_dT = v * alphaV; // [m³/(kg·K)]
+                    d_dp = -v * kappaT; // [m³/(kg·Pa)]
                     break;
 
                 case u:
-                    d_dT = cp - p * v * alphaV;
-                    d_dp = v * (p * kappaT - T * alphaV);
+                    d_dT = cp - p * v * alphaV; // [J/(kg·K)]
+                    d_dp = v * (p * kappaT - T * alphaV); // [m³/kg]
                     break;
 
                 case h:
-                    d_dT = cp;
-                    d_dp = v * (1 - T * alphaV);
+                    d_dT = cp; // [J/(kg·K)]
+                    d_dp = v * (1 - T * alphaV); // [m³/kg]
                     break;
 
                 case s:
-                    d_dT = cp / T;
-                    d_dp = -v * alphaV;
+                    d_dT = cp / T; // [J/(kg·K²)]
+                    d_dp = -v * alphaV; // [m³/(kg·K)]
                     break;
 
                 case g:
-                    d_dT = -s;
-                    d_dp = v;
+                    d_dT = -s; // [J/(kg·K)]
+                    d_dp = v; // [m³/kg]
                     break;
 
                 case f:
-                    d_dT = -p * v * alphaV - s;
-                    d_dp = p * v * kappaT;
+                    d_dT = -p * v * alphaV - s; // [J/(kg·K)]
+                    d_dp = p * v * kappaT; // [m³/kg]
                     break;
 
                 case rho:
-                    d_dT = -alphaV / v;
-                    d_dp = kappaT / v;
+                    d_dT = -alphaV / v; // [kg/(m³K)]
+                    d_dp = kappaT / v; // [kg/(m³Pa)]
                     break;
 
                 default:
@@ -3659,6 +3796,24 @@ public class IF97 {
                     Lambda2 = (n2[0] / pow(theta, 10) + n2[1]) * pow(delta, 1.8) * exp(n2[2] * (1.0 - pow(delta, 2.8))) + n2[3] * A * pow(delta, B) * exp(B / (1.0 + B) * (1.0 - pow(delta, 1.0 + B))) + n2[4] * exp(n2[5] * pow(theta, 1.5) + n2[6] / pow(delta, 5));
 
             return sqrt(theta) * Lambda0 + Lambda1 + Lambda2;
+        }
+
+        static double thermalDiffusivityPH(double p, double h) {
+
+            Region region = Region.getRegionPH(p, h);
+
+            double rho = 1 / region.specificVolumePH(p, h),
+                    T = region.temperaturePH(p, h),
+                    lambda = thermalConductivityRhoT(rho, T),
+                    cp;
+
+            if (region instanceof Region4) {
+                cp = Region.REGION4.specificIsobaricHeatCapacityPH(p, h);
+
+            } else {
+                cp = region.specificIsobaricHeatCapacityPT(p, T);
+            }
+            return lambda / rho / cp;
         }
     }
 

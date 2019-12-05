@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -191,21 +191,210 @@ final class Region4 extends Region {
         }
     }
 
+    private double[] densitiesRegion3(double pressure, double[] enthalpies) {
+        return new double[]{
+            1 / REGION3.specificVolumePH(pressure, enthalpies[0]),
+            1 / REGION3.specificVolumePH(pressure, enthalpies[1])};
+    }
+
+    /**
+     * Gets the derivative, dT/dp, along the saturation line in SI units,
+     * according Clausius-Clapeyron.
+     *
+     * @param pressure [MPa]
+     * @return dT/dp [K/Pa]
+     */
+    private double derivativeP(double pressure) {
+
+        double T = saturationTemperatureP(pressure); // [K]
+        double[] h = specificEnthalpiesP(pressure), // [kJ/kg]
+                v = specificVolumesP(pressure); // [m³/kg]
+
+        return T * (v[1] - v[0]) / (h[1] - h[0]) / 1e3;
+    } //TODO Replace by derivative of elementary function
+
+    /**
+     * Gets the derivative of z with respect to pT (pressure or temperature) in
+     * SI units, along the saturation line.
+     *
+     * @param pressure [MPa]
+     * @param pT pressure or temperature [IF97.Quantity.p | IF97.Quantity.T]
+     * @param z any quantity
+     * @return derivative (dz/dp)T or (dz/dT)p [SI]
+     */
+    private double[] derivativeP(double pressure, Quantity pT, Quantity z) {
+
+        double T = saturationTemperatureP(pressure), // [K]
+                dT_dp = derivativeP(pressure); // [K/Pa]
+        double[] dz_dp_T = new double[2],
+                dz_dT_p = new double[2];
+
+        if (ps13 <= pressure) {
+            /*
+             Region 3
+             */
+            double[] h = specificEnthalpiesP(pressure), // [kJ/kg]
+                    rho = densitiesRegion3(pressure, h); // [kg/m³]
+            dz_dp_T[0] = IF97.Calculate.partialDerivativeRhoT(rho[0], T, Quantity.p, Quantity.T, z); // [SI]
+            dz_dp_T[1] = IF97.Calculate.partialDerivativeRhoT(rho[1], T, Quantity.p, Quantity.T, z); // [SI]
+            dz_dT_p[0] = IF97.Calculate.partialDerivativeRhoT(rho[0], T, Quantity.T, Quantity.p, z); // [SI]
+            dz_dT_p[1] = IF97.Calculate.partialDerivativeRhoT(rho[1], T, Quantity.T, Quantity.p, z); // [SI]
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            dz_dp_T[0] = IF97.Calculate.partialDerivativePT(Region.REGION1, pressure, T, Quantity.p, Quantity.T, z); // [SI]
+            dz_dp_T[1] = IF97.Calculate.partialDerivativePT(Region.REGION2, pressure, T, Quantity.p, Quantity.T, z); // [SI]
+            dz_dT_p[0] = IF97.Calculate.partialDerivativePT(Region.REGION1, pressure, T, Quantity.T, Quantity.p, z); // [SI]
+            dz_dT_p[1] = IF97.Calculate.partialDerivativePT(Region.REGION2, pressure, T, Quantity.T, Quantity.p, z); // [SI]
+        }
+        switch (pT) {
+            case p:
+                return new double[]{
+                    dz_dp_T[0] + dz_dT_p[0] * dT_dp,
+                    dz_dp_T[1] + dz_dT_p[1] * dT_dp};
+
+            case T:
+                return new double[]{
+                    dz_dT_p[0] + dz_dp_T[0] / dT_dp,
+                    dz_dT_p[1] + dz_dp_T[1] / dT_dp};
+
+            default:
+                throw new IllegalArgumentException("Quantity pT should be either pressure or temperature, not: " + pT);
+        }
+    }
+
     @Override
     double isentropicExponentPT(double pressure, double temperature) {
         return Double.NaN;
     }
 
+    double isobaricCubicExpansionCoefficientPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return isobaricCubicExpansionCoefficientPX(pressure, x);
+    }
+
     @Override
     double isobaricCubicExpansionCoefficientPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    double isobaricCubicExpansionCoefficientPX(double pressure, double vapourFraction) {
+
+        double T = saturationTemperatureP(pressure);
+        double[] alpha = new double[2];
+
+        if (pressure > Region.ps13) {
+            /*
+             Region 3
+             */
+            double[] h = specificEnthalpiesP(pressure),
+                    rho = densitiesRegion3(pressure, h);
+            alpha[0] = REGION3.isobaricCubicExpansionCoefficientRhoT(rho[0], T);
+            alpha[1] = REGION3.isobaricCubicExpansionCoefficientRhoT(rho[1], T);
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            alpha[0] = REGION1.isobaricCubicExpansionCoefficientPT(pressure, T);
+            alpha[1] = REGION2.isobaricCubicExpansionCoefficientPT(pressure, T);
+        }
+        return valueX(vapourFraction, alpha);
+    }
+
+    double isothermalCompressibilityPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return isothermalCompressibilityPX(pressure, x);
     }
 
     @Override
     double isothermalCompressibilityPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    double isothermalCompressibilityPX(double pressure, double vapourFraction) {
+
+        double T = saturationTemperatureP(pressure);
+        double[] kappaT = new double[2];
+
+        if (pressure > Region.ps13) {
+            /*
+             Region 3
+             */
+            double[] h = specificEnthalpiesP(pressure),
+                    rho = densitiesRegion3(pressure, h);
+            kappaT[0] = REGION3.isothermalCompressibilityRhoT(rho[0], T);
+            kappaT[1] = REGION3.isothermalCompressibilityRhoT(rho[1], T);
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            kappaT[0] = REGION1.isothermalCompressibilityPT(pressure, T);
+            kappaT[1] = REGION2.isothermalCompressibilityPT(pressure, T);
+        }
+        return valueX(vapourFraction, kappaT);
+    }
+
+    /**
+     * Gets the partial derivative of z with respect to pT (pressure or
+     * temperature) for constant y in SI units.
+     *
+     * @param pressure pressure [MPa]
+     * @param enthalpy specific enthalpy [kJ/kg]
+     * @param pT pressure or temperature [IF97.Quantity.p|IF97.Quantity.T]
+     * @param y specific enthalpy or specific volume
+     * @param z specific enthalpy or specific volume
+     * @return partial derivative [SI]
+     */
+    double partialDerivativePH(double pressure, double enthalpy, Quantity pT, Quantity y, Quantity z) {
+
+        switch (z) {
+            case rho:
+                double rho = 1 / specificVolumePH(pressure, enthalpy); // [kg/m³]
+
+                return -rho * rho * partialDerivativePH(pressure, enthalpy, pT, y, Quantity.v);
+        }
+        double dy, dz;
+        double[] h = specificEnthalpiesP(pressure), // [kJ/kg]
+                v = specificVolumesP(pressure), // [m³/kg]
+                dz_dpT = derivativeP(pressure, pT, z), // [SI]
+                dy_dpT = derivativeP(pressure, pT, y); // [SI]
+
+        switch (z) {
+            case h:
+                dz = (h[1] - h[0]) * 1e3; // [J/kg]
+                break;
+
+            case v:
+                dz = v[1] - v[0]; // [m³/kg]
+                break;
+
+            default:
+                throw new IllegalArgumentException("Partial derivative of " + z + " is currently not supported in the saturated region, only specific enthalpy and specific volume.");
+        }
+        switch (y) {
+            case h:
+                dy = (h[0] - h[1]) * 1e3; // [J/kg]
+                break;
+
+            case v:
+                dy = v[0] - v[1]; // [m³/kg]
+                break;
+
+            default:
+                throw new IllegalArgumentException("Partial derivative for constant " + y + " is currently not supported in the saturated region, only specific enthalpy and specific volume.");
+        }
+        double x = vapourFraction(enthalpy, h), // [-]
+                dx_dpT_y = (x * dy_dpT[1] + (1 - x) * dy_dpT[0]) / dy;
+
+        return dz_dpT[0] + dz * dx_dpT_y + x * (dz_dpT[1] - dz_dpT[0]);
     }
 
     /**
@@ -311,8 +500,13 @@ final class Region4 extends Region {
      * @return
      */
     private double sign(double a, double b) {
+        return b >= 0 ^ a >= 0 ? -a : a; // simplified using XOR
+    }
 
-        return b >= 0 ^ a >= 0 ? -a : a; // simlified using XOR
+    private double[] specificEnthalpiesP(double pressure) {
+        return new double[]{
+            specificEnthalpySaturatedLiquidP(pressure),
+            specificEnthalpySaturatedVapourP(pressure)};
     }
 
     @Override
@@ -325,7 +519,6 @@ final class Region4 extends Region {
 
     @Override
     double specificEnthalpyPT(double pressure, double temperature) {
-
         return Double.NaN;
     }
 
@@ -338,10 +531,9 @@ final class Region4 extends Region {
      */
     double specificEnthalpyPX(double pressure, double vapourFraction) {
 
-        double h1 = specificEnthalpySaturatedLiquidP(pressure),
-                h2 = specificEnthalpySaturatedVapourP(pressure);
+        double[] h = specificEnthalpiesP(pressure);
 
-        return h1 + (h2 - h1) * vapourFraction;
+        return valueX(vapourFraction, h);
     }
 
     /**
@@ -440,6 +632,12 @@ final class Region4 extends Region {
         }
     }
 
+    private double[] specificEntropiesP(double pressure) {
+        return new double[]{
+            specificEntropySaturatedLiquidP(pressure),
+            specificEntropySaturatedVapourP(pressure)};
+    }
+
     /**
      * Specific entropy as a function of pressure & specific enthalpy.
      *
@@ -456,7 +654,6 @@ final class Region4 extends Region {
 
     @Override
     double specificEntropyPT(double pressure, double temperature) {
-
         return Double.NaN;
     }
 
@@ -469,15 +666,13 @@ final class Region4 extends Region {
      */
     double specificEntropyPX(double pressure, double vapourFraction) {
 
-        double s1 = specificEntropySaturatedLiquidP(pressure),
-                s2 = specificEntropySaturatedVapourP(pressure);
+        double[] s = specificEntropiesP(pressure);
 
-        return s1 + (s2 - s1) * vapourFraction;
+        return valueX(vapourFraction, s);
     }
 
     @Override
     double specificEntropyRhoT(double density, double temperature) {
-
         throw new UnsupportedOperationException("Region4.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
@@ -507,8 +702,20 @@ final class Region4 extends Region {
 
     @Override
     double specificGibbsFreeEnergyPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    private double[] specificInternalEnergiesP(double pressure) {
+        return new double[]{
+            specificInternalEnergySaturatedLiquidP(pressure),
+            specificInternalEnergySaturatedVapourP(pressure)};
+    }
+
+    double specificInternalEnergyPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return specificInternalEnergyPX(pressure, x);
     }
 
     @Override
@@ -518,10 +725,9 @@ final class Region4 extends Region {
 
     double specificInternalEnergyPX(double pressure, double vapourFraction) {
 
-        double v1 = specificInternalEnergySaturatedLiquidP(pressure),
-                v2 = specificInternalEnergySaturatedVapourP(pressure);
+        double[] v = specificInternalEnergiesP(pressure);
 
-        return v1 + (v2 - v1) * vapourFraction;
+        return valueX(vapourFraction, v);
     }
 
     double specificInternalEnergySaturatedLiquidP(double pressure) {
@@ -548,16 +754,76 @@ final class Region4 extends Region {
         return REGION2.specificInternalEnergyPT(pressure, Ts);
     }
 
+    double specificIsobaricHeatCapacityPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return specificIsobaricHeatCapacityPX(pressure, x);
+    }
+
     @Override
     double specificIsobaricHeatCapacityPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    double specificIsobaricHeatCapacityPX(double pressure, double vapourFraction) {
+
+        double T = saturationTemperatureP(pressure);
+        double[] h = specificEnthalpiesP(pressure),
+                cp = new double[2];
+
+        if (pressure > Region.ps13) {
+            /*
+             Region 3
+             */
+            double[] rho = densitiesRegion3(pressure, h);
+            cp[0] = REGION3.specificIsobaricHeatCapacityRhoT(rho[0], T);
+            cp[1] = REGION3.specificIsobaricHeatCapacityRhoT(rho[1], T);
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            cp[0] = REGION1.specificIsobaricHeatCapacityPT(pressure, T);
+            cp[1] = REGION2.specificIsobaricHeatCapacityPT(pressure, T);
+        }
+        return valueX(vapourFraction, cp);
+    }
+
+    double specificIsochoricHeatCapacityPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return specificIsochoricHeatCapacityPX(pressure, x);
     }
 
     @Override
     double specificIsochoricHeatCapacityPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    double specificIsochoricHeatCapacityPX(double pressure, double vapourFraction) {
+
+        double[] h = specificEnthalpiesP(pressure),
+                cv = new double[2];
+        double T = saturationTemperatureP(pressure);
+
+        if (pressure > Region.ps13) {
+            /*
+             Region 3
+             */
+            double[] rho = densitiesRegion3(pressure, h);
+            cv[0] = REGION3.specificIsochoricHeatCapacityRhoT(rho[0], T);
+            cv[1] = REGION3.specificIsochoricHeatCapacityRhoT(rho[1], T);
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            cv[0] = REGION1.specificIsochoricHeatCapacityPT(pressure, T);
+            cv[1] = REGION2.specificIsochoricHeatCapacityPT(pressure, T);
+        }
+        return valueX(vapourFraction, cv);
     }
 
     @Override
@@ -587,16 +853,14 @@ final class Region4 extends Region {
 
     @Override
     double specificVolumePT(double pressure, double temperature) {
-
         return Double.NaN;
     }
 
     double specificVolumePX(double pressure, double vapourFraction) {
 
-        double v1 = specificVolumeSaturatedLiquidP(pressure),
-                v2 = specificVolumeSaturatedVapourP(pressure);
+        double[] v = specificVolumesP(pressure);
 
-        return v1 + (v2 - v1) * vapourFraction;
+        return valueX(vapourFraction, v);
     }
 
     /**
@@ -782,10 +1046,46 @@ final class Region4 extends Region {
         }
     }
 
+    private double[] specificVolumesP(double pressure) {
+        return new double[]{
+            specificVolumeSaturatedLiquidP(pressure),
+            specificVolumeSaturatedVapourP(pressure)};
+    }
+
+    double speedOfSoundPH(double pressure, double enthalpy) {
+
+        double x = vapourFractionPH(pressure, enthalpy);
+
+        return speedOfSoundPX(pressure, x);
+    }
+
     @Override
     double speedOfSoundPT(double pressure, double temperature) {
-
         return Double.NaN;
+    }
+
+    double speedOfSoundPX(double pressure, double vapourFraction) {
+
+        double T = saturationTemperatureP(pressure);
+        double[] h = specificEnthalpiesP(pressure),
+                w = new double[2];
+
+        if (pressure > Region.ps13) {
+            /*
+             Region 3
+             */
+            double[] rho = densitiesRegion3(pressure, h);
+            w[0] = REGION3.speedOfSoundRhoT(rho[0], T);
+            w[1] = REGION3.speedOfSoundRhoT(rho[1], T);
+
+        } else {
+            /*
+             Regions 1 & 2
+             */
+            w[0] = REGION1.speedOfSoundPT(pressure, T);
+            w[1] = REGION2.speedOfSoundPT(pressure, T);
+        }
+        return valueX(vapourFraction, w);
     }
 
     /**
@@ -817,20 +1117,25 @@ final class Region4 extends Region {
         for (double[] ijn : IJnHS) {
             theta += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
         }
-
         return theta * 550;
     }
 
     @Override
     double temperaturePH(double pressure, double dummy) {
-
         return saturationTemperatureP(pressure);
     }
 
     @Override
     double temperaturePS(double pressure, double dummy) {
-
         return saturationTemperatureP(pressure);
+    }
+
+    private double valueX(double x, double[] lim) {
+        return lim[0] + x * (lim[1] - lim[0]);
+    }
+
+    private double vapourFraction(double value, double[] lim) {
+        return max(0, min((value - lim[0]) / (lim[1] - lim[0]), 1));
     }
 
     /**
@@ -847,29 +1152,28 @@ final class Region4 extends Region {
 
         //checkHS(enthalpy, entropy);
         double Ts = temperatureHS(enthalpy, entropy),
-                ps = saturationPressureT(Ts),
-                h1 = REGION1.specificEnthalpyPT(ps, Ts),
-                h2 = REGION2.specificEnthalpyPT(ps, Ts);
+                ps = saturationPressureT(Ts);
+        double[] h = {
+            REGION1.specificEnthalpyPT(ps, Ts),
+            REGION2.specificEnthalpyPT(ps, Ts)};
 
-        return max(0, min(1, (enthalpy - h1) / (h2 - h1)));
+        return vapourFraction(enthalpy, h);
     }
 
     @Override
     double vapourFractionPH(double pressure, double enthalpy) {
 
-        double h1 = specificEnthalpySaturatedLiquidP(pressure),
-                h2 = specificEnthalpySaturatedVapourP(pressure);
+        double[] h = specificEnthalpiesP(pressure);
 
-        return max(0, min(1, (enthalpy - h1) / (h2 - h1)));
+        return vapourFraction(enthalpy, h);
     }
 
     @Override
     double vapourFractionPS(double pressure, double entropy) {
 
-        double s1 = specificEntropySaturatedLiquidP(pressure),
-                s2 = specificEntropySaturatedVapourP(pressure);
+        double[] s = specificEntropiesP(pressure);
 
-        return max(0, min(1, (entropy - s1) / (s2 - s1)));
+        return vapourFraction(entropy, s);
     }
 
     @Override

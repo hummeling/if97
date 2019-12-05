@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -408,12 +408,10 @@ final class Region3 extends Region {
     }
 
     private SubRegion getSubRegionS(double entropy) {
-
         return entropy > sc ? SubRegion.b : SubRegion.a;
     }
 
     private SubRegion getSubRegionPH(double pressure, double enthalpy) {
-
         return enthalpy < enthalpy3ab(pressure) ? SubRegion.a : SubRegion.b;
     }
 
@@ -689,6 +687,13 @@ final class Region3 extends Region {
         return 1e3 / (2 * delta * phiDelta(delta, tau) + delta * delta * phiDeltaDelta(delta, tau)) / (density * R * temperature);
     }
 
+    /**
+     * Gets the isothermal stress coefficient, <code>beta<sub>p</sub></code>.
+     *
+     * @param rho density [kg/m³]
+     * @param T temperature [K]
+     * @return isothermal stress coefficient [kg/m³]
+     */
     double isothermalStressCoefficientRhoT(double rho, double T) {
 
         double delta = rho / rhoc,
@@ -720,11 +725,12 @@ final class Region3 extends Region {
     }
 
     /**
+     * Gets the relative pressure coefficient, <code>alpha<sub>p</sub></code>.
      * alpha p
      *
-     * @param rho
-     * @param T
-     * @return
+     * @param rho density [kg/m³]
+     * @param T temperature [K]
+     * @return relative pressure coefficient [1/K]
      */
     double relativePressureCoefficientRhoT(double rho, double T) {
 
@@ -827,12 +833,11 @@ final class Region3 extends Region {
 
     @Override
     double specificVolumeHS(double enthalpy, double entropy) {
-
         return specificVolumePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
     @Override
-    double specificVolumePH(double pressure, double enthalpy) { //TODO Explain why specificVolumePT() is called instead.
+    double specificVolumePH(double pressure, double enthalpy) {
 
         double pi = pressure / 100;
 
@@ -852,8 +857,8 @@ final class Region3 extends Region {
     double specificVolumePS(double pressure, double entropy) {
 
         double omega = 0;
-        double[] x = null;
-        double[][] IJn = null;
+        double[] x;
+        double[][] IJn;
 
         switch (getSubRegionS(entropy)) {
             case a:
@@ -865,6 +870,9 @@ final class Region3 extends Region {
                 x = new double[]{pressure / 100 + 0.298, entropy / 5.3 - 0.816, 0.0088};
                 IJn = IJnOb;
                 break;
+
+            default:
+                throw new AssertionError("Unsupported subregion: " + getSubRegionS(entropy));
         }
         for (double[] ijn : IJn) {
             omega += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -883,7 +891,6 @@ final class Region3 extends Region {
                 logPi = log(pi),
                 ps643 = REGION4.saturationPressureT(643.15),
                 Ts = REGION4.saturationTemperatureP(p);
-
         double[][] In;
 
         /*
@@ -1034,7 +1041,6 @@ final class Region3 extends Region {
          */
         SubRegion subRegion;
 
-        //if (22.5 >= p && p > ps643 && T3rx > T && T > T3qu) {
         if (T3qu <= T && T <= T3rx && ps643 <= p && p <= 22.5) {
             /*
              Auxiliary Equations for the Near-Critical Region (p.126)
@@ -1051,162 +1057,116 @@ final class Region3 extends Region {
                 } else {
                     subRegion = SubRegion.x;
                 }
-
             } else if (p <= 22.11) {
                 if (T > T3wx) {
                     subRegion = SubRegion.x;
-
                 } else if (T > T3ef) {
                     subRegion = SubRegion.z;
-
                 } else if (T > T3uv) {
                     subRegion = SubRegion.y;
-
                 } else {
                     subRegion = SubRegion.u;
                 }
             } else if (T > T3wx) {
                 subRegion = SubRegion.x;
-
             } else if (T > T3ef) {
                 subRegion = SubRegion.w;
-
             } else if (T > T3uv) {
                 subRegion = SubRegion.v;
-
             } else {
                 subRegion = SubRegion.u;
             }
-
         } else if (40 < p) {
             subRegion = T <= T3ab ? SubRegion.a : SubRegion.b;
-
         } else if (25 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= T3ab) {
                 subRegion = SubRegion.d;
-
             } else if (T <= T3ef) {
                 subRegion = SubRegion.e;
-
             } else {
                 subRegion = SubRegion.f;
             }
-
         } else if (23.5 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= T3gh) {
                 subRegion = SubRegion.g;
-
             } else if (T <= T3ef) {
                 subRegion = SubRegion.h;
-
             } else if (T <= T3ij) {
                 subRegion = SubRegion.i;
-
             } else if (T <= T3jk) {
                 subRegion = SubRegion.j;
-
             } else {
                 subRegion = SubRegion.k;
             }
-
         } else if (23 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= T3gh) {
                 subRegion = SubRegion.l;
-
             } else if (T <= T3ef) {
                 subRegion = SubRegion.h;
-
             } else if (T <= T3ij) {
                 subRegion = SubRegion.i;
-
             } else if (T <= T3jk) {
                 subRegion = SubRegion.j;
-
             } else {
                 subRegion = SubRegion.k;
             }
-
         } else if (22.5 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= T3gh) {
                 subRegion = SubRegion.l;
-
             } else if (T <= T3mn) {
                 subRegion = SubRegion.m;
-
             } else if (T <= T3ef) {
                 subRegion = SubRegion.n;
-
             } else if (T <= T3op) {
                 subRegion = SubRegion.o;
-
             } else if (T <= T3ij) {
                 subRegion = SubRegion.p;
-
             } else if (T <= T3jk) {
                 subRegion = SubRegion.j;
-
             } else {
                 subRegion = SubRegion.k;
             }
-
         } else if (ps643 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= T3qu) {
                 subRegion = SubRegion.q;
-
             } else if (T3rx < T && T <= T3jk) {
                 subRegion = SubRegion.r;
-
             } else {
                 subRegion = SubRegion.k;
             }
-
         } else if (20.5 < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= Ts) {
                 subRegion = SubRegion.s;
-
             } else if (T <= T3jk) {
                 subRegion = SubRegion.r;
-
             } else {
                 subRegion = SubRegion.k;
             }
-
         } else if (p3cd < p) {
             if (T <= T3cd) {
                 subRegion = SubRegion.c;
-
             } else if (T <= Ts) {
                 subRegion = SubRegion.s;
-
             } else {
                 subRegion = SubRegion.t;
             }
-
         } else if (ps13 < p) {
             subRegion = T <= Ts ? SubRegion.c : SubRegion.t;
-
         } else {
             return NaN;
         }
-
         pi = p / subRegion.pRed;
         theta = T / subRegion.Tred;
 
@@ -1227,8 +1187,8 @@ final class Region3 extends Region {
             default:
                 x = new double[]{
                     pow(pi - subRegion.A, subRegion.C),
-                    pow(theta - subRegion.B, subRegion.D)
-                };
+                    pow(theta - subRegion.B, subRegion.D)};
+
                 for (double[] ijn : subRegion.IJn) {
                     omega += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
                 }
@@ -1256,7 +1216,6 @@ final class Region3 extends Region {
 
     @Override
     double temperatureHS(double enthalpy, double entropy) {
-
         return temperaturePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
@@ -1266,12 +1225,10 @@ final class Region3 extends Region {
         switch (getSubRegionPH(pressure, enthalpy)) {
             case a:
                 return thetaA(pressure / 100, enthalpy / 2300) * 760;
-
             case b:
                 return thetaB(pressure / 100, enthalpy / 2800) * 860;
-
             default:
-                return NaN;
+                throw new AssertionError("Unsupported subregion: " + getSubRegionPH(pressure, enthalpy));
         }
     }
 
@@ -1279,8 +1236,8 @@ final class Region3 extends Region {
     double temperaturePS(double pressure, double entropy) {
 
         double theta = 0;
-        double[] x = null;
-        double[][] IJn = null;
+        double[] x;
+        double[][] IJn;
 
         switch (getSubRegionS(entropy)) {
             case a:
@@ -1292,6 +1249,9 @@ final class Region3 extends Region {
                 x = new double[]{pressure / 100 + 0.760, entropy / 5.3 - 0.818, 860};
                 IJn = IJnTb;
                 break;
+
+            default:
+                throw new AssertionError("Unsupported subregion: " + getSubRegionS(entropy));
         }
         for (double[] ijn : IJn) {
             theta += ijn[2] * pow(x[0], ijn[0]) * pow(x[1], ijn[1]);
@@ -1301,13 +1261,11 @@ final class Region3 extends Region {
 
     @Override
     double vapourFractionHS(double enthalpy, double entropy) {
-
         return NaN;
     }
 
     @Override
     double vapourFractionPH(double pressure, double enthalpy) {
-
         return NaN;
     }
 
@@ -1319,7 +1277,6 @@ final class Region3 extends Region {
 
     @Override
     double vapourFractionTS(double temperature, double entropy) {
-
         return NaN;
     }
 
