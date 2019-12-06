@@ -3279,7 +3279,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            return Region.getRegionHS(h, s).vapourFractionHS(h, s);
+            return Region.REGION4.vapourFractionHS(h, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -3301,7 +3301,7 @@ public class IF97 {
                 h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
 
         try {
-            return Region.getRegionPH(p, h).vapourFractionPH(p, h);
+            return Region.REGION4.vapourFractionPH(p, h);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -3323,7 +3323,7 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            return Region.getRegionPS(p, s).vapourFractionPS(p, s);
+            return Region.REGION4.vapourFractionPS(p, s);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -3347,9 +3347,6 @@ public class IF97 {
                 s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
 
         try {
-            Region.REGION4.checkT(T);
-            //TODO Region.REGION4.checkS(s);
-
             return Region.REGION4.vapourFractionTS(T, s);
 
         } catch (OutOfRangeException e) {

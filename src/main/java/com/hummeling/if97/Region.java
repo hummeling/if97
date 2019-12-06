@@ -954,18 +954,4 @@ abstract class Region {
      * @return temperature [K]
      */
     //abstract double temperatureRhoH(double rho, double h);
-    /**
-     * Vapour fraction.
-     *
-     * @param h specific enthalpy [kJ/kg]
-     * @param s specific entropy [kJ/kg-K]
-     * @return vapour fraction [-]
-     */
-    abstract double vapourFractionHS(double h, double s);
-
-    abstract double vapourFractionPH(double p, double h);
-
-    abstract double vapourFractionPS(double p, double s);
-
-    abstract double vapourFractionTS(double T, double s);
 }

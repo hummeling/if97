@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -306,7 +306,6 @@ public final class Region1 extends Region {
 
     @Override
     double specificEntropyRhoT(double rho, double T) {
-
         throw new UnsupportedOperationException("Region1.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
@@ -367,7 +366,6 @@ public final class Region1 extends Region {
 
     @Override
     double temperatureHS(double enthalpy, double entropy) {
-
         return temperaturePH(pressureHS(enthalpy, entropy), enthalpy);
     }
 
@@ -391,29 +389,5 @@ public final class Region1 extends Region {
             out += ijn[2] * pow(pressure, ijn[0]) * pow(entropy + 2, ijn[1]);
         }
         return out;
-    }
-
-    @Override
-    double vapourFractionHS(double enthalpy, double entropy) {
-
-        return 0;
-    }
-
-    @Override
-    double vapourFractionPH(double pressure, double enthalpy) {
-
-        return 0;
-    }
-
-    @Override
-    double vapourFractionPS(double pressure, double entropy) {
-
-        return 0;
-    }
-
-    @Override
-    double vapourFractionTS(double temperature, double entropy) {
-
-        return 0;
     }
 }

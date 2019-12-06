@@ -1135,7 +1135,7 @@ final class Region4 extends Region {
     }
 
     private double vapourFraction(double value, double[] lim) {
-        return max(0, min((value - lim[0]) / (lim[1] - lim[0]), 1));
+        return (value - lim[0]) / (lim[1] - lim[0]);
     }
 
     /**
@@ -1147,12 +1147,14 @@ final class Region4 extends Region {
      * @param entropy specific entropy [kJ/(kg K)]
      * @return vapour fraction [-]
      */
-    @Override
     double vapourFractionHS(double enthalpy, double entropy) {
 
-        //checkHS(enthalpy, entropy);
         double Ts = temperatureHS(enthalpy, entropy),
                 ps = saturationPressureT(Ts);
+
+        if (ps > pc) {
+            return Double.NaN;
+        }
         double[] h = {
             REGION1.specificEnthalpyPT(ps, Ts),
             REGION2.specificEnthalpyPT(ps, Ts)};
@@ -1160,27 +1162,33 @@ final class Region4 extends Region {
         return vapourFraction(enthalpy, h);
     }
 
-    @Override
     double vapourFractionPH(double pressure, double enthalpy) {
 
+        if (pressure > pc) {
+            return Double.NaN;
+        }
         double[] h = specificEnthalpiesP(pressure);
 
         return vapourFraction(enthalpy, h);
     }
 
-    @Override
     double vapourFractionPS(double pressure, double entropy) {
 
+        if (pressure > pc) {
+            return Double.NaN;
+        }
         double[] s = specificEntropiesP(pressure);
 
         return vapourFraction(entropy, s);
     }
 
-    @Override
     double vapourFractionTS(double temperature, double entropy) {
 
         double ps = saturationPressureT(temperature);
 
+        if (ps > pc) {
+            return Double.NaN;
+        }
         return vapourFractionPS(ps, entropy);
     }
 }

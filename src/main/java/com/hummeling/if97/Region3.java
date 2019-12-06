@@ -1259,27 +1259,6 @@ final class Region3 extends Region {
         return theta * x[2];
     }
 
-    @Override
-    double vapourFractionHS(double enthalpy, double entropy) {
-        return NaN;
-    }
-
-    @Override
-    double vapourFractionPH(double pressure, double enthalpy) {
-        return NaN;
-    }
-
-    @Override
-    double vapourFractionPS(double pressure, double entropy) {
-
-        return NaN;
-    }
-
-    @Override
-    double vapourFractionTS(double temperature, double entropy) {
-        return NaN;
-    }
-
     enum SubRegion {
 
         a(0.0024, 100, 760, 0.085, 0.817, 1, 1, 1, new double[][]{

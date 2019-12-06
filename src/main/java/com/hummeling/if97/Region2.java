@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -914,30 +914,6 @@ class Region2 extends Region {
             out += ijn[2] * pow(pi, ijn[0]) * pow(2 - sigma, ijn[1]);
         }
         return out;
-    }
-
-    @Override
-    double vapourFractionHS(double enthalpy, double entropy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionPH(double pressure, double enthalpy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionPS(double pressure, double entropy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionTS(double temperature, double entropy) {
-
-        return 1;
     }
 
     enum SubRegion {

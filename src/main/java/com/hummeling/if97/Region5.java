@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -190,7 +190,6 @@ final class Region5 extends Region {
      * @return
      */
     private double gammaOPi(double pi) {
-
         return 1 / pi;
     }
 
@@ -201,7 +200,6 @@ final class Region5 extends Region {
      * @return
      */
     private double gammaOPiPi(double pi) {
-
         return -1 / (pi * pi);
     }
 
@@ -211,7 +209,6 @@ final class Region5 extends Region {
      * @return
      */
     private double gammaOPiTau() {
-
         return 0;
     }
 
@@ -350,7 +347,6 @@ final class Region5 extends Region {
     }
 
     private SubRegion getSubRegion(double pressure, double enthalpy) {
-
         return pressure > 4 ? (enthalpy < enthalpy2bc(pressure) ? SubRegion.C : SubRegion.B) : SubRegion.A;
     }
 
@@ -526,54 +522,25 @@ final class Region5 extends Region {
 
     @Override
     double pressureHS(double h, double s) {
-
         throw new UnsupportedOperationException("Region5.pressureHS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double specificEntropyRhoT(double rho, double T) {
-
         throw new UnsupportedOperationException("Region5.specificEntropyRhoT() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double temperatureHS(double h, double s) {
-
         throw new UnsupportedOperationException("Region5.temperatureHS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
     @Override
     double temperaturePS(double p, double s) {
-
         throw new UnsupportedOperationException("Region5.temperaturePS() pending implementation. Contact Hummeling Engineering BV for assistance: www.hummeling.com.");
     }
 
-    @Override
-    double vapourFractionHS(double enthalpy, double entropy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionPH(double pressure, double enthalpy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionPS(double pressure, double entropy) {
-
-        return 1;
-    }
-
-    @Override
-    double vapourFractionTS(double temperature, double entropy) {
-
-        return 1;
-    }
-
     enum SubRegion {
-
         A, B, C;
     }
 }
