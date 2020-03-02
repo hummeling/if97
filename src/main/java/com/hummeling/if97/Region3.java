@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -433,8 +433,8 @@ final class Region3 extends Region {
     /**
      * Dimensionless specific volume for subregion 3a.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless specific enthalpy
      * @return dimensionless specific volume
      */
     private double omegaA(double pi, double eta) {
@@ -450,8 +450,8 @@ final class Region3 extends Region {
     /**
      * Dimensionless specific volume for subregion 3b.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless specific enthalpy
      * @return dimensionless specific volume
      */
     private double omegaB(double pi, double eta) {
@@ -467,8 +467,8 @@ final class Region3 extends Region {
     /**
      * Specific Helmholtz free energy.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phi(double delta, double tau) {
@@ -484,8 +484,8 @@ final class Region3 extends Region {
     /**
      * First partial derivative with respect to delta.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phiDelta(double delta, double tau) {
@@ -501,8 +501,8 @@ final class Region3 extends Region {
     /**
      * Second partial derivative with respect to delta.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phiDeltaDelta(double delta, double tau) {
@@ -518,8 +518,8 @@ final class Region3 extends Region {
     /**
      * Second partial derivative with respect to delta & tau.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phiDeltaTau(double delta, double tau) {
@@ -535,8 +535,8 @@ final class Region3 extends Region {
     /**
      * First partial derivative with respect to tau.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phiTau(double delta, double tau) {
@@ -552,8 +552,8 @@ final class Region3 extends Region {
     /**
      * Second partial derivative with respect to tau.
      *
-     * @param delta dimensionless density [kg/m3]
-     * @param tau dimensionless temperature [K]
+     * @param delta dimensionless density
+     * @param tau dimensionless temperature
      * @return
      */
     private double phiTauTau(double delta, double tau) {
@@ -605,8 +605,8 @@ final class Region3 extends Region {
     /**
      * Dimensionless temperature for subregion 3a.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless specific enthalpy
      * @return dimensionless temperature
      */
     private double thetaA(double pi, double eta) {
@@ -622,8 +622,8 @@ final class Region3 extends Region {
     /**
      * Dimensionless temperature for subregion 3b.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless specific enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless specific enthalpy
      * @return dimensionless temperature
      */
     private double thetaB(double pi, double eta) {
@@ -726,7 +726,6 @@ final class Region3 extends Region {
 
     /**
      * Gets the relative pressure coefficient, <code>alpha<sub>p</sub></code>.
-     * alpha p
      *
      * @param rho density [kg/m³]
      * @param T temperature [K]

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -68,18 +68,17 @@ public class RegionTest {
             {10, 1000},
             {10, 3000},
             {25, 2000},
-            {10, 2000},
-            {25, 5000}};
+            {10, 2000}};
+        //{25, 5000}};
         String[] expected = {
             "Region 1",
             "Region 2",
             "Region 3",
-            "Region 4",
-            "Region 5"};
+            "Region 4"};
+        //"Region 5"};
 
         for (int i = 0; i < X.length; i++) {
             Region region = Region.getRegionPH(X[i][0], X[i][1]);
-            //System.out.println("region.NAME: " + region.getName());
             assertEquals(expected[i], region.getName());
         }
     }

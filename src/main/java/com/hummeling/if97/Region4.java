@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -769,14 +769,14 @@ final class Region4 extends Region {
     double specificIsobaricHeatCapacityPX(double pressure, double vapourFraction) {
 
         double T = saturationTemperatureP(pressure);
-        double[] h = specificEnthalpiesP(pressure),
-                cp = new double[2];
+        double[] cp = new double[2];
 
         if (pressure > Region.ps13) {
             /*
              Region 3
              */
-            double[] rho = densitiesRegion3(pressure, h);
+            double[] h = specificEnthalpiesP(pressure),
+                    rho = densitiesRegion3(pressure, h);
             cp[0] = REGION3.specificIsobaricHeatCapacityRhoT(rho[0], T);
             cp[1] = REGION3.specificIsobaricHeatCapacityRhoT(rho[1], T);
 
@@ -804,15 +804,15 @@ final class Region4 extends Region {
 
     double specificIsochoricHeatCapacityPX(double pressure, double vapourFraction) {
 
-        double[] h = specificEnthalpiesP(pressure),
-                cv = new double[2];
         double T = saturationTemperatureP(pressure);
+        double[] cv = new double[2];
 
         if (pressure > Region.ps13) {
             /*
              Region 3
              */
-            double[] rho = densitiesRegion3(pressure, h);
+            double[] h = specificEnthalpiesP(pressure),
+                    rho = densitiesRegion3(pressure, h);
             cv[0] = REGION3.specificIsochoricHeatCapacityRhoT(rho[0], T);
             cv[1] = REGION3.specificIsochoricHeatCapacityRhoT(rho[1], T);
 

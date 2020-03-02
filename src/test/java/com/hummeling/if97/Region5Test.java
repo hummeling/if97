@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -158,25 +158,6 @@ public class Region5Test {
 
         for (double[] x : X) {
             assertEquals(x[0], region.speedOfSoundPT(x[1], x[2]), 1e-5);
-        }
-    }
-
-    @Test
-    public void testTemperaturePH() {
-
-        double[][] X = {
-            {0.534433241e3, 0.001, 3000},
-            {0.575373370e3, 3, 3000},
-            {0.101077577e4, 3, 4000},
-            {0.801299102e3, 5, 3500},
-            {0.101531583e4, 5, 4000},
-            {0.875279054e3, 25, 3500},
-            {0.743056411e3, 40, 2700},
-            {0.791137067e3, 60, 2700},
-            {0.882756860e3, 60, 3200}};
-
-        for (double[] x : X) {
-            assertEquals(x[0], region.temperaturePH(x[1], x[2]), 1e-5);
         }
     }
 }

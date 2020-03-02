@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -142,8 +142,8 @@ public final class Region1 extends Region {
     /**
      * Dimensionless Gibbs free energy.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return gamma
      */
     private double gamma(double pi, double tau) {
@@ -160,8 +160,8 @@ public final class Region1 extends Region {
     /**
      * First partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return d/dpi gamma
      */
     private double gammaPi(double pi, double tau) {
@@ -178,8 +178,8 @@ public final class Region1 extends Region {
     /**
      * Second partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return d2/dpi2 gamma
      */
     private double gammaPiPi(double pi, double tau) {
@@ -196,8 +196,8 @@ public final class Region1 extends Region {
     /**
      * Second partial derivative with respect to pi & tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return d/dpi d/dtau gamma
      */
     private double gammaPiTau(double pi, double tau) {
@@ -214,8 +214,8 @@ public final class Region1 extends Region {
     /**
      * First partial derivative with respect to tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return d/dtau gamma
      */
     private double gammaTau(double pi, double tau) {
@@ -232,8 +232,8 @@ public final class Region1 extends Region {
     /**
      * Second partial derivative with respect to tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return d2/dtau2 gamma
      */
     private double gammaTauTau(double pi, double tau) {

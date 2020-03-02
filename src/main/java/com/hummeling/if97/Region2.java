@@ -428,8 +428,8 @@ class Region2 extends Region {
     /**
      * Dimensionless Gibbs free energy.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return gamma
      */
     private double gammaO(double pi, double tau) {
@@ -445,7 +445,7 @@ class Region2 extends Region {
     /**
      * First partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
+     * @param pi dimensionless pressure
      * @return d/dpi gamma
      */
     private double gammaOPi(double pi) {
@@ -456,7 +456,7 @@ class Region2 extends Region {
     /**
      * Second partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
+     * @param pi dimensionless pressure
      * @return d2/dpi2 gamma
      */
     private double gammaOPiPi(double pi) {
@@ -477,7 +477,7 @@ class Region2 extends Region {
     /**
      * First partial derivative with respect to tau.
      *
-     * @param tau dimensionless temperature [K]
+     * @param tau dimensionless temperature
      * @return d/dtau gamma
      */
     private double gammaOTau(double tau) {
@@ -493,7 +493,7 @@ class Region2 extends Region {
     /**
      * Second partial derivative with respect to tau.
      *
-     * @param tau dimensionless temperature [K]
+     * @param tau dimensionless temperature
      * @return d2/dtau2 gamma
      */
     private double gammaOTauTau(double tau) {
@@ -509,8 +509,8 @@ class Region2 extends Region {
     /**
      * Dimensionless Gibbs free energy.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaR(double pi, double tau) {
@@ -526,8 +526,8 @@ class Region2 extends Region {
     /**
      * First partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaRPi(double pi, double tau) {
@@ -543,8 +543,8 @@ class Region2 extends Region {
     /**
      * Second partial derivative with respect to pi.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaRPiPi(double pi, double tau) {
@@ -560,8 +560,8 @@ class Region2 extends Region {
     /**
      * Second partial derivative with respect to pi & tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaRPiTau(double pi, double tau) {
@@ -577,8 +577,8 @@ class Region2 extends Region {
     /**
      * First partial derivative with respect to tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaRTau(double pi, double tau) {
@@ -594,8 +594,8 @@ class Region2 extends Region {
     /**
      * Second partial derivative with respect to tau.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param tau dimensionless temperature [K]
+     * @param pi dimensionless pressure
+     * @param tau dimensionless temperature
      * @return
      */
     private double gammaRTauTau(double pi, double tau) {
@@ -851,8 +851,8 @@ class Region2 extends Region {
     /**
      * Dimensionless backward equation for region 2b.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless enthalpy
      * @return
      */
     private double theta2bPH(double pi, double eta) {
@@ -885,8 +885,8 @@ class Region2 extends Region {
     /**
      * Dimensionless backward equation for region 2c.
      *
-     * @param pi dimensionless pressure [MPa]
-     * @param eta dimensionless enthalpy [kJ/kg]
+     * @param pi dimensionless pressure
+     * @param eta dimensionless enthalpy
      * @return
      */
     private double theta2cPH(double pi, double eta) {

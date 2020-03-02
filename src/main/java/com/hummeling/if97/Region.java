@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -194,7 +194,8 @@ abstract class Region {
             if (pressure > p5) {
                 throw new OutOfRangeException(new IF97.Quantity[]{IF97.Quantity.p, IF97.Quantity.h}, new double[]{pressure, enthalpy}, new double[]{p5, h25});
             }
-            return REGION5;
+            //return REGION5;
+            throw new OutOfRangeException(IF97.Quantity.h, enthalpy, h25);
         }
         if (pressure <= ps13) {
             // region 1, 4, or 2
