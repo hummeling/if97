@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -244,6 +244,20 @@ public class IF97Test {
         for (double[] x : X) {
             assertEquals(x[0], if97.saturationTemperatureP(x[1]), 1e-6);
         }
+    }
+
+    @Test
+    public void testPartialDerivative() {
+
+        double p = 2,
+//                h = 105, // X = 0.5
+//                h = 1605, // 25 Celsius
+                h = 2871, // 200 Celsius
+                rho = 1000,
+                T = 700;
+        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", rho, T, if97.partialDerivativeRhoT(rho, T, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), rho);
+        //System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, 1 / if97.partialDerivativePH(p, h, IF97.Quantity.p, IF97.Quantity.s, IF97.Quantity.h), if97.densityPH(p, h));
+        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, if97.partialDerivativePH(p, h, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), if97.densityPH(p, h));
     }
 
     @Test

@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -1481,7 +1481,7 @@ public class IF97 {
      * a function of pressure and specific enthalpy.
      *
      * <p>
-     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, T)
+     * (<sup>&part;z</sup>/<sub>&part;x</sub>)<sub>y</sub>(p, h)
      * </p>
      *
      * @param pressure absolute pressure

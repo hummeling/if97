@@ -343,29 +343,29 @@ final class Region4 extends Region {
     }
 
     /**
-     * Gets the partial derivative of z with respect to pT (pressure or
+     * Gets the partial derivative of z with respect to p_or_T (pressure or
      * temperature) for constant y in SI units.
      *
      * @param pressure pressure [MPa]
      * @param enthalpy specific enthalpy [kJ/kg]
-     * @param pT pressure or temperature [IF97.Quantity.p|IF97.Quantity.T]
+     * @param p_or_T pressure or temperature [IF97.Quantity.p|IF97.Quantity.T]
      * @param y specific enthalpy or specific volume
      * @param z specific enthalpy or specific volume
      * @return partial derivative [SI]
      */
-    double partialDerivativePH(double pressure, double enthalpy, Quantity pT, Quantity y, Quantity z) {
+    double partialDerivativePH(double pressure, double enthalpy, Quantity p_or_T, Quantity y, Quantity z) {
 
         switch (z) {
             case rho:
                 double rho = 1 / specificVolumePH(pressure, enthalpy); // [kg/m³]
 
-                return -rho * rho * partialDerivativePH(pressure, enthalpy, pT, y, Quantity.v);
+                return -rho * rho * partialDerivativePH(pressure, enthalpy, p_or_T, y, Quantity.v);
         }
         double dy, dz;
         double[] h = specificEnthalpiesP(pressure), // [kJ/kg]
                 v = specificVolumesP(pressure), // [m³/kg]
-                dz_dpT = derivativeP(pressure, pT, z), // [SI]
-                dy_dpT = derivativeP(pressure, pT, y); // [SI]
+                dz_dpT = derivativeP(pressure, p_or_T, z), // [SI]
+                dy_dpT = derivativeP(pressure, p_or_T, y); // [SI]
 
         switch (z) {
             case h:
