@@ -1068,7 +1068,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkP(p);
-            Region.REGION4.checkX(vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1095,7 +1094,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkT(T);
-            Region.REGION4.checkX(vapourFraction);
 
         } catch (OutOfRangeException e) {
             throw e.convertFromDefault(UNIT_SYSTEM);
@@ -1955,7 +1953,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkP(p);
-            Region.REGION4.checkX(vapourFraction);
 
             h = Region.REGION4.specificEnthalpyPX(p, vapourFraction);
 
@@ -2076,7 +2073,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkT(T);
-            Region.REGION4.checkX(vapourFraction);
 
             h = Region.REGION4.specificEnthalpyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
@@ -2156,7 +2152,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkP(p);
-            Region.REGION4.checkX(vapourFraction);
 
             s = Region.REGION4.specificEntropyPX(p, vapourFraction);
 
@@ -2277,7 +2272,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkT(T);
-            Region.REGION4.checkX(vapourFraction);
 
             s = Region.REGION4.specificEntropyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
@@ -2440,7 +2434,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkP(p);
-            Region.REGION4.checkX(vapourFraction);
 
             v = Region.REGION4.specificInternalEnergyPX(p, vapourFraction);
 
@@ -2564,7 +2557,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkT(T);
-            Region.REGION4.checkX(vapourFraction);
 
             v = Region.REGION4.specificInternalEnergyPX(Region.REGION4.saturationPressureT(T), vapourFraction);
 
@@ -2682,7 +2674,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkP(p);
-            Region.REGION4.checkX(vapourFraction);
 
             v = Region.REGION4.specificVolumePX(p, vapourFraction);
 
@@ -2799,7 +2790,6 @@ public class IF97 {
 
         try {
             Region.REGION4.checkT(T);
-            Region.REGION4.checkX(vapourFraction);
 
             v = Region.REGION4.specificVolumePX(Region.REGION4.saturationPressureT(T), vapourFraction);
 

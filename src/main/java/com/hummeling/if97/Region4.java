@@ -181,16 +181,6 @@ final class Region4 extends Region {
         }
     }
 
-    void checkX(double vapourFraction) throws OutOfRangeException {
-
-        if (vapourFraction < 0) {
-            throw new OutOfRangeException(Quantity.x, vapourFraction, 0);
-
-        } else if (vapourFraction > 1) {
-            throw new OutOfRangeException(Quantity.x, vapourFraction, 1);
-        }
-    }
-
     private double[] densitiesRegion3(double pressure, double[] enthalpies) {
         return new double[]{
             1 / REGION3.specificVolumePH(pressure, enthalpies[0]),
