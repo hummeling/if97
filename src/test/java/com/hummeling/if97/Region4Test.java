@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2018 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2021 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -314,6 +314,32 @@ public class Region4Test {
 
         for (double[] x : X) {
             assertEquals(x[0], region4.specificVolumeSaturatedVapourP(x[1]), 1e-8);
+        }
+    }
+
+//    @Test
+    public void testSpecificVolumeSaturatedVapour_fail16_53() {
+
+        double[][] X = {
+            {0.00882826, 16.5},
+            {0.00882826, 16.51},
+            {0.00882826, 16.52},
+            {0.00882826, 16.529},
+            {0.00882826, 16.53}, //XXX Problematic value
+            {0.00882826, 16.531},
+            {0.00882826, 16.54},
+            {0.00882826, 16.55}
+        };
+
+        for (double[] x : X) {
+            double Tsat = region4.saturationTemperatureP(x[1]),
+                    nu = region4.specificVolumeSaturatedVapourP(x[1]),
+                    nu2 = Region.REGION2.specificVolumePT(x[1], Tsat),
+                    nu3 = Region.REGION3.specificVolumePT(x[1], Tsat);
+            System.out.format("p: %.3f, Ts: %.3f", x[1], Tsat);
+            System.out.format(", specific volume: %8.6f", nu);
+            System.out.format(", region 2: %8.6f", nu2);
+            System.out.format(", region 3: %8.6f%n", nu3);
         }
     }
 

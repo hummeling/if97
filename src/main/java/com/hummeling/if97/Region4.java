@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2021 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -872,7 +872,7 @@ final class Region4 extends Region {
                 return 1 / rhoc;
             }
             double[] v = {REGION1.specificVolumePT(ps13, T13), 1 / rhoc, Double.NaN, Double.NaN, Double.NaN},
-                    dp = {REGION3.pressureRhoT(1 / v[0], Ts) - pressure, REGION3.pressureRhoT(1 / v[1], Ts) - pressure, Double.NaN};
+                    dp = {REGION3.pressureRhoT(1 / v[0], Ts) - pressure, REGION3.pressureRhoT(rhoc, Ts) - pressure, Double.NaN};
 
             v[2] = v[1];
             dp[2] = dp[1];
@@ -958,7 +958,7 @@ final class Region4 extends Region {
                 return 1 / rhoc;
             }
             double[] v = {Double.NaN, REGION2.specificVolumePT(ps13, T13), Double.NaN, Double.NaN, Double.NaN},
-                    dp = {Double.NaN, REGION3.pressureRhoT(1 / v[1], Ts) - pressure, Double.NaN};
+                    dp = {Double.NaN, REGION3.pressureRhoT(1 / v[1], T13) - pressure, Double.NaN};
 
             /*
              Bracket Root
