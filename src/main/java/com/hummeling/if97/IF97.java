@@ -3916,7 +3916,7 @@ public class IF97 {
         /**
          * Isentropic exponent, or heat capacity ratio.
          */
-        gamma("isentropic exponent", "\u0393");
+        gamma("isentropic exponent", "\u03b3");
 
         private final String NAME, SYMBOL;
 
