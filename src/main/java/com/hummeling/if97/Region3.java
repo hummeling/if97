@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -637,6 +637,26 @@ final class Region3 extends Region {
     }
 
     @Override
+    double heatCapacityRatioPT(double pressure, double temperature) {
+
+        double rho = 1 / specificVolumePT(pressure, temperature);
+
+        return heatCapacityRatioRhoT(rho, temperature);
+    }
+
+    double heatCapacityRatioRhoT(double density, double temperature) {
+
+        double delta = density / rhoc,
+                tau = Tc / temperature,
+                phiDelta = phiDelta(delta, tau),
+                phiDeltaDelta = phiDeltaDelta(delta, tau),
+                phiTauTau = phiTauTau(delta, tau),
+                x = delta * phiDelta - delta * tau * phiDeltaTau(delta, tau);
+
+        return 1 - x * x / (tau * tau * phiTauTau * (2 * delta * phiDelta + delta * delta * phiDeltaDelta));
+    }
+
+    @Override
     double isentropicExponentPT(double pressure, double temperature) {
 
         double rho = 1 / specificVolumePT(pressure, temperature);
@@ -649,9 +669,11 @@ final class Region3 extends Region {
         double delta = density / rhoc,
                 tau = Tc / temperature,
                 phiDelta = phiDelta(delta, tau),
-                x = delta * phiDelta - delta * tau * phiDeltaTau(delta, tau);
+                phiDeltaDelta = phiDeltaDelta(delta, tau),
+                phiTauTau = phiTauTau(delta, tau),
+                x = phiDelta - tau * phiDeltaTau(delta, tau);
 
-        return 1 - x * x / (tau * tau * phiTauTau(delta, tau) * (2 * delta * phiDelta + delta * delta * phiDeltaDelta(delta, tau)));
+        return 2 + delta / phiDelta * (phiDeltaDelta - x * x / (tau * tau * phiTauTau));
     }
 
     @Override

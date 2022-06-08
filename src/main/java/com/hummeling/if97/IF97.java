@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -833,8 +833,109 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent, or heat capacity ratio, as a function of specific
-     * enthalpy &amp; specific entropy.
+     * Heat capacity ratio as a function of specific enthalpy &amp; specific
+     * entropy.
+     *
+     * @param enthalpy specific enthalpy
+     * @param entropy specific entropy
+     * @return heat capacity ratio
+     * @throws OutOfRangeException out-of-range exception
+     * @see #heatCapacityRatioPT(double, double)
+     */
+    public double heatCapacityRatioHS(double enthalpy, double entropy) throws OutOfRangeException {
+
+        double h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
+
+        try {
+            Region region = Region.getRegionHS(h, s);
+
+            double p = region.pressureHS(h, s),
+                    T = region.temperatureHS(h, s);
+
+            return region.heatCapacityRatioPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Heat capacity ratio as a function of pressure &amp; specific enthalpy.
+     *
+     * @param pressure absolute pressure
+     * @param enthalpy specific enthalpy
+     * @return heat capacity ratio
+     * @throws OutOfRangeException out-of-range exception
+     * @see #heatCapacityRatioPT(double, double)
+     */
+    public double heatCapacityRatioPH(double pressure, double enthalpy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                h = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTHALPY, enthalpy);
+
+        try {
+            Region region = Region.getRegionPH(p, h);
+
+            double T = region.temperaturePH(p, h);
+
+            return region.heatCapacityRatioPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Heat capacity ratio as a function of pressure &amp; specific entropy.
+     *
+     * @param pressure absolute pressure
+     * @param entropy specific entropy
+     * @return heat capacity ratio
+     * @throws OutOfRangeException out-of-range exception
+     * @see #heatCapacityRatioPT(double, double)
+     */
+    public double heatCapacityRatioPS(double pressure, double entropy) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                s = convertToDefault(UNIT_SYSTEM.SPECIFIC_ENTROPY, entropy);
+
+        try {
+            Region region = Region.getRegionPS(p, s);
+
+            double T = region.temperaturePS(p, s);
+
+            return region.heatCapacityRatioPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Heat capacity ratio as a function of pressure &amp; temperature.
+     *
+     * @param pressure absolute pressure
+     * @param temperature temperature
+     * @return heat capacity ratio
+     * @throws OutOfRangeException out-of-range exception
+     */
+    public double heatCapacityRatioPT(double pressure, double temperature) throws OutOfRangeException {
+
+        double p = convertToDefault(UNIT_SYSTEM.PRESSURE, pressure),
+                T = convertToDefault(UNIT_SYSTEM.TEMPERATURE, temperature);
+
+        try {
+            return Region.getRegionPT(p, T).heatCapacityRatioPT(p, T);
+
+        } catch (OutOfRangeException e) {
+            throw e.convertFromDefault(UNIT_SYSTEM);
+        }
+    }
+
+    /**
+     * Isentropic exponent as a function of specific enthalpy &amp; specific
+     * entropy.
      *
      * @param enthalpy specific enthalpy
      * @param entropy specific entropy
@@ -861,8 +962,7 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent, or heat capacity ratio, as a function of pressure
-     * &amp; specific enthalpy.
+     * Isentropic exponent as a function of pressure &amp; specific enthalpy.
      *
      * @param pressure absolute pressure
      * @param enthalpy specific enthalpy
@@ -888,8 +988,7 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent, or heat capacity ratio, as a function of pressure
-     * &amp; specific entropy.
+     * Isentropic exponent as a function of pressure &amp; specific entropy.
      *
      * @param pressure absolute pressure
      * @param entropy specific entropy
@@ -915,8 +1014,7 @@ public class IF97 {
     }
 
     /**
-     * Isentropic exponent, or heat capacity ratio, as a function of pressure
-     * &amp; temperature.
+     * Isentropic exponent as a function of pressure &amp; temperature.
      *
      * @param pressure absolute pressure
      * @param temperature temperature
@@ -3574,77 +3672,6 @@ public class IF97 {
         }
 
         /**
-         * Gets the partial derivatives of the given quantity with respect to
-         * specific volume and temperature in SI units, for region 3 described
-         * by specific Helmholtz free energy.
-         *
-         * @param v specific volume [m³/kg]
-         * @param T temperature [K]
-         * @param quantity quantity
-         * @param p pressure [Pa]
-         * @param s specific entropy [J/(kg·K)]
-         * @param cv specific isochoric heat capacity [J/(kg·K)]
-         * @param alphap relative pressure coefficient [1/K]
-         * @param betap isothermal stress coefficient [kg/m³]
-         * @return partial derivatives d/d&nu; and d/dT [SI units]
-         */
-        private static double[] partialDerivativesVT(double v, double T, Quantity quantity, double p, double s, double cv, double alphap, double betap) {
-
-            double d_dv, d_dT;
-
-            switch (quantity) {
-                case p:
-                    d_dv = -p * betap; // [Pa·kg/m³]
-                    d_dT = p * alphap; // [Pa/K]
-                    break;
-
-                case T:
-                    d_dv = 0; // [-]
-                    d_dT = 1; // [-]
-                    break;
-
-                case v:
-                    d_dv = 1; // [-]
-                    d_dT = 0; // [-]
-                    break;
-
-                case u:
-                    d_dv = p * (T * alphap - 1); // [Pa]
-                    d_dT = cv; // [J/(kg·K)]
-                    break;
-
-                case h:
-                    d_dv = p * (T * alphap - v * betap); // [Pa]
-                    d_dT = cv + p * v * alphap; // [J/(kg·K)]
-                    break;
-
-                case s:
-                    d_dv = p * alphap; // [Pa/K]
-                    d_dT = cv / T; // [J/(kg·K²)]
-                    break;
-
-                case g:
-                    d_dv = -p * v * betap; // [Pa]
-                    d_dT = p * v * alphap - s; // [J/(kg·K)]
-                    break;
-
-                case f:
-                    d_dv = -p; // [Pa]
-                    d_dT = -s; // [J/(kg·K)]
-                    break;
-
-                case rho:
-                    d_dv = -1 / (v * v); // [kg²/m^6]
-                    d_dT = 0; // [-]
-                    break;
-
-                default:
-                    throw new IllegalArgumentException("Unsupported quantity for partial derivative: " + quantity);
-            }
-            return new double[]{d_dv, d_dT};
-        }
-
-        /**
          * Partial derivatives of the given quantity with respect to pressure
          * and temperature for regions described by specific Gibbs free energy
          * in SI units.
@@ -3714,6 +3741,77 @@ public class IF97 {
             }
 
             return new double[]{d_dT, d_dp};
+        }
+
+        /**
+         * Gets the partial derivatives of the given quantity with respect to
+         * specific volume and temperature in SI units, for region 3 described
+         * by specific Helmholtz free energy.
+         *
+         * @param v specific volume [m³/kg]
+         * @param T temperature [K]
+         * @param quantity quantity
+         * @param p pressure [Pa]
+         * @param s specific entropy [J/(kg·K)]
+         * @param cv specific isochoric heat capacity [J/(kg·K)]
+         * @param alphap relative pressure coefficient [1/K]
+         * @param betap isothermal stress coefficient [kg/m³]
+         * @return partial derivatives d/d&nu; and d/dT [SI units]
+         */
+        private static double[] partialDerivativesVT(double v, double T, Quantity quantity, double p, double s, double cv, double alphap, double betap) {
+
+            double d_dv, d_dT;
+
+            switch (quantity) {
+                case p:
+                    d_dv = -p * betap; // [Pa·kg/m³]
+                    d_dT = p * alphap; // [Pa/K]
+                    break;
+
+                case T:
+                    d_dv = 0; // [-]
+                    d_dT = 1; // [-]
+                    break;
+
+                case v:
+                    d_dv = 1; // [-]
+                    d_dT = 0; // [-]
+                    break;
+
+                case u:
+                    d_dv = p * (T * alphap - 1); // [Pa]
+                    d_dT = cv; // [J/(kg·K)]
+                    break;
+
+                case h:
+                    d_dv = p * (T * alphap - v * betap); // [Pa]
+                    d_dT = cv + p * v * alphap; // [J/(kg·K)]
+                    break;
+
+                case s:
+                    d_dv = p * alphap; // [Pa/K]
+                    d_dT = cv / T; // [J/(kg·K²)]
+                    break;
+
+                case g:
+                    d_dv = -p * v * betap; // [Pa]
+                    d_dT = p * v * alphap - s; // [J/(kg·K)]
+                    break;
+
+                case f:
+                    d_dv = -p; // [Pa]
+                    d_dT = -s; // [J/(kg·K)]
+                    break;
+
+                case rho:
+                    d_dv = -1 / (v * v); // [kg²/m^6]
+                    d_dT = 0; // [-]
+                    break;
+
+                default:
+                    throw new IllegalArgumentException("Unsupported quantity for partial derivative: " + quantity);
+            }
+            return new double[]{d_dv, d_dT};
         }
 
         /**

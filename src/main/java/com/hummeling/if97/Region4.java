@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2021 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -253,6 +253,11 @@ final class Region4 extends Region {
             default:
                 throw new IllegalArgumentException("Quantity pT should be either pressure or temperature, not: " + pT);
         }
+    }
+
+    @Override
+    double heatCapacityRatioPT(double pressure, double temperature) {
+        return Double.NaN;
     }
 
     @Override

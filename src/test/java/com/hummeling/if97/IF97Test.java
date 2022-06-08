@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -177,18 +177,62 @@ public class IF97Test {
     }
 
     @Test
-    public void testRefractiveIndexPTLambda() {
+    public void testHeatCapacityRatioPT() {
 
         double[][] X = {
-            {0.139277824e1, 0.1, 298.15, 0.2265},
-            {0.133285819e1, 0.1, 298.15, 0.5893},
-            //meta {0.101098988e1, 10, 773.15, 0.2265},
-            //meta {0.100949307e1, 10, 773.15, 0.5893},
-            {0.119757252e1, 40, 673.15, 0.2265},
-            {0.116968699e1, 40, 673.15, 0.5893}};
+            {0.417301218e1 / 0.412120160e1, 3, 300}, // region 1
+            {0.401008987e1 / 0.391736606e1, 80, 300},
+            {0.465580682e1 / 0.322139223e1, 3, 500},
+            {0.191300162e1 / 0.144132662e1, 0.0035, 300}, // region 2
+            {0.208141274e1 / 0.161978333e1, 0.0035, 700},
+            {0.103505092e2 / 0.297553837e1, 30, 700},
+            {0.261609445e1 / 0.215337784e1, 0.5, 1500}, // region 5
+            {0.272724317e1 / 0.219274829e1, 30, 1500},
+            {0.288569882e1 / 0.239589436e1, 30, 2000}}; // test values for cp/cv
 
         for (double[] x : X) {
-            assertEquals(x[0], if97.refractiveIndexPTLambda(x[1], x[2], x[3]), 1e-6);
+            assertEquals(x[0], if97.heatCapacityRatioPT(x[1], x[2]), 1e-8);
+        }
+    }
+
+    @Test
+    public void testIsentropicExponentPT() {
+
+        double[][] X = {
+            {756.132, 3, 300}, // region 1
+            {34.212, 80, 298.15}, // 800 bar, 25 C, Table 3, p.282
+            {34.394, 80, 300},
+            {426.743, 3, 500},
+            {1.2881, 0.1, 673.15}, // region 2
+            {1.2935, 20, 673.15},
+            {1.4227, 50, 873.15}}; // test values for cp/cv
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.isentropicExponentPT(x[1], x[2]), 1e-3);
+        }
+    }
+
+    @Test
+    public void testPartialDerivative() {
+
+        double p = 2,
+                //                h = 105, // X = 0.5
+                //                h = 1605, // 25 Celsius
+                h = 2871, // 200 Celsius
+                rho = 1000,
+                T = 700;
+        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", rho, T, if97.partialDerivativeRhoT(rho, T, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), rho);
+        //System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, 1 / if97.partialDerivativePH(p, h, IF97.Quantity.p, IF97.Quantity.s, IF97.Quantity.h), if97.densityPH(p, h));
+        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, if97.partialDerivativePH(p, h, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), if97.densityPH(p, h));
+    }
+
+    @Test
+    public void testPartialDerivativePT() {
+
+        double[][] X = {};
+        for (double[] x : X) {
+            //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
+            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2], IF97.Quantity.p, IF97.Quantity.v, IF97.Quantity.u), 1e-5);
         }
     }
 
@@ -221,6 +265,32 @@ public class IF97Test {
     }
 
     @Test
+    public void testQuantity_getPartialDerivatives() {
+
+        System.out.println("IF97.Quantity.getPartialDerivatives()");
+
+        for (IF97.Quantity quantity : IF97.Quantity.getPartialDerivatives()) {
+            System.out.println("  " + quantity);
+        }
+    }
+
+    @Test
+    public void testRefractiveIndexPTLambda() {
+
+        double[][] X = {
+            {0.139277824e1, 0.1, 298.15, 0.2265},
+            {0.133285819e1, 0.1, 298.15, 0.5893},
+            //meta {0.101098988e1, 10, 773.15, 0.2265},
+            //meta {0.100949307e1, 10, 773.15, 0.5893},
+            {0.119757252e1, 40, 673.15, 0.2265},
+            {0.116968699e1, 40, 673.15, 0.5893}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.refractiveIndexPTLambda(x[1], x[2], x[3]), 1e-6);
+        }
+    }
+
+    @Test
     public void testSaturationPressureT() {
 
         double[][] X = {
@@ -243,30 +313,6 @@ public class IF97Test {
 
         for (double[] x : X) {
             assertEquals(x[0], if97.saturationTemperatureP(x[1]), 1e-6);
-        }
-    }
-
-    @Test
-    public void testPartialDerivative() {
-
-        double p = 2,
-//                h = 105, // X = 0.5
-//                h = 1605, // 25 Celsius
-                h = 2871, // 200 Celsius
-                rho = 1000,
-                T = 700;
-        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", rho, T, if97.partialDerivativeRhoT(rho, T, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), rho);
-        //System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, 1 / if97.partialDerivativePH(p, h, IF97.Quantity.p, IF97.Quantity.s, IF97.Quantity.h), if97.densityPH(p, h));
-        System.out.format("(dp/dh)s(%.1f, %.1f): %.1f, rho: %.1f%n", p, h, if97.partialDerivativePH(p, h, IF97.Quantity.h, IF97.Quantity.s, IF97.Quantity.p), if97.densityPH(p, h));
-    }
-
-    @Test
-    public void testPartialDerivativePT() {
-
-        double[][] X = {};
-        for (double[] x : X) {
-            //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
-            assertEquals(x[0], if97.partialDerivativePT(x[1], x[2], IF97.Quantity.p, IF97.Quantity.v, IF97.Quantity.u), 1e-5);
         }
     }
 
@@ -609,29 +655,6 @@ public class IF97Test {
     }
 
     @Test
-    public void testViscosityPT() {
-
-        double[][] X = {
-            {0.890022551e-3, .1, 298.15},
-            {0.339743835e-4, 20, 873.15},
-            {0.726093560e-4, 60, 673.15}};
-
-        for (double[] x : X) {
-            assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), 1e-12);
-        }
-    }
-
-    @Test
-    public void testQuantity_getPartialDerivatives() {
-
-        System.out.println("IF97.Quantity.getPartialDerivatives()");
-
-        for (IF97.Quantity quantity : IF97.Quantity.getPartialDerivatives()) {
-            System.out.println("  " + quantity);
-        }
-    }
-
-    @Test
     public void testUnitSystem() {
 
         assertEquals(4.4482216152605, IF97.lb * IF97.g, 1e-13);
@@ -645,5 +668,18 @@ public class IF97Test {
         //System.out.format("PsatT(%.1f F): %f bar%n", Timp, if97.saturationPressureT(Timp) * IF97.psi * 10);
 
         if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+    }
+
+    @Test
+    public void testViscosityPT() {
+
+        double[][] X = {
+            {0.890022551e-3, .1, 298.15},
+            {0.339743835e-4, 20, 873.15},
+            {0.726093560e-4, 60, 673.15}};
+
+        for (double[] x : X) {
+            assertEquals(x[0], if97.dynamicViscosityPT(x[1], x[2]), 1e-12);
+        }
     }
 }

@@ -9,7 +9,7 @@
  * information.</p>
  *
  * <p>
- * Copyright 2009-2018 Hummeling Engineering BV
+ * Copyright 2009-2022 Hummeling Engineering BV
  * (<a href="https://www.hummeling.com/">www.hummeling.com</a>).</p>
  *
  * <p>

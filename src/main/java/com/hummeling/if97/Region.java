@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2020 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -355,7 +355,16 @@ abstract class Region {
     }
 
     /**
-     * Isentropic exponent,
+     * Heat capacity ratio.
+     *
+     * @param p pressure [MPa]
+     * @param T temperature [K]
+     * @return heat capacity ratio [-]
+     */
+    abstract double heatCapacityRatioPT(double p, double T);
+
+    /**
+     * Isentropic exponent.
      *
      * @param p pressure [MPa]
      * @param T temperature [K]

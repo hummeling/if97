@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -41,15 +41,28 @@ public class Region2Test {
     //    }
     //}
     @Test
-    public void testIsentropicExponentPT() {
+    public void testHeatCapacityRatioPT() {
 
         double[][] X = {
             {0.191300162e1 / 0.144132662e1, 0.0035, 300},
             {0.208141274e1 / 0.161978333e1, 0.0035, 700},
-            {0.103505092e2 / 0.297553837e1, 30, 700}};
+            {0.103505092e2 / 0.297553837e1, 30, 700}}; // test values for cp/cv
 
         for (double[] x : X) {
-            assertEquals(x[0], region.isentropicExponentPT(x[1], x[2]), 1e-8);
+            assertEquals(x[0], region.heatCapacityRatioPT(x[1], x[2]), 1e-8);
+        }
+    }
+
+    @Test
+    public void testIsentropicExponentPT() {
+
+        double[][] X = {
+            {1.2881, 0.1, 673.15},
+            {1.2935, 20, 673.15},
+            {1.4227, 50, 873.15}}; // values taken from Table 3 of [Wagner & Kretzschmar].
+
+        for (double[] x : X) {
+            assertEquals(x[0], region.isentropicExponentPT(x[1], x[2]), 1e-4);
         }
     }
 

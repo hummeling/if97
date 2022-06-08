@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2019 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
@@ -619,13 +619,27 @@ class Region2 extends Region {
     }
 
     @Override
-    double isentropicExponentPT(double pressure, double temperature) {
+    double heatCapacityRatioPT(double pressure, double temperature) {
 
         double pi = pressure / pRef,
                 tau = Tref / temperature,
                 x = 1 + pi * gammaRPi(pi, tau) - tau * pi * gammaRPiTau(pi, tau);
 
         return 1 / (1 + x * x / (tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)) * (1 - pi * pi * gammaRPiPi(pi, tau))));
+    }
+
+    @Override
+    double isentropicExponentPT(double pressure, double temperature) {
+
+        double pi = pressure / pRef,
+                tau = Tref / temperature,
+                gPi = gammaOPi(pi) + gammaRPi(pi, tau),
+                gRPiPi = gammaRPiPi(pi, tau),
+                x = 1 + pi * gammaRPi(pi, tau),
+                y = x * tau * tau * (gammaOTauTau(tau) + gammaRTauTau(pi, tau)),
+                z = x - pi * tau * gammaRPiTau(pi, tau);
+
+        return x * y / ((1 - pi * pi * gRPiPi) * y + pi * gPi * z * z);
     }
 
     @Override
