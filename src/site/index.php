@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
     <head>
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19225692-4" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-19225692-4"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
@@ -12,10 +12,13 @@
         </script>
         <title>IF97 steam tables</title>
         <meta charset="UTF-8" />
-        <meta name='copyright' content='Copyright 2009-2018 by Hummeling Engineering BV' />
+        <meta name='copyright' content='Copyright 2009-2023 by Hummeling Engineering BV' />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="Cache-Control" content="no-cache" />
+        <link href='https://fonts.googleapis.com/css?family=Abel' rel='stylesheet'>
+        <link href='https://fonts.googleapis.com/css?family=Orbitron' rel='stylesheet'>
         <link rel="shortcut icon" href="favicon.ico" />
+        <script src="https://cdn.nocodeflow.net/tools/geoblock.js"></script>
         <style>
             html {
                 background: linear-gradient(#fff, #eef) no-repeat fixed;
@@ -32,14 +35,13 @@
             body {
                 background: rgba(255, 255, 255, 0.5) url(img/diagramIF97.png) no-repeat bottom right;
                 color: #566;
-                font: 16px Verdana, "sans serif";
+                font: 20px Abel, Verdana, "sans serif";
                 margin: auto;
-                max-width: 66em;
+                max-width: 52em;
             }
             code, pre {
                 background: #fff;
                 border: 1px solid #F80;
-                font-weight: bold;
                 padding: 0 4pt;
             }
             a {
@@ -85,6 +87,8 @@
             h1, footer {
                 background-color: rgb(0, 34, 68);
                 background-color: rgba(0, 34, 68, 0.5);
+                font-family: Orbitron;
+                font-weight: normal;
             }
             section {
                 background-color: rgb(255, 255, 255);
@@ -241,18 +245,18 @@
         </form>
         <p>IF97 project binaries and source code are hosted on SourceForge: <a href="https://sourceforge.net/projects/if97/">sourceforge.net/projects/if97</a> as well as compiled sources and API documentation (javadoc).</p>
         <p>Our IF97 library is developed in Java, with a test suite containing a mere 100&nbsp;tests readily available in the source distribution.</p>
-        <p>IF97 artefacts are also available in <a href="https://search.maven.org/search?q=a:%22if97%22">The Central Repository</a> and can be added to your Maven project dependencies section:</p>
+        <p>IF97 artefacts are also available in the <a href="https://search.maven.org/search?q=a:if97">Maven Central Repository</a> and can be added to your Maven project dependencies section:</p>
         <pre style="clear:both; background-color:#fff; float:none; margin:auto; margin:1em;">&lt;dependency&gt;
     &lt;groupId&gt;com.hummeling&lt;/groupId&gt;
     &lt;artifactId&gt;if97&lt;/artifactId&gt;
-    &lt;version&gt;1.0.5&lt;/version&gt;
+    &lt;version&gt;2.1.0&lt;/version&gt;
 &lt;/dependency&gt;</pre>
         <p>This library has no dependencies on other software libraries, except for the test classes which require <a href="http://www.junit.org/">JUnit</a>.</p>
         <h2 id="code-calc">Calculate online</h2>
         <p>See IF97 in action on our engineering portal: <a href="https://www.code-calc.com/calculations/if97">www.code-calc.com</a></p>
 
         <h2 id="swing">Calculate on your desktop</h2>
-        <p>We've prepared a desktop application which can be used in Windows, Mac, and Linux. Send us a message when you are interested!</p>
+        <p>We're preparing a desktop application which can be used in Windows, Mac, and Linux. Add yourself to the mailing list or send us a message when you want to be informed when it's available!</p>
 
         <h2 id="android">Calculate on your mobile device</h2>
         <p>We're also preparing an Android app. Add yourself to the mailing list or send us a message when you want to be informed when it's available!</p>
@@ -291,7 +295,7 @@
 
         <!--<img style="float:right; padding:1em;" src="img/JavaPowered.png" width="76" height="142" alt="Java is a registered trademark of Oracle Corporation." />-->
         <h1 id="usageJava">Using IF97 in Java</h1>
-        <a href="https://www.oracle.com/java/" style="float:right; padding:50px;"><img _fcksavedurl="https://www.oracle.com/java/"><img _fcksavedurl="https://www.oracle.com/java/"><img src="http://www.oracle.com/us/technologies/java/gimmejava/i-code-java-100x117-1705302.png" alt="I Code Java" border="0" width="100" height="117" /></a>
+        <a href="https://www.oracle.com/java/" style="float:right; padding:50px;"><img _fcksavedurl="https://www.oracle.com/java/"><img _fcksavedurl="https://www.oracle.com/java/"><img src="img/i-code-java-100x117-1705302.png" alt="I Code Java" border="0" width="100" height="117" /></a>
         <ol>
             <li>Add IF97 to the imports: <code>import com.hummeling.if97.IF97;</code></li>
             <li>Create an IF97 object: <code>IF97 if97 = new IF97(IF97.UnitSystem.ENGINEERING);</code></li>
@@ -347,8 +351,8 @@
         <h1 id="contact">Contact Us</h1>
         <a href="https://www.hummeling.com" style="float:right; padding:0 1em;"><img src="img/HummelingEngineering2.svg" onerror="this.src='img/HummelingEngineering.png'" alt="Hummeling Engineering BV" width="300" height="102" /></a>
         <p>For more information, contact us: <script type="text/javascript">
-            var email = "engineering@hummeling.com";
-            document.write("<a href='mailto:" + email + "'>" + email + "</a>");
+    var email = "engineering@hummeling.com";
+    document.write("<a href='mailto:" + email + "'>" + email + "</a>");
             </script>.
         </p>
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">

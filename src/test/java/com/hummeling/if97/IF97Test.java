@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2023 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -30,7 +31,12 @@ import org.junit.Test;
  */
 public class IF97Test {
 
-    private final IF97 if97 = new IF97();
+    static IF97 if97;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        if97 = new IF97();
+    }
 
     /**
      * Bug filed by Klaus Heckmann on SourceForge forum.
@@ -153,6 +159,8 @@ public class IF97Test {
     @Test
     public void testCompressionFactorPT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.00073, 0.1, 298.15},
             {0.03636, 5, 298.15},
@@ -166,6 +174,8 @@ public class IF97Test {
     @Test
     public void testDielectricConstantPT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.785907250e2, 5, 298.15},
             //meta {0.112620970e1, 10, 873.15},
@@ -178,6 +188,8 @@ public class IF97Test {
 
     @Test
     public void testHeatCapacityRatioPT() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.417301218e1 / 0.412120160e1, 3, 300}, // region 1
@@ -198,6 +210,8 @@ public class IF97Test {
     @Test
     public void testIsentropicExponentPT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {756.132, 3, 300}, // region 1
             {34.212, 80, 298.15}, // 800 bar, 25 C, Table 3, p.282
@@ -215,6 +229,8 @@ public class IF97Test {
     @Test
     public void testPartialDerivative() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double p = 2,
                 //                h = 105, // X = 0.5
                 //                h = 1605, // 25 Celsius
@@ -229,6 +245,8 @@ public class IF97Test {
     @Test
     public void testPartialDerivativePT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {};
         for (double[] x : X) {
             //System.out.println("region: " + Region.getRegionPT(x[1], x[2]).getName());
@@ -238,6 +256,8 @@ public class IF97Test {
 
     @Test
     public void testPressureHS() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {9.800980612e-4, 0.001, 0}, // region 1: ok with tol = 1e-13
@@ -277,6 +297,8 @@ public class IF97Test {
     @Test
     public void testRefractiveIndexPTLambda() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.139277824e1, 0.1, 298.15, 0.2265},
             {0.133285819e1, 0.1, 298.15, 0.5893},
@@ -293,6 +315,8 @@ public class IF97Test {
     @Test
     public void testSaturationPressureT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.353658941e-2, 300},
             {0.263889776e1, 500},
@@ -306,6 +330,8 @@ public class IF97Test {
     @Test
     public void testSaturationTemperatureP() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.372755919e3, 0.1},
             {0.453035632e3, 1},
@@ -318,6 +344,8 @@ public class IF97Test {
 
     @Test
     public void testSpecificEnthalpyPT() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.115331273e3, 3, 300}, // region 1
@@ -342,6 +370,8 @@ public class IF97Test {
     @Test
     public void testSpecificEnthalpyPX() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.1, 0},
             {1, 0.5},
@@ -354,6 +384,8 @@ public class IF97Test {
 
     @Test
     public void testSpecificEnthalpyTX() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {373.15, 0},
@@ -373,6 +405,8 @@ public class IF97Test {
      */
     @Test
     public void testSpecificEntropyPT() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.392294792, 3, 300}, // region 1 tests
@@ -396,6 +430,8 @@ public class IF97Test {
     @Test
     public void testSpecificEntropyPX() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.1, 0},
             {1, 0.5},
@@ -409,6 +445,8 @@ public class IF97Test {
     @Test
     public void testSpecificEntropyTX() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {373.15, 0},
             {373.15, 0.5},
@@ -421,6 +459,8 @@ public class IF97Test {
 
     @Test
     public void testSpecificVolumePH() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {1.749903962e-3, 20, 1700}, // region 3
@@ -438,6 +478,8 @@ public class IF97Test {
     @Test
     public void testSpecificVolumePS() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {1.733791463e-3, 20, 3.8}, // region 3
             {1.469680170e-3, 50, 3.6},
@@ -453,6 +495,8 @@ public class IF97Test {
 
     @Test
     public void testSpecificVolumePT() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.100215168e-2, 3, 300}, // region 1
@@ -531,6 +575,8 @@ public class IF97Test {
     @Test
     public void testSpeedOfSoundPT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.150773921e4, 3, 300}, // region 1
             {0.163469054e4, 80, 300},
@@ -562,6 +608,8 @@ public class IF97Test {
     @Test
     public void testSurfaceTensionT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.0716859625, 300},
             {0.0428914992, 450},
@@ -575,6 +623,8 @@ public class IF97Test {
     @Test
     public void testTemperatureHS() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {3.468475498e2, 1800, 5.3}, // region 4
             {4.251373305e2, 2400, 6},
@@ -587,6 +637,8 @@ public class IF97Test {
 
     @Test
     public void testTemperaturePH() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.391798509e3, 3, 500}, // region 1
@@ -616,6 +668,8 @@ public class IF97Test {
     @Test
     public void testTemperaturePS() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.307842258e3, 3, 0.5}, // region 1
             {0.309979785e3, 80, 0.5},
@@ -644,6 +698,8 @@ public class IF97Test {
     @Test
     public void testThermalConductivityRhoT() {
 
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
+
         double[][] X = {
             {0.607509806, 0.1, 298.15},
             //{0.867570353e-1, 10, 873.15},
@@ -666,12 +722,12 @@ public class IF97Test {
         if97.setUnitSystem(IF97.UnitSystem.IMPERIAL);
         double Timp = 212; // [F]
         //System.out.format("PsatT(%.1f F): %f bar%n", Timp, if97.saturationPressureT(Timp) * IF97.psi * 10);
-
-        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
     }
 
     @Test
     public void testViscosityPT() {
+
+        if97.setUnitSystem(IF97.UnitSystem.DEFAULT);
 
         double[][] X = {
             {0.890022551e-3, .1, 298.15},

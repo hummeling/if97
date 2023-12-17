@@ -16,12 +16,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2023 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
-import org.junit.*;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Region 2 tests.
@@ -31,7 +32,12 @@ import static org.junit.Assert.*;
  */
 public class Region2Test {
 
-    static Region2 region = new Region2();
+    static Region region;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        region = new Region2();
+    }
 
     //@Test
     //public void testEnthalpy2bc() {

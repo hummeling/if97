@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2022 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2023 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -31,7 +32,12 @@ import org.junit.Test;
  */
 public class Region1Test {
 
-    static Region1 region = new Region1();
+    static Region region;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        region = new Region1();
+    }
 
     @Test
     public void testHeatCapacityRatioPT() {
@@ -126,6 +132,14 @@ public class Region1Test {
     }
 
     @Test
+    public void testSpecificEntropyRhoT() {
+    }
+
+    @Test
+    public void testSpecificGibbsFreeEnergyPT() {
+    }
+
+    @Test
     public void testSpecificInternalEnergyPT() {
 
         double[][] X = {
@@ -188,6 +202,10 @@ public class Region1Test {
         for (double[] x : X) {
             assertEquals(x[0], region.speedOfSoundPT(x[1], x[2]), 1e-5);
         }
+    }
+
+    @Test
+    public void testTemperatureHS() {
     }
 
     @Test

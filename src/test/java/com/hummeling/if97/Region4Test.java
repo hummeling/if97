@@ -16,28 +16,33 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with IF97. If not, see <https://www.gnu.org/licenses/>.
  *
- * Copyright 2009-2021 Hummeling Engineering BV (www.hummeling.com)
+ * Copyright 2009-2023 Hummeling Engineering BV (www.hummeling.com)
  */
 package com.hummeling.if97;
 
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- * For methods related to liquid or vapour state above 16.5292 MPa (surrounded
- * by region 3), iterations are implemented.
+ * For methods related to liquid or vapour state above 16.5292 MPa (surrounded by region 3),
+ * iterations are implemented.
  *
- * Tabulated values from Wagner are used as test values, as well as values from
- * Zittau's Fluid Property Calculator. At pressures near critical pressure
- * (22.064 MPa) Zittau's values are not consistent with values from Wagner's
- * Table 1 and 2, in which cases Wagner's values are assumed correct.
+ * Tabulated values from Wagner are used as test values, as well as values from Zittau's Fluid
+ * Property Calculator. At pressures near critical pressure (22.064 MPa) Zittau's values are not
+ * consistent with values from Wagner's Table 1 and 2, in which cases Wagner's values are assumed
+ * correct.
  *
- * @author Ralph Hummeling
- * (<a href="https://www.hummeling.com">www.hummeling.com</a>)
+ * @author Ralph Hummeling (<a href="https://www.hummeling.com">www.hummeling.com</a>)
  */
 public class Region4Test {
 
-    static Region4 region4 = new Region4();
+    static Region4 region;
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        region = new Region4();
+    }
 
     @Test
     public void testSaturationPressureB34H() {
@@ -48,7 +53,7 @@ public class Region4Test {
             {2.018090839e1, 2400}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.saturationPressureB34H(x[1]), 1e-8);
+            assertEquals(x[0], region.saturationPressureB34H(x[1]), 1e-8);
         }
     }
 
@@ -61,7 +66,7 @@ public class Region4Test {
             {1.668968482e1, 5.2}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.saturationPressureB34S(x[1]), 1e-8);
+            assertEquals(x[0], region.saturationPressureB34S(x[1]), 1e-8);
         }
     }
 
@@ -74,7 +79,7 @@ public class Region4Test {
             {0.123443146e2, 600}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.saturationPressureT(x[1]), 1e-7);
+            assertEquals(x[0], region.saturationPressureT(x[1]), 1e-7);
         }
     }
 
@@ -87,7 +92,7 @@ public class Region4Test {
             {0.584149488e3, 10}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.saturationTemperatureP(x[1]), 1e-6);
+            assertEquals(x[0], region.saturationTemperatureP(x[1]), 1e-6);
         }
     }
 
@@ -101,7 +106,7 @@ public class Region4Test {
             {5.225579013e2, 2500, 5.5}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.temperatureHS(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region.temperatureHS(x[1], x[2]), 1e-7);
         }
     }
 
@@ -119,7 +124,7 @@ public class Region4Test {
             {2411.3880, 20, 1}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificEnthalpyPX(x[1], x[2]), 1e-3);
+            assertEquals(x[0], region.specificEnthalpyPX(x[1], x[2]), 1e-3);
         }
     }
 
@@ -142,15 +147,15 @@ public class Region4Test {
             {2087.55, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificEnthalpySaturatedLiquidP(x[1]), 1e-2);
+            assertEquals(x[0], region.specificEnthalpySaturatedLiquidP(x[1]), 1e-2);
         }
     }
 
     /**
      * Test values from Table 2 Wagner.
      *
-     * The 22 MPa case fails on the last two digits (.18 is wrong), possibly
-     * because of a typo: the previous tabulated value does end with .18.
+     * The 22 MPa case fails on the last two digits (.18 is wrong), possibly because of a typo: the
+     * previous tabulated value does end with .18.
      */
     @Test
     public void testSpecificEnthalpySaturatedVapourP() {
@@ -168,7 +173,7 @@ public class Region4Test {
             {2087.55, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificEnthalpySaturatedVapourP(x[1]), 1e-2);
+            assertEquals(x[0], region.specificEnthalpySaturatedVapourP(x[1]), 1e-2);
         }
     }
 
@@ -186,9 +191,9 @@ public class Region4Test {
             {2550.6559, 625, 1}};
 
         for (double[] x : X) {
-            double ps = region4.saturationPressureT(x[1]);
+            double ps = region.saturationPressureT(x[1]);
 
-            assertEquals(x[0], region4.specificEnthalpyPX(ps, x[2]), 1e-2);
+            assertEquals(x[0], region.specificEnthalpyPX(ps, x[2]), 1e-2);
         }
     }
 
@@ -211,7 +216,7 @@ public class Region4Test {
             {4.41202, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificEntropySaturatedLiquidP(x[1]), 1e-4);
+            assertEquals(x[0], region.specificEntropySaturatedLiquidP(x[1]), 1e-4);
         }
     }
 
@@ -234,7 +239,7 @@ public class Region4Test {
             {4.41202, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificEntropySaturatedVapourP(x[1]), 1e-5);
+            assertEquals(x[0], region.specificEntropySaturatedVapourP(x[1]), 1e-5);
         }
     }
 
@@ -254,7 +259,7 @@ public class Region4Test {
             {0.0180336, 10, 1}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificVolumePX(x[1], x[2]), 1e-7);
+            assertEquals(x[0], region.specificVolumePX(x[1], x[2]), 1e-7);
         }
     }
 
@@ -277,7 +282,7 @@ public class Region4Test {
             {0.00310559, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificVolumeSaturatedLiquidP(x[1]), 1e-8);
+            assertEquals(x[0], region.specificVolumeSaturatedLiquidP(x[1]), 1e-8);
         }
     }
 
@@ -290,9 +295,9 @@ public class Region4Test {
             {0.00252643, 646.15}};
 
         for (double[] x : X) {
-            double ps = region4.saturationPressureT(x[1]);
+            double ps = region.saturationPressureT(x[1]);
 
-            assertEquals(x[0], region4.specificVolumeSaturatedLiquidP(ps), 1e-8);
+            assertEquals(x[0], region.specificVolumeSaturatedLiquidP(ps), 1e-8);
         }
     }
 
@@ -313,7 +318,7 @@ public class Region4Test {
             {0.00310559, IF97.pc}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.specificVolumeSaturatedVapourP(x[1]), 1e-8);
+            assertEquals(x[0], region.specificVolumeSaturatedVapourP(x[1]), 1e-8);
         }
     }
 
@@ -332,8 +337,8 @@ public class Region4Test {
         };
 
         for (double[] x : X) {
-            double Tsat = region4.saturationTemperatureP(x[1]),
-                    nu = region4.specificVolumeSaturatedVapourP(x[1]),
+            double Tsat = region.saturationTemperatureP(x[1]),
+                    nu = region.specificVolumeSaturatedVapourP(x[1]),
                     nu2 = Region.REGION2.specificVolumePT(x[1], Tsat),
                     nu3 = Region.REGION3.specificVolumePT(x[1], Tsat);
             System.out.format("p: %.3f, Ts: %.3f", x[1], Tsat);
@@ -357,7 +362,7 @@ public class Region4Test {
             {0.999641, 10, 2725}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.vapourFractionPH(x[1], x[2]), 1e-6);
+            assertEquals(x[0], region.vapourFractionPH(x[1], x[2]), 1e-6);
         }
     }
 
@@ -379,7 +384,7 @@ public class Region4Test {
             {1, 22, 4.5308}};
 
         for (double[] x : X) {
-            assertEquals(x[0], region4.vapourFractionPS(x[1], x[2]), 1e-4);
+            assertEquals(x[0], region.vapourFractionPS(x[1], x[2]), 1e-4);
         }
     }
 }
